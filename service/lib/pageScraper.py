@@ -22,13 +22,13 @@ class WNAPageScraper(object):
     Usage:
     from pageScraper import WNAPageScraper
     page_scraper = WNAPageScraper(2)
-    page_scraper.get_columns_in_reactor_details()
-    #page_scraper.columns_in_reactor_details
+    page_scraper.get_reactor_details_cols()
+    # page_scraper.reactor_details_cols
     page_scraper.get_reactor_details()
-    #page_scraper.reactor_details
+    # page_scraper.reactor_details
     """
-    def __init__(self, page_number, columns_in_reactor_details=defaultdict(list)):
-        self.columns_in_reactor_details = columns_in_reactor_details
+    def __init__(self, page_number, reactor_details_cols=defaultdict(list)):
+        self.reactor_details_cols = reactor_details_cols
         try:
             self.page_number = int(page_number)
         except ValueError:
@@ -56,15 +56,15 @@ class WNAPageScraper(object):
         return
 
     def request_page(self):
-        #TODO: InsecurePlatformWarning
+        # TODO: InsecurePlatformWarning
         #      requests/packages/urllib3/util/ssl_.py:90: InsecurePlatformWarning: A true SSLContext object is not available.
         #      This prevents urllib3 from configuring SSL appropriately and may cause certain SSL connections to fail.
         #      For more information, see https://urllib3.readthedocs.org/en/latest/security.html#insecureplatformwarning.
 
         payload = {'current': self.page_number}
         r = requests.get(PRISURL, params=payload)
-        #r.headers['content-type']
-        #r.encoding # could use this decode and encode data into unicode
+        # r.headers['content-type']
+        # r.encoding # could use this decode and encode data into unicode
         if r.status_code > 199 and r.status_code < 300:
             self.page = r.text
             return True
@@ -101,7 +101,7 @@ class WNAPageScraper(object):
                 self.operating_history_section = section_title
         return
 
-    def get_columns_in_reactor_details(self):
+    def get_reactor_details_cols(self):
         if not self.reactor_section:
             return False
         content = self.reactor_section.find_parent("div", class_="box")
@@ -116,7 +116,7 @@ class WNAPageScraper(object):
                     except:
                         span_id = cols1[i].h5.a.get('id')
                 except:
-                    #Loop through contents to find an id
+                    # Loop through contents to find an id
                     for child in cols1[i].contents:
                         try:
                             span_id = child.get('id', None)
@@ -124,11 +124,11 @@ class WNAPageScraper(object):
                             continue
                         if span_id:
                             break
-                if span_id and span_id not in self.columns_in_reactor_details:
-                    self.columns_in_reactor_details[span_id].append(cols0[i].text.strip('\r\n\t '))
-                elif not span_id and not cols0[i].text.strip('\r\n\t ') in self.columns_in_reactor_details:
+                if span_id and span_id not in self.reactor_details_cols:
+                    self.reactor_details_cols[span_id].append(cols0[i].text.strip('\r\n\t '))
+                elif not span_id and not cols0[i].text.strip('\r\n\t ') in self.reactor_details_cols:
                     # if no id, use label from column in previous row as key
-                    self.columns_in_reactor_details[cols0[i].text.strip('\r\n\t ')].append(cols0[i].text.strip('\r\n\t '))
+                    self.reactor_details_cols[cols0[i].text.strip('\r\n\t ')].append(cols0[i].text.strip('\r\n\t '))
         return True
         
     def parse_owner(self, owner):
@@ -201,8 +201,8 @@ class WNAPageScraper(object):
                             label = cols0[i].text.strip('\r\n\t ')
                             value = cols1[i].h5.text.strip('\r\n\t ')
                 except:
-                    #Assuming no ID found rather than looping through content.
-                    #Using label from column in row above and all of the contents of the cell for value
+                    # Assuming no ID found rather than looping through content.
+                    # Using label from column in row above and all of the contents of the cell for value
                     label = cols0[i].text.strip('\r\n\t ')
                     value = cols1[i].contents.strip('\r\n\t ')
                 if span_id and span_id in reactor_details_id:
@@ -240,7 +240,7 @@ class WNAPageScraper(object):
                 # Add blank comment
                 data_row.append('')
             else:
-                #TODO: Add exception. The table layout has been modified
+                # TODO: Add exception. The table layout has been modified
                 pass
             if data_row:
                 self.operating_history.append(data_row)
@@ -249,10 +249,10 @@ class WNAPageScraper(object):
         
 class WNAScraper(object):
     """
-    Usgae:
+    Usage:
     from pageScraper import WNAScraper
     ws = WNAScraper(max_pages=1200)
-    columns = ws.get_all_columns_in_reactor_details
+    columns = ws.get_all_reactor_details_cols()
     ws.get_page(2)
     ws.get_all_pages()
     """
@@ -268,16 +268,16 @@ class WNAScraper(object):
         self.oh_file_handler = None
         self.oh_csv_writer = None
             
-    def get_rd_filename(self, scraperJob='all'):
+    def get_rd_filename(self, job_id='all'):
         timestr = time.strftime("%Y%m%d-%H%M%S")
-        fn = "%s-%s-%s.csv"%(timestr, 'reactor_details', str(scraperJob))
+        fn = "%s-%s-%s.csv" % (timestr, 'reactor_details', str(job_id))
         self.rd_filename = os.path.join(reactor_details_data_dir, fn)
         return
         
-    def open_rd_stream(self, filename=None, scraperJob='all'):
+    def open_rd_stream(self, filename=None, job_id='all'):
         file_exists = False
         if not filename:
-            self.get_rd_filename(scraperJob=scraperJob)
+            self.get_rd_filename(job_id=job_id)
             filename = self.rd_filename
         if os.path.isfile(filename):
             file_exists = True
@@ -288,7 +288,7 @@ class WNAScraper(object):
         return
         
     def write_rd_stream(self, reactor_details):
-        #reactor_details is a dictionary
+        # reactor_details is a dictionary
         data = []
         for col in reactor_details_header:
             data.append(reactor_details.get(col, ''))
@@ -299,16 +299,16 @@ class WNAScraper(object):
         self.rd_file_handler.close()
         return
         
-    def get_oh_filename(self, scraperJob='all'):
+    def get_oh_filename(self, job_id='all'):
         timestr = time.strftime("%Y%m%d-%H%M%S")
-        fn = "%s-%s-%s.csv"%(timestr, 'operating_history', str(scraperJob))
+        fn = "%s-%s-%s.csv" % (timestr, 'operating_history', str(job_id))
         self.oh_filename = os.path.join(operating_history_data_dir, fn)
         return
         
-    def open_oh_stream(self, filename=None, scraperJob='all'):
+    def open_oh_stream(self, filename=None, job_id='all'):
         file_exists = False
         if not filename:
-            self.get_oh_filename(scraperJob=scraperJob)
+            self.get_oh_filename(job_id=job_id)
             filename = self.oh_filename
         if os.path.isfile(filename):
             file_exists = True
@@ -318,46 +318,46 @@ class WNAScraper(object):
             self.oh_csv_writer.writerow(operating_history_header)
         return
         
-    def write_oh_stream(self, operatingHistory):
-        #operating_history is a list of lists
-        self.oh_csv_writer.writerows(operatingHistory)
+    def write_oh_stream(self, operating_history):
+        # operating_history is a list of lists
+        self.oh_csv_writer.writerows(operating_history)
         return
         
     def close_oh_stream(self):
         self.oh_file_handler.close()
         return
 
-    def get_all_columns_in_reactor_details(self):
+    def get_all_reactor_details_cols(self):
         # Get all available columns in reactor dtails
-        columns_in_reactor_details = defaultdict(list)
+        reactor_details_cols = defaultdict(list)
         for i in range(1, self.max_pages):
-            page_scraper = WNAPageScraper(i, columns_in_reactor_details=columns_in_reactor_details)
-            if page_scraper.get_columns_in_reactor_details():
-                columns_in_reactor_details = dict(Counter(columns_in_reactor_details)+Counter(page_scraper.columns_in_reactor_details))
-                for k,v in columns_in_reactor_details.iteritems():
-                    columns_in_reactor_details[k] = list(set(v))
-        return columns_in_reactor_details
+            page_scraper = WNAPageScraper(i, reactor_details_cols=reactor_details_cols)
+            if page_scraper.get_reactor_details_cols():
+                reactor_details_cols = dict(Counter(reactor_details_cols)+Counter(page_scraper.reactor_details_cols))
+                for k, v in reactor_details_cols.iteritems():
+                    reactor_details_cols[k] = list(set(v))
+        return reactor_details_cols
     
     def get_all_pages(self, sections=sections_scraped):
         if not isinstance(sections, list):
             sections = [sections]
         if 'reactor details' in sections:
-            self.open_rd_stream(scraperJob='all')
+            self.open_rd_stream(job_id='all')
         if 'operating history' in sections:
-            self.open_oh_stream(scraperJob='all')
+            self.open_oh_stream(job_id='all')
         for page_number in range(1, self.max_pages):
             page_scraper = WNAPageScraper(page_number)
             if 'reactor details' in sections:
                 if page_scraper.get_reactor_details():
                     self.write_rd_stream(page_scraper.reactor_details)
                 else:
-                    #TODO: raise exception
+                    # TODO: raise exception
                     pass
             if 'operating history' in sections:
                 if page_scraper.get_operating_history():
                     self.write_oh_stream(page_scraper.operating_history)
                 else:
-                    #TODO: raise exception
+                    # TODO: raise exception
                     pass
         if 'reactor details' in sections:
             self.close_rd_stream()
@@ -367,23 +367,23 @@ class WNAScraper(object):
         
     def get_page(self, page_number, sections=sections_scraped):
         if not isinstance(page_number, int):
-            #TODO: raise exception
+            # TODO: raise exception
             return False
         page_scraper = WNAPageScraper(page_number)
         if 'reactor details' in sections:
-            self.open_rd_stream(scraperJob=page_number)
+            self.open_rd_stream(job_id=page_number)
             if page_scraper.get_reactor_details():
                 self.write_rd_stream(page_scraper.reactor_details)
             else:
-                #TODO: raise exception
+                # TODO: raise exception
                 pass
             self.close_rd_stream()
         if 'operating history' in sections:
-            self.open_oh_stream(scraperJob=page_number)
+            self.open_oh_stream(job_id=page_number)
             if page_scraper.get_operating_history():
                 self.write_oh_stream(page_scraper.operating_history)
             else:
-                #TODO: raise exception
+                # TODO: raise exception
                 pass
             self.close_oh_stream()
         return
