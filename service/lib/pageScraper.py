@@ -1,5 +1,3 @@
-#import urllib2
-#import urllib
 from bs4 import BeautifulSoup
 import requests
 from collections import defaultdict, Counter
@@ -7,73 +5,63 @@ import time
 import os
 import re
 
-from config.wnaConfig import PRISURL, defaultMaxPages, sectionsScraped, pageDetailsId
-from config.wnaConfig import reactorDetailsId, reactorDetailsDataDir, reactorDetailsHeader
-from config.wnaConfig import operatingHistoryHeader, operatingHistoryDataColumns, operatingHistoryDataDir
+from config.wnaConfig import PRISURL, default_max_pages, sections_scraped, page_details_id
+from config.wnaConfig import reactor_details_id, reactor_details_data_dir, reactor_details_header
+from config.wnaConfig import operating_history_header, operating_history_data_columns, operating_history_data_dir
 from service.lib.unicodeCSV import UnicodeWriter
 
-#TODO:  Do we need config file with reactor names and corresponding id used in the website
-#       If they add new reactors / delete reactors, do we update our config file?
-
-#url="https://www.iaea.org/PRIS/CountryStatistics/ReactorDetails.aspx?current=2"
-#page=urllib2.urlopen(url)
-
-#url="https://www.iaea.org/PRIS/CountryStatistics/ReactorDetails.aspx"
-#values = {'current' : 2}
-#data = urllib.urlencode(values)
-#req = urllib2.Request(url, data)
-#page = urllib2.urlopen(req)
 
 def alternate(i):
     i = iter(i)
     while True:
         yield(i.next(), i.next())
        
+
 class WNAPageScraper(object):
     """
     Usage:
     from pageScraper import WNAPageScraper
-    pageScraper = WNAPageScraper(2)
-    pageScraper.getColumnsInReactorDetails()
-    #pageScraper.columnsInReactorDetails
-    pageScraper.getReactorDetails()
-    #pageScraper.reactorDetails
+    page_scraper = WNAPageScraper(2)
+    page_scraper.get_columns_in_reactor_details()
+    #page_scraper.columns_in_reactor_details
+    page_scraper.get_reactor_details()
+    #page_scraper.reactor_details
     """
-    def __init__(self, pageNumber, columnsInReactorDetails=defaultdict(list)):
-        self.columnsInReactorDetails = columnsInReactorDetails
+    def __init__(self, page_number, columns_in_reactor_details=defaultdict(list)):
+        self.columns_in_reactor_details = columns_in_reactor_details
         try:
-            self.pageNumber = int(pageNumber)
-        except:
-            self.pageNumber = None
-            #TODO raise exception
+            self.page_number = int(page_number)
+        except ValueError:
+            self.page_number = None
+            # TODO raise exception
             pass
         self.page = None
         self.soup = None
-        self.reactorName = None
-        self.reactorAlternateName = None
-        self.reactorStatus = None
-        self.reactorCountry = None
-        self.reactorSection = None
-        self.lifeTimeSection = None
-        self.operatingHistorySection = None
-        self.reactorDetails = {}
-        self.operatingHistory = []
-        self.getPage()
+        self.reactor_name = None
+        self.reactor_alternate_name = None
+        self.reactor_status = None
+        self.reactor_country = None
+        self.reactor_section = None
+        self.life_time_section = None
+        self.operating_history_section = None
+        self.reactor_details = {}
+        self.operating_history = []
+        self.get_page()
 
-    def getPage(self):
-        if self.requestPage():
-            self.parsePage()
-            self.getReactorName()
-            self.getPageSections()
+    def get_page(self):
+        if self.request_page():
+            self.parse_page()
+            self.get_reactor_name()
+            self.get_page_sections()
         return
 
-    def requestPage(self):
+    def request_page(self):
         #TODO: InsecurePlatformWarning
         #      requests/packages/urllib3/util/ssl_.py:90: InsecurePlatformWarning: A true SSLContext object is not available.
         #      This prevents urllib3 from configuring SSL appropriately and may cause certain SSL connections to fail.
         #      For more information, see https://urllib3.readthedocs.org/en/latest/security.html#insecureplatformwarning.
 
-        payload = {'current': self.pageNumber}
+        payload = {'current': self.page_number}
         r = requests.get(PRISURL, params=payload)
         #r.headers['content-type']
         #r.encoding # could use this decode and encode data into unicode
@@ -83,67 +71,67 @@ class WNAPageScraper(object):
         else:
             return False
 
-    def parsePage(self):
+    def parse_page(self):
         self.soup = BeautifulSoup(self.page, 'html.parser')
         return
 
-    def getReactorName(self):
-        self.reactorName = self.soup.find(id=pageDetailsId['reactorName']['id']).text.strip('\r\n\t ')
+    def get_reactor_name(self):
+        self.reactor_name = self.soup.find(id=page_details_id['reactor_name']['id']).text.strip('\r\n\t ')
         return
 
-    def getReactorAlternateName(self):
-        self.reactorAlternateName = self.soup.find(id=pageDetailsId['reactorAlternateName']['id']).text.strip('\r\n\t ')
+    def get_reactor_alternate_name(self):
+        self.reactor_alternate_name = self.soup.find(id=page_details_id[u'reactor_alternate_name']['id']).text.strip('\r\n\t ')
         return
 
-    def getReactorStatus(self):
-        self.reactorStatus = self.soup.find(id=pageDetailsId['reactorStatus']['id']).text.strip('\r\n\t ')
+    def get_reactor_status(self):
+        self.reactor_status = self.soup.find(id=page_details_id['reactor_status']['id']).text.strip('\r\n\t ')
         return
 
-    def getReactorCountry(self):
-        self.reactorCountry = self.soup.find(id=pageDetailsId['reactorCountry']['id']).text.strip('\r\n\t ')
+    def get_reactor_country(self):
+        self.reactor_country = self.soup.find(id=page_details_id['reactor_country']['id']).text.strip('\r\n\t ')
         return
 
-    def getPageSections(self):
-        for sectionTitle in self.soup.find_all('h3'):
-            if sectionTitle.text.strip('\r\n\t ').lower() == 'reactor details':
-                self.reactorSection = sectionTitle
-            if sectionTitle.text.strip('\r\n\t ').lower() == 'lifeTime performance':
-                self.lifeTimeSection = sectionTitle
-            if sectionTitle.text.strip('\r\n\t ').lower() == 'operating history':
-                self.operatingHistorySection = sectionTitle
+    def get_page_sections(self):
+        for section_title in self.soup.find_all('h3'):
+            if section_title.text.strip('\r\n\t ').lower() == 'reactor details':
+                self.reactor_section = section_title
+            if section_title.text.strip('\r\n\t ').lower() == 'lifeTime performance':
+                self.life_time_section = section_title
+            if section_title.text.strip('\r\n\t ').lower() == 'operating history':
+                self.operating_history_section = section_title
         return
 
-    def getColumnsInReactorDetails(self):
-        if not self.reactorSection:
+    def get_columns_in_reactor_details(self):
+        if not self.reactor_section:
             return False
-        content = self.reactorSection.find_parent("div", class_="box")
+        content = self.reactor_section.find_parent("div", class_="box")
         for rows in alternate(content.table.find_all('tr')):
             cols0 = rows[0].find_all('td')
             cols1 = rows[1].find_all('td')
             for i in range(len(cols1)):
-                spanId = None
+                span_id = None
                 try:
                     try:
-                        spanId = cols1[i].span.get('id')
+                        span_id = cols1[i].span.get('id')
                     except:
-                        spanId = cols1[i].h5.a.get('id')
+                        span_id = cols1[i].h5.a.get('id')
                 except:
                     #Loop through contents to find an id
                     for child in cols1[i].contents:
                         try:
-                            spanId = child.get('id', None)
+                            span_id = child.get('id', None)
                         except:
                             continue
-                        if spanId:
+                        if span_id:
                             break
-                if spanId and not spanId in self.columnsInReactorDetails:
-                    self.columnsInReactorDetails[spanId].append(cols0[i].text.strip('\r\n\t '))
-                elif not spanId and not cols0[i].text.strip('\r\n\t ') in self.columnsInReactorDetails:
+                if span_id and span_id not in self.columns_in_reactor_details:
+                    self.columns_in_reactor_details[span_id].append(cols0[i].text.strip('\r\n\t '))
+                elif not span_id and not cols0[i].text.strip('\r\n\t ') in self.columns_in_reactor_details:
                     # if no id, use label from column in previous row as key
-                    self.columnsInReactorDetails[cols0[i].text.strip('\r\n\t ')].append(cols0[i].text.strip('\r\n\t '))
+                    self.columns_in_reactor_details[cols0[i].text.strip('\r\n\t ')].append(cols0[i].text.strip('\r\n\t '))
         return True
         
-    def parseOwner(self, owner):
+    def parse_owner(self, owner):
         owners = owner
         if '%' in owner:
             p1 = re.compile("[0-9][.][ ]")
@@ -154,11 +142,11 @@ class WNAPageScraper(object):
                 owner = owner.split('\n')
             elif ',' in owner:
                 owner = owner.split(',')
-            for eachOwner in owner:
-                eachOwner = p1.sub(u'', eachOwner)
-                ans = re.findall(p2, eachOwner)
+            for eachowner in owner:
+                eachowner = p1.sub(u'', eachowner)
+                ans = re.findall(p2, eachowner)
                 if not ans:
-                    ans = re.findall(p3, eachOwner)
+                    ans = re.findall(p3, eachowner)
                 if ans:
                     ans = ans[0]
                     val = ans[1].replace(',', '.')
@@ -166,9 +154,9 @@ class WNAPageScraper(object):
                         name = ans[0].strip('\r\n\t,; ')
                     else:
                         name = ans[2].strip('\r\n\t,; ')
-                    owners.append("%s (%s)"%(name, val))
+                    owners.append("%s (%s)" % (name, val))
                 else:
-                    owners.append(eachOwner)
+                    owners.append(eachowner)
             owners = '\n'.join(owners)
         elif 'nuclear portion' in owner.lower():
             owners = []
@@ -180,33 +168,34 @@ class WNAPageScraper(object):
             owners = '\n'.join(owners)
         return owners
                 
-    def getReactorDetails(self):
-        if not self.reactorSection:
+    def get_reactor_details(self):
+        if not self.reactor_section:
             return False
-        self.getReactorAlternateName()
-        self.getReactorStatus()
-        self.getReactorCountry()
-        self.reactorDetails[pageDetailsId['reactorName']['label']] = self.reactorName
-        self.reactorDetails[pageDetailsId['reactorAlternateName']['label']] = self.reactorAlternateName
-        self.reactorDetails[pageDetailsId['reactorStatus']['label']] = self.reactorStatus
-        self.reactorDetails[pageDetailsId['reactorCountry']['label']] = self.reactorCountry
-        content = self.reactorSection.find_parent("div", class_="box")
+        self.get_reactor_alternate_name()
+        self.get_reactor_status()
+        self.get_reactor_country()
+        self.reactor_details[page_details_id['reactor_name']['label']] = self.reactor_name
+        self.reactor_details[page_details_id['reactor_alternate_name']['label']] = self.reactor_alternate_name
+        self.reactor_details[page_details_id['reactor_status']['label']] = self.reactor_status
+        self.reactor_details[page_details_id['reactor_country']['label']] = self.reactor_country
+        content = self.reactor_section.find_parent("div", class_="box")
         for rows in alternate(content.table.find_all('tr')):
             cols0 = rows[0].find_all('td')
             cols1 = rows[1].find_all('td')
             for i in range(len(cols1)):
-                spanId = None
+                span_id = None
                 label = None
                 try:
                     try:
-                        spanId = cols1[i].span.get('id')
+                        span_id = cols1[i].span.get('id')
                         value = cols1[i].span.text.strip('\r\n\t ')
                     except:
                         try:
-                            spanId = cols1[i].h5.a.get('id')
+                            span_id = cols1[i].h5.a.get('id')
                             value = cols1[i].h5.a.text.strip('\r\n\t ')
                             # TODO: Do we also need the href in this case?
-                            #       Example: https://www.iaea.org/PRIS/CountryStatistics/ReactorDetails.aspx?current=2 owner and operator
+                            #       Example: https://www.iaea.org/PRIS/CountryStatistics/ReactorDetails.aspx?current=2
+                            #       owner and operator
                         except:
                             # No Id and no hyperlink
                             label = cols0[i].text.strip('\r\n\t ')
@@ -216,45 +205,45 @@ class WNAPageScraper(object):
                     #Using label from column in row above and all of the contents of the cell for value
                     label = cols0[i].text.strip('\r\n\t ')
                     value = cols1[i].contents.strip('\r\n\t ')
-                if spanId and spanId in reactorDetailsId:
-                    self.reactorDetails[reactorDetailsId[spanId]] = value
-                elif not spanId and label and label in reactorDetailsId:
-                     # if no id, use label as key
-                    self.reactorDetails[reactorDetailsId[label]] = value
-        self.reactorDetails['Owner'] = self.parseOwner(self.reactorDetails['Owner'])
+                if span_id and span_id in reactor_details_id:
+                    self.reactor_details[reactor_details_id[span_id]] = value
+                elif not span_id and label and label in reactor_details_id:
+                    # if no id, use label as key
+                    self.reactor_details[reactor_details_id[label]] = value
+        self.reactor_details['Owner'] = self.parse_owner(self.reactor_details['Owner'])
         return True
         
-    def getOperatingHistory(self):
-        if not self.operatingHistorySection:
+    def get_operating_history(self):
+        if not self.operating_history_section:
             return False
-        content = self.operatingHistorySection.find_parent("div", class_="box")
-        prevComment = None
+        content = self.operating_history_section.find_parent("div", class_="box")
+        prev_comment = None
         for rows in content.table.tbody.find_all('tr'):
             cols = rows.find_all('td')
-            dataRow = [self.reactorName]
+            data_row = [self.reactor_name]
             if len(cols) == 2:
-                dataRow.append(cols[0].text.strip('\r\n\t '))
+                data_row.append(cols[0].text.strip('\r\n\t '))
                 # Add blank data columns
-                dataRow.extend([''] * (len(operatingHistoryDataColumns) - 1))
+                data_row.extend([''] * (len(operating_history_data_columns) - 1))
                 # Add comment
                 if cols[1].text.strip('\r\n\t ') != '"':
-                    prevComment = cols[1].text.strip('\r\n\t ')
-                    dataRow.append(cols[1].text.strip('\r\n\t '))
-                elif prevComment:
-                    dataRow.append(prevComment)
+                    prev_comment = cols[1].text.strip('\r\n\t ')
+                    data_row.append(cols[1].text.strip('\r\n\t '))
+                elif prev_comment:
+                    data_row.append(prev_comment)
                 else:
-                    dataRow.append(cols[1].text.strip('\r\n\t '))
-            elif len(cols) == len(operatingHistoryDataColumns):
+                    data_row.append(cols[1].text.strip('\r\n\t '))
+            elif len(cols) == len(operating_history_data_columns):
                 # Add data columns
                 for col in cols:
-                    dataRow.append(col.text.strip('\r\n\t '))
+                    data_row.append(col.text.strip('\r\n\t '))
                 # Add blank comment
-                dataRow.append('')
+                data_row.append('')
             else:
                 #TODO: Add exception. The table layout has been modified
                 pass
-            if dataRow:
-                self.operatingHistory.append(dataRow)
+            if data_row:
+                self.operating_history.append(data_row)
         return True
         
         
@@ -262,139 +251,139 @@ class WNAScraper(object):
     """
     Usgae:
     from pageScraper import WNAScraper
-    ws = WNAScraper(maxPages=1200)
-    columns = ws.getAllColumnsInReactorDetails
-    ws.getPage(2)
-    ws.getAllPages()
+    ws = WNAScraper(max_pages=1200)
+    columns = ws.get_all_columns_in_reactor_details
+    ws.get_page(2)
+    ws.get_all_pages()
     """
-    def __init__(self, maxPages=defaultMaxPages):
+    def __init__(self, max_pages=default_max_pages):
         try:
-            self.maxPages = int(maxPages)
-        except:
-            self.maxPages = defaultMaxPages
-        self.rdFilename = None
-        self.rdFileHandler = None
-        self.rdCsvWriter = None
-        self.ohFilename = None
-        self.ohFileHandler = None
-        self.ohCsvWriter = None
+            self.max_pages = int(max_pages)
+        except ValueError:
+            self.max_pages = default_max_pages
+        self.rd_filename = None
+        self.rd_file_handler = None
+        self.rd_csv_writer = None
+        self.oh_filename = None
+        self.oh_file_handler = None
+        self.oh_csv_writer = None
             
-    def getrdFileName(self, scraperJob='all'):
+    def get_rd_filename(self, scraperJob='all'):
         timestr = time.strftime("%Y%m%d-%H%M%S")
-        fn = "%s-%s-%s.csv"%(timestr, 'reactorDetails', str(scraperJob))
-        self.rdFilename = os.path.join(reactorDetailsDataDir, fn)
+        fn = "%s-%s-%s.csv"%(timestr, 'reactor_details', str(scraperJob))
+        self.rd_filename = os.path.join(reactor_details_data_dir, fn)
         return
         
-    def openrdStream(self, filename=None, scraperJob='all'):
-        fileExists = False
+    def open_rd_stream(self, filename=None, scraperJob='all'):
+        file_exists = False
         if not filename:
-            self.getrdFileName(scraperJob=scraperJob)
-            filename = self.rdFilename
+            self.get_rd_filename(scraperJob=scraperJob)
+            filename = self.rd_filename
         if os.path.isfile(filename):
-            fileExists = True
-        self.rdFileHandler = file(filename, 'a')
-        self.rdCsvWriter = UnicodeWriter(self.rdFileHandler)
-        if not fileExists:
-            self.rdCsvWriter.writerow(reactorDetailsHeader)
+            file_exists = True
+        self.rd_file_handler = file(filename, 'a')
+        self.rd_csv_writer = UnicodeWriter(self.rd_file_handler)
+        if not file_exists:
+            self.rd_csv_writer.writerow(reactor_details_header)
         return
         
-    def writerdStream(self, reactorDetails):
-        #reactorDetails is a dictionary
+    def write_rd_stream(self, reactor_details):
+        #reactor_details is a dictionary
         data = []
-        for col in reactorDetailsHeader:
-            data.append(reactorDetails.get(col, ''))
-        self.rdCsvWriter.writerow(data)
+        for col in reactor_details_header:
+            data.append(reactor_details.get(col, ''))
+        self.rd_csv_writer.writerow(data)
         return
         
-    def closerdStream(self):
-        self.rdFileHandler.close()
+    def close_rd_stream(self):
+        self.rd_file_handler.close()
         return
         
-    def getohFileName(self, scraperJob='all'):
+    def get_oh_filename(self, scraperJob='all'):
         timestr = time.strftime("%Y%m%d-%H%M%S")
-        fn = "%s-%s-%s.csv"%(timestr, 'operatingHistory', str(scraperJob))
-        self.ohFilename = os.path.join(operatingHistoryDataDir, fn)
+        fn = "%s-%s-%s.csv"%(timestr, 'operating_history', str(scraperJob))
+        self.oh_filename = os.path.join(operating_history_data_dir, fn)
         return
         
-    def openohStream(self, filename=None, scraperJob='all'):
-        fileExists = False
+    def open_oh_stream(self, filename=None, scraperJob='all'):
+        file_exists = False
         if not filename:
-            self.getohFileName(scraperJob=scraperJob)
-            filename = self.ohFilename
+            self.get_oh_filename(scraperJob=scraperJob)
+            filename = self.oh_filename
         if os.path.isfile(filename):
-            fileExists = True
-        self.ohFileHandler = file(filename, 'a')
-        self.ohCsvWriter = UnicodeWriter(self.ohFileHandler)
-        if not fileExists:
-            self.ohCsvWriter.writerow(operatingHistoryHeader)
+            file_exists = True
+        self.oh_file_handler = file(filename, 'a')
+        self.oh_csv_writer = UnicodeWriter(self.oh_file_handler)
+        if not file_exists:
+            self.oh_csv_writer.writerow(operating_history_header)
         return
         
-    def writeohStream(self, operatingHistory):
-        #operatingHistory is a list of lists
-        self.ohCsvWriter.writerows(operatingHistory)
+    def write_oh_stream(self, operatingHistory):
+        #operating_history is a list of lists
+        self.oh_csv_writer.writerows(operatingHistory)
         return
         
-    def closeohStream(self):
-        self.ohFileHandler.close()
+    def close_oh_stream(self):
+        self.oh_file_handler.close()
         return
 
-    def getAllColumnsInReactorDetails(self):
+    def get_all_columns_in_reactor_details(self):
         # Get all available columns in reactor dtails
-        columnsInReactorDetails = defaultdict(list)
-        for i in range(1, self.maxPages):
-            pageScraper = WNAPageScraper(i, columnsInReactorDetails=columnsInReactorDetails)
-            if pageScraper.getColumnsInReactorDetails():
-                columnsInReactorDetails = dict(Counter(columnsInReactorDetails)+Counter(pageScraper.columnsInReactorDetails))
-                for k,v in columnsInReactorDetails.iteritems():
-                    columnsInReactorDetails[k] = list(set(v))
-        return columnsInReactorDetails
+        columns_in_reactor_details = defaultdict(list)
+        for i in range(1, self.max_pages):
+            page_scraper = WNAPageScraper(i, columns_in_reactor_details=columns_in_reactor_details)
+            if page_scraper.get_columns_in_reactor_details():
+                columns_in_reactor_details = dict(Counter(columns_in_reactor_details)+Counter(page_scraper.columns_in_reactor_details))
+                for k,v in columns_in_reactor_details.iteritems():
+                    columns_in_reactor_details[k] = list(set(v))
+        return columns_in_reactor_details
     
-    def getAllPages(self, sections=sectionsScraped):
+    def get_all_pages(self, sections=sections_scraped):
         if not isinstance(sections, list):
             sections = [sections]
         if 'reactor details' in sections:
-            self.openrdStream(scraperJob='all')
+            self.open_rd_stream(scraperJob='all')
         if 'operating history' in sections:
-            self.openohStream(scraperJob='all')
-        for pageNumber in range(1, self.maxPages):
-            pageScraper = WNAPageScraper(pageNumber)
+            self.open_oh_stream(scraperJob='all')
+        for page_number in range(1, self.max_pages):
+            page_scraper = WNAPageScraper(page_number)
             if 'reactor details' in sections:
-                if pageScraper.getReactorDetails():
-                    self.writerdStream(pageScraper.reactorDetails)
+                if page_scraper.get_reactor_details():
+                    self.write_rd_stream(page_scraper.reactor_details)
                 else:
                     #TODO: raise exception
                     pass
             if 'operating history' in sections:
-                if pageScraper.getOperatingHistory():
-                    self.writeohStream(pageScraper.operatingHistory)
+                if page_scraper.get_operating_history():
+                    self.write_oh_stream(page_scraper.operating_history)
                 else:
                     #TODO: raise exception
                     pass
         if 'reactor details' in sections:
-            self.closerdStream()
+            self.close_rd_stream()
         if 'operating history' in sections:
-            self.closeohStream()
+            self.close_oh_stream()
         return
         
-    def getPage(self, pageNumber, sections=sectionsScraped):
-        if not isinstance(pageNumber, int):
+    def get_page(self, page_number, sections=sections_scraped):
+        if not isinstance(page_number, int):
             #TODO: raise exception
             return False
-        pageScraper = WNAPageScraper(pageNumber)
+        page_scraper = WNAPageScraper(page_number)
         if 'reactor details' in sections:
-            self.openrdStream(scraperJob=pageNumber)
-            if pageScraper.getReactorDetails():
-                self.writerdStream(pageScraper.reactorDetails)
+            self.open_rd_stream(scraperJob=page_number)
+            if page_scraper.get_reactor_details():
+                self.write_rd_stream(page_scraper.reactor_details)
             else:
                 #TODO: raise exception
                 pass
-            self.closerdStream()
+            self.close_rd_stream()
         if 'operating history' in sections:
-            self.openohStream(scraperJob=pageNumber)
-            if pageScraper.getOperatingHistory():
-                self.writeohStream(pageScraper.operatingHistory)
+            self.open_oh_stream(scraperJob=page_number)
+            if page_scraper.get_operating_history():
+                self.write_oh_stream(page_scraper.operating_history)
             else:
                 #TODO: raise exception
                 pass
-            self.closeohStream()
+            self.close_oh_stream()
         return

@@ -1,28 +1,28 @@
-defaultMaxPages = 1200
+default_max_pages = 1200
 
 PRISURL="https://www.iaea.org/PRIS/CountryStatistics/ReactorDetails.aspx"
 
-sectionsAvailable = [
+sections_available = [
     u'reactor details',
     u'lifeTime performance',
     u'operating history'
 ]
 
-sectionsScraped = [
+sections_scraped = [
     u'reactor details',
     u'operating history'
 ]
 
-reactorDetailsDataDir = '/tmp/WNA/'
+reactor_details_data_dir = '/tmp/WNA/'
 
-pageDetailsId = {
-    u'reactorName':          {'id': 'MainContent_MainContent_lblReactorName',   'label': u'Reactor Name'},
-    u'reactorAlternateName': {'id': 'MainContent_MainContent_lblAlternateName', 'label': u'Alternate Name'},
-    u'reactorStatus':        {'id': 'MainContent_MainContent_lblReactorStatus', 'label': u'Status'},
-    u'reactorCountry':       {'id': 'MainContent_litCaption',                   'label': u'Location'},
+page_details_id = {
+    u'reactor_name':          {'id': 'MainContent_MainContent_lblReactorName',   'label': u'Reactor Name'},
+    u'reactor_alternate_name': {'id': 'MainContent_MainContent_lblAlternateName', 'label': u'Alternate Name'},
+    u'reactor_status':        {'id': 'MainContent_MainContent_lblReactorStatus', 'label': u'Status'},
+    u'reactor_country':       {'id': 'MainContent_litCaption',                   'label': u'Location'},
 }
 
-reactorDetailsId = {
+reactor_details_id = {
     u'MainContent_MainContent_hypOperatorUrl':             u'Operator',
 	u'MainContent_MainContent_lblType':                    u'Reactor Type',
 	u'MainContent_MainContent_lblGridConnectionDate':      u'First Grid Connection',
@@ -44,7 +44,7 @@ reactorDetailsId = {
 	u'Operator':                                           u'Operator',
 }
 
-reactorDetailsHeader = (
+reactor_details_header = (
     u'Reactor Name',
     u'Alternate Name',
     u'Location',
@@ -68,9 +68,9 @@ reactorDetailsHeader = (
     u'Restart Date',
 )
 
-operatingHistoryDataDir = '/tmp/WNA/'
+operating_history_data_dir = '/tmp/WNA/'
 
-operatingHistoryHeader = (
+operating_history_header = (
     u'Reactor Name',
     u'Year',
     u'Electricity Supplied [GW.h]',
@@ -84,4 +84,4 @@ operatingHistoryHeader = (
     u'Comment'
 )
 # No reactor name and comment in operating history table
-operatingHistoryDataColumns = operatingHistoryHeader[1:-1]
+operating_history_data_columns = operating_history_header[1:-1]

@@ -7,7 +7,8 @@ setup(
     install_requires = [
         "octopus==1.0.0",
         "esprit",
-        "Flask"
+        "Flask",
+        "beautifulsoup4"
     ],
     url = 'http://cottagelabs.com/',
     author = 'Cottage Labs',
