@@ -69,8 +69,18 @@
             {% elif job.status_code == "processing" and job.job_type == "all pages" %}
                 <div id="progress_container" class="row row-odd">
                     <div class="container status col-md-12">
-                        Processing progress:
-                        <span id="pc_container">{{job.pc_complete}}</span>%
+                        <div class="col-md-4">Processing progress:</div>
+                        <div class="col-md-8">
+                            <span id="pc_container">{{ "%2.2f%%" % job.pc_complete }}</span>
+                        </div>
+                     </div>
+                </div>
+                <div id="progress_statement" class="row row-odd">
+                    <div class="container status col-md-12">
+                        <div class="col-md-4"></div>
+                        <div class="col-md-8">
+                            <span id="statement_container">{{ job.status_per_page|length() }} of {{ job.max_pages }}</span>
+                        </div>
                      </div>
                 </div>
             {% endif %}
