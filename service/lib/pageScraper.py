@@ -9,6 +9,7 @@ from config.wnaConfig import reactor_details_id, reactor_details_data_dir, react
 from config.wnaConfig import operating_history_header, operating_history_data_columns, operating_history_data_dir
 from config.http import HTTP_RETRY_CODES
 from service.lib.unicodeCSV import UnicodeWriter
+from service.lib.processify import processify
 from service import models
 from octopus.lib.http import get
 
@@ -460,3 +461,15 @@ class WNAScraper(object):
             job.success_count = {'type': 'single page', 'success': 0, 'total': 1}
         job.save()
         return
+
+
+@processify
+def scrape_page(page_number):
+    ws = WNAScraper()
+    return ws.get_page(page_number)
+
+
+@processify
+def scrape_all_pages(max_pages):
+    ws = WNAScraper(max_pages=max_pages)
+    return ws.get_all_pages()
