@@ -4,8 +4,6 @@ from flask import Flask, request, abort, render_template, redirect, make_respons
 from wtforms import Form, IntegerField, HiddenField, validators
 from service.lib.pageScraper import scrape_all_pages, scrape_page
 from service import models
-# from service.lib.forkProcess import fork_process
-# from service.lib.pageScraper import ScrapeAllPages, ScrapePage
 from multiprocessing import Process
 
 import os
@@ -56,24 +54,10 @@ def root():  # do not rename this function - the octopus 404 page refers to "roo
     if request.method == "POST":
         if request.form['prefix'] == 'page' and form_page.validate():
             page_number = form_page.page_number.data
-            # processify style
-            # scrape_page(page_number)
-            # fork style
-            # fork_process(scrape_page, page_number)
-            # daemonize style
-            # sp = ScrapePage(page_number)
-            # sp.start()
             # Start multiprocess
             Process(target=scrape_page, args=(page_number,)).start()
         elif request.form['prefix'] == 'all' and form_all.validate():
             max_page_number = form_all.max_page_number.data
-            # processify style
-            # scrape_all_pages(max_page_number)
-            # fork style
-            # fork_process(scrape_all_pages, max_page_number)
-            # daemonize style
-            # sp = ScrapeAllPages(max_page_number)
-            # sp.start()
             # Start multiprocess
             Process(target=scrape_all_pages, args=(max_page_number,)).start()
     job = models.ScraperJob()

@@ -9,8 +9,6 @@ from config.wnaConfig import reactor_details_id, reactor_details_data_dir, react
 from config.wnaConfig import operating_history_header, operating_history_data_columns, operating_history_data_dir
 from config.http import HTTP_RETRY_CODES
 from service.lib.unicodeCSV import UnicodeWriter
-# from service.lib.processify import processify
-from service.lib.daemon import Daemon
 from service import models
 from octopus.lib.http import get
 
@@ -464,33 +462,12 @@ class WNAScraper(object):
         return
 
 
-#@processify
 def scrape_page(page_number):
     ws = WNAScraper()
     return ws.get_page(page_number)
 
 
-#@processify
 def scrape_all_pages(max_pages):
     ws = WNAScraper(max_pages=max_pages)
     return ws.get_all_pages()
 
-
-class ScrapePage(Daemon):
-    def __init__(self, page_number, pid_file='/tmp/scrape-page-daemon.pid'):
-        super(ScrapePage,self).__init__(pid_file)
-        self.page_number = page_number
-
-    def run(self):
-        ws = WNAScraper()
-        ws.get_page(self.page_number)
-
-
-class ScrapeAllPages(Daemon):
-    def __init__(self, max_pages, pid_file='/tmp/scrape-all-pages-daemon.pid'):
-        super(ScrapeAllPages, self).__init__(pid_file)
-        self.max_pages = max_pages
-
-    def run(self):
-        ws = WNAScraper(max_pages=self.max_pages)
-        ws.get_all_pages()
