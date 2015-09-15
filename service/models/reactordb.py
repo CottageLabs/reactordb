@@ -1,7 +1,8 @@
 from service.dao import ScraperJobDAO
 from octopus.lib.dataobj import DataObj
 from config.wnaConfig import sections_scraped
-
+from dateutil.parser import parse
+import os
 
 class ScraperJob(ScraperJobDAO, DataObj):
     """
@@ -48,8 +49,14 @@ class ScraperJob(ScraperJobDAO, DataObj):
         return self._get_single("id", self._utf8_unicode())
 
     @property
+    def started(self):
+        dt = self._get_single("created_date", self._utf8_unicode())
+        return parse(dt).strftime('%d-%m-%Y %H:%M')
+
+    @property
     def filename(self):
-        return self._get_list("filename", self._utf8_unicode())
+        objs = self._get_list("filename", self._utf8_unicode())
+        return [(os.path.split(o)[0], os.path.split(o)[1]) for o in objs]
 
     @filename.setter
     def filename(self, val):
