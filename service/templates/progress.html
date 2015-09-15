@@ -1,24 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<div class="container col-md-12">
-    <h1><small>Progress for job #: </small> {{job.job_id}}</h1>
-    <div class="col-md-offset-3 col-md-6 panel">
-        <div>
+<div class="row">
+    <div class="container col-md-12">
+        <h1><small>Progress for job #: </small> {{job.job_id}}</h1>
+        <div class="col-md-offset-3 col-md-6 panel">
             <div class="row row-odd">
                 <div class="container status col-md-12">
                     <div class="col-md-4">Date requested:</div>
                     <div class="col-md-8">
                         <span id="job_started">{{job.started}}</span>
                     </div>
-                 </div>
+                </div>
             </div>
             <div class="row row-even">
                 <div class="container status col-md-12">
                     <div class="col-md-4">Job type:</div>
                     <div class="col-md-8">
-                        <span id="job_status_message">{{job.job_type.capitalize()}}</span>
+                        <span id="job_type">{{job.job_type.capitalize()}}</span>
                     </div>
                  </div>
             </div>
@@ -36,12 +35,11 @@
                     <div class="container status col-md-12">
                         <div class="col-md-4">Largest page number:</div>
                         <div class="col-md-8">
-                            <span id="page_number">{{job.max_pages}}</span>
+                            <span id="max_page">{{job.max_pages}}</span>
                         </div>
                     </div>
                 </div>
             {% endif %}
-
             <div class="row row-even">
                 <div class="container status col-md-12">
                     <div class="col-md-4">Status:</div>
@@ -51,7 +49,7 @@
                             <span id="job_status_message">{{job.status_message}}</span>
                         {% endif %}
                     </div>
-                 </div>
+                </div>
             </div>
             {% if job.status_code == "complete" and job.job_type == "all pages" %}
                 <div class="row row-even">
@@ -65,8 +63,8 @@
                         </div>
                     {% endfor %}
                  </div>
-            </div>
-            {% elif job.status_code == "processing" and job.job_type == "all pages" %}
+            {% endif %}
+            {% if job.status_code == "processing" and job.job_type == "all pages" %}
                 <div id="progress_container" class="row row-odd">
                     <div class="container status col-md-12">
                         <div class="col-md-4">Processing progress:</div>
@@ -80,6 +78,16 @@
                         <div class="col-md-4"></div>
                         <div class="col-md-8">
                             <span id="statement_container">{{ job.status_per_page|length() }} of {{ job.max_pages }}</span>
+                        </div>
+                     </div>
+                </div>
+            {% endif %}
+            {% if job.status_code != "complete" and job.job_type == "single page" %}
+                <div id="complete_statement" class="row row-even">
+                    <div class="container status col-md-12">
+                        <div class="col-md-4"></div>
+                        <div class="col-md-8">
+                            <span id="complete_container">{{ job.status_per_page[0]['message'] }}</span>
                         </div>
                      </div>
                 </div>
@@ -105,11 +113,8 @@
                 <div class="row"><br/></div>
             {% endfor %}
         </div>
-
      </div>
 </div>
-
-
 
 {% endblock %}
 {% block extra_js_bottom %}
