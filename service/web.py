@@ -2,6 +2,10 @@ from octopus.core import app, initialise, add_configuration
 from flask import Flask, request, abort, render_template, redirect, make_response, jsonify, send_file, \
     send_from_directory, url_for
 from wtforms import Form, IntegerField, HiddenField, validators
+from service.lib.pageScraper import scrape_all_pages, scrape_page
+from service import models
+
+import os
 
 if __name__ == "__main__":
     import argparse
@@ -49,10 +53,29 @@ def root():  # do not rename this function - the octopus 404 page refers to "roo
     if request.method == "POST":
         if request.form['prefix'] == 'page' and form_page.validate():
             page_number = form_page.page_number.data
+            scrape_page(page_number)
         elif request.form['prefix'] == 'all' and form_all.validate():
             max_page_number = form_all.max_page_number.data
+            scrape_all_pages(max_page_number)
+    job = models.ScraperJob()
+    jobs = job.list_all()
+    return render_template("index.html", form_page=form_page, form_all=form_all, jobs=jobs)
 
-    return render_template("index.html", form_page=form_page, form_all=form_all)
+
+@app.route("/download/<job_id>/<filename>")
+def download_file(job_id, filename):
+    job = models.ScraperJob.pull(job_id)
+    for fp, fn in job.filename:
+        if fn == filename:
+            return send_from_directory(os.path.abspath(fp), fn, as_attachment=True, attachment_filename=filename)
+    abort(404)
+
+
+@app.route("/progress/<job_id>")
+def progress(job_id):
+    job = models.ScraperJob.pull(job_id)
+    return render_template("progress.html", job=job)
+
 
 @app.route("/docs")
 def docs():

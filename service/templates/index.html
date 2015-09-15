@@ -56,6 +56,41 @@
 
     </div>
 </div>
+<div class="row">
+    <div class="container col-md-offset-3 col-md-6">
+        <h2>Download data</h2>
+        <div class="panel col-md-12">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Job #</th>
+                        <th>Date started</th>
+                        <th>Status</th>
+                        <th>Type</th>
+                        <th>Download files</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in jobs %}
+                        <tr>
+                            <td><a href="/progress/{{job.job_id}}">{{loop.revindex}}</a></td>
+                            <td>{{job.started}}</td>
+                            <td>{{job.status_code}}</td>
+                            <td>{{job.job_type}}</td>
+                            <td>
+                                {% if job.status_code == "complete" %}
+                                    {% for fp, fn in job.filename %}
+                                        <p><a href="/download/{{job.job_id}}/{{fn}}">{{fn}}</a></p>
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
 

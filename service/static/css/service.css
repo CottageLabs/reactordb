@@ -1,3 +1,16 @@
 .form-group .required:after {
   content:" *";color:red;
 }
+
+.row {
+  padding-bottom: 5px;
+  font-size: medium;
+}
+
+.row-even {
+  background-color: none;
+}
+
+.row-odd {
+  background-color: #ccc;
+}
