@@ -85,3 +85,6 @@ operating_history_header = (
 )
 # No reactor name and comment in operating history table
 operating_history_data_columns = operating_history_header[1:-1]
+
+# Minimum success rate for page scraper
+success_rate = 25

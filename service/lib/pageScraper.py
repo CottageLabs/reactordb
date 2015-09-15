@@ -1,14 +1,16 @@
 from bs4 import BeautifulSoup
-import requests
 from collections import defaultdict, Counter
 import time
 import os
 import re
 
-from config.wnaConfig import PRISURL, default_max_pages, sections_scraped, page_details_id
+from config.wnaConfig import PRISURL, default_max_pages, sections_scraped, page_details_id, success_rate
 from config.wnaConfig import reactor_details_id, reactor_details_data_dir, reactor_details_header
 from config.wnaConfig import operating_history_header, operating_history_data_columns, operating_history_data_dir
+from config.http import HTTP_RETRY_CODES
 from service.lib.unicodeCSV import UnicodeWriter
+from service import models
+from octopus.lib.http import get
 
 
 def alternate(i):
@@ -17,11 +19,16 @@ def alternate(i):
         yield(i.next(), i.next())
        
 
+def percentage(part, whole):
+    return 100 * float(part)/float(whole)
+
+
 class WNAPageScraper(object):
     """
     Usage:
     from pageScraper import WNAPageScraper
     page_scraper = WNAPageScraper(2)
+    page_scraper.get_page()
     page_scraper.get_reactor_details_cols()
     # page_scraper.reactor_details_cols
     page_scraper.get_reactor_details()
@@ -46,26 +53,28 @@ class WNAPageScraper(object):
         self.operating_history_section = None
         self.reactor_details = {}
         self.operating_history = []
-        self.get_page()
 
     def get_page(self):
         if self.request_page():
             self.parse_page()
             self.get_reactor_name()
             self.get_page_sections()
-        return
+            return True
+        else:
+            return False
 
     def request_page(self):
         # TODO: InsecurePlatformWarning
-        #      requests/packages/urllib3/util/ssl_.py:90: InsecurePlatformWarning: A true SSLContext object is not available.
-        #      This prevents urllib3 from configuring SSL appropriately and may cause certain SSL connections to fail.
-        #      For more information, see https://urllib3.readthedocs.org/en/latest/security.html#insecureplatformwarning.
+        #      requests/packages/urllib3/util/ssl_.py:90: InsecurePlatformWarning: A true SSLContext object is not
+        #      available. This prevents urllib3 from configuring SSL appropriately and may cause certain SSL
+        #      connections to fail. For more information, see
+        #      https://urllib3.readthedocs.org/en/latest/security.html#insecureplatformwarning.
 
         payload = {'current': self.page_number}
-        r = requests.get(PRISURL, params=payload)
+        r = get(PRISURL, retry_codes=HTTP_RETRY_CODES, params=payload)
         # r.headers['content-type']
         # r.encoding # could use this decode and encode data into unicode
-        if r.status_code > 199 and r.status_code < 300:
+        if r and r.status_code > 199 and r.status_code < 300:
             self.page = r.text
             return True
         else:
@@ -80,7 +89,8 @@ class WNAPageScraper(object):
         return
 
     def get_reactor_alternate_name(self):
-        self.reactor_alternate_name = self.soup.find(id=page_details_id[u'reactor_alternate_name']['id']).text.strip('\r\n\t ')
+        txt = self.soup.find(id=page_details_id[u'reactor_alternate_name']['id']).text
+        self.reactor_alternate_name = txt.strip('\r\n\t ')
         return
 
     def get_reactor_status(self):
@@ -193,7 +203,7 @@ class WNAPageScraper(object):
                         try:
                             span_id = cols1[i].h5.a.get('id')
                             value = cols1[i].h5.a.text.strip('\r\n\t ')
-                            # TODO: Do we also need the href in this case?
+                            # Note: Not taking the value of href in this case?
                             #       Example: https://www.iaea.org/PRIS/CountryStatistics/ReactorDetails.aspx?current=2
                             #       owner and operator
                         except:
@@ -341,49 +351,112 @@ class WNAScraper(object):
     def get_all_pages(self, sections=sections_scraped):
         if not isinstance(sections, list):
             sections = [sections]
+        job = models.ScraperJob()
+        job.job_type = "all pages"
+        job.status_code = "processing"
+        job.max_pages = self.max_pages
         if 'reactor details' in sections:
             self.open_rd_stream(job_id='all')
+            job.filename = self.rd_filename
         if 'operating history' in sections:
             self.open_oh_stream(job_id='all')
+            job.filename = self.oh_filename
+        job.save()
+        success_count = 0
+        success_rd_count = 0
+        success_oh_count = 0
         for page_number in range(1, self.max_pages):
             page_scraper = WNAPageScraper(page_number)
-            if 'reactor details' in sections:
-                if page_scraper.get_reactor_details():
-                    self.write_rd_stream(page_scraper.reactor_details)
+            ans = page_scraper.get_page()
+            if ans:
+                success_count += 1
+                msg = []
+                status_rd = True
+                if 'reactor details' in sections:
+                    if page_scraper.get_reactor_details():
+                        self.write_rd_stream(page_scraper.reactor_details)
+                        success_rd_count += 1
+                    else:
+                        status_rd = False
+                        msg.append("Reactor details not obtained")
+                status_oh = True
+                if 'operating history' in sections:
+                    if page_scraper.get_operating_history():
+                        self.write_oh_stream(page_scraper.operating_history)
+                        success_oh_count += 1
+                    else:
+                        status_oh = False
+                        msg.append("Operating history not obtained")
+                if status_rd and status_oh:
+                    job.status_per_page = {'page': page_number, 'code': 'complete', 'message': 'OK'}
                 else:
-                    # TODO: raise exception
-                    pass
-            if 'operating history' in sections:
-                if page_scraper.get_operating_history():
-                    self.write_oh_stream(page_scraper.operating_history)
-                else:
-                    # TODO: raise exception
-                    pass
+                    job.status_per_page = {'page': page_number, 'code': 'warning', 'message': '\n'.join(msg)}
+            else:
+                job.status_per_page = {'page': page_number, 'code': 'error', 'message': 'Error requesting page'}
+            job.save()
         if 'reactor details' in sections:
             self.close_rd_stream()
         if 'operating history' in sections:
             self.close_oh_stream()
+        job.success_count = {'type': 'all pages',         'success': success_count,    'total': self.max_pages}
+        job.success_count = {'type': 'reactor details',   'success': success_rd_count, 'total': success_count}
+        job.success_count = {'type': 'operating history', 'success': success_oh_count, 'total': success_count}
+        pc = percentage(success_count, self.max_pages)
+        if pc >= success_rate:
+            job.status_code = "complete"
+            job.status_message = "Success rate is %2d%%" % pc
+        else:
+            job.status_code = "error"
+            job.status_message = "Success rate is %2d%%" % pc
+        job.save()
         return
         
     def get_page(self, page_number, sections=sections_scraped):
         if not isinstance(page_number, int):
             # TODO: raise exception
             return False
+        job = models.ScraperJob()
+        job.job_type = "single page"
+        job.status_code = "processing"
+        job.max_pages = self.max_pages
+        job.save()
         page_scraper = WNAPageScraper(page_number)
-        if 'reactor details' in sections:
-            self.open_rd_stream(job_id=page_number)
-            if page_scraper.get_reactor_details():
-                self.write_rd_stream(page_scraper.reactor_details)
+        ans = page_scraper.get_page()
+        if ans:
+            msg = []
+            status_rd = True
+            if 'reactor details' in sections:
+                self.open_rd_stream(job_id=str(page_number))
+                job.filename = self.rd_filename
+                if page_scraper.get_reactor_details():
+                    self.write_rd_stream(page_scraper.reactor_details)
+                    job.success_count = {'type': 'reactor details', 'success': 1, 'total': 1}
+                else:
+                    status_rd = False
+                    msg.append("Reactor details not obtained")
+                    job.success_count = {'type': 'reactor details', 'success': 0, 'total': 1}
+                self.close_rd_stream()
+            status_oh = True
+            if 'operating history' in sections:
+                self.open_oh_stream(job_id=str(page_number))
+                job.filename = self.oh_filename
+                if page_scraper.get_operating_history():
+                    self.write_oh_stream(page_scraper.operating_history)
+                    job.success_count = {'type': 'operating history', 'success': 1, 'total': 1}
+                else:
+                    status_oh = False
+                    msg.append("Operating history not obtained")
+                    job.success_count = {'type': 'operating history', 'success': 0, 'total': 1}
+                self.close_oh_stream()
+            if status_rd and status_oh:
+                job.status_per_page = {'page': page_number, 'code': 'complete', 'message': 'OK'}
             else:
-                # TODO: raise exception
-                pass
-            self.close_rd_stream()
-        if 'operating history' in sections:
-            self.open_oh_stream(job_id=page_number)
-            if page_scraper.get_operating_history():
-                self.write_oh_stream(page_scraper.operating_history)
-            else:
-                # TODO: raise exception
-                pass
-            self.close_oh_stream()
+                job.status_per_page = {'page': page_number, 'code': 'warning', 'message': '\n'.join(msg)}
+            job.status_code = "complete"
+            job.success_count = {'type': 'single page', 'success': 1, 'total': 1}
+        else:
+            job.status_per_page = {'page': page_number, 'code': 'error', 'message': 'Error requesting page'}
+            job.status_code = "error"
+            job.success_count = {'type': 'single page', 'success': 0, 'total': 1}
+        job.save()
         return
