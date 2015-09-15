@@ -167,7 +167,7 @@ class WNAPageScraper(object):
                     owners.append("%s (%s)" % (name, val))
                 else:
                     owners.append(eachowner)
-            owners = '\n'.join(owners)
+            owners = '\n\n'.join(owners)
         elif 'nuclear portion' in owner.lower():
             owners = []
             p = re.compile("nuclear portion:(.*?)[;,]\sconventional portion:(.*?)$", re.IGNORECASE)
@@ -175,7 +175,7 @@ class WNAPageScraper(object):
             if ans:
                 owners.append(ans[0][0].strip('\r\n\t,; '))
                 owners.append(ans[0][1].strip('\r\n\t,; '))
-            owners = '\n'.join(owners)
+            owners = '\n\n'.join(owners)
         return owners
                 
     def get_reactor_details(self):
