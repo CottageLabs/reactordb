@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="container col-md-12">
+        <h1><small>Progress for job #: </small> {{job.job_id}}</h1>
+        <div class="col-md-offset-3 col-md-6 panel">
+            <div class="row row-odd">
+                <div class="container status col-md-12">
+                    <div class="col-md-4">Date requested:</div>
+                    <div class="col-md-8">
+                        <span id="job_started">{{job.started}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row row-even">
+                <div class="container status col-md-12">
+                    <div class="col-md-4">Job type:</div>
+                    <div class="col-md-8">
+                        <span id="job_type">{{job.job_type.capitalize()}}</span>
+                    </div>
+                 </div>
+            </div>
+            {% if job.job_type == "single page" and job.status_per_page %}
+                <div class="row row-odd">
+                    <div class="container status col-md-12">
+                        <div class="col-md-4">Page number:</div>
+                        <div class="col-md-8">
+                            <span id="page_number">{{job.status_per_page[0]['page']}}</span>
+                        </div>
+                    </div>
+                </div>
+            {% elif job.job_type == "all pages"  %}
+                <div class="row row-odd">
+                    <div class="container status col-md-12">
+                        <div class="col-md-4">Largest page number:</div>
+                        <div class="col-md-8">
+                            <span id="max_page">{{job.max_pages}}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="row row-even">
+                <div class="container status col-md-12">
+                    <div class="col-md-4">Status:</div>
+                    <div class="col-md-8">
+                        <span id="job_status_code">{{job.status_code.capitalize()}}</span><br/>
+                        {% if job.status_message %}
+                            <span id="job_status_message">{{job.status_message}}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% if job.status_code == "error" and job.job_type == "single page" and job.status_per_page %}
+                <div id="complete_statement" class="row row-even">
+                    <div class="container status col-md-12">
+                        <div class="col-md-4"></div>
+                        <div class="col-md-8">
+                            <span id="complete_container">{{ job.status_per_page[0]['message'] }}</span>
+                        </div>
+                     </div>
+                </div>
+            {% endif %}
+            {% if job.success_count %}
+                <div class="row row-even">
+                    {% for sc in job.success_count %}
+                        <div class="container status col-md-12">
+                            <div class="col-md-4"> </div>
+                            <div class="col-md-4">{{ sc['type'].capitalize() }}</div>
+                            <div class="col-md-4">
+                                <span>{{sc['success']}} of {{sc['total']}} succeeded</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                 </div>
+            {% endif %}
+            <div id="progress_statement" class="row row-even">
+                <div class="container status col-md-12">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4">Number of pages requested</div>
+                    <div class="col-md-4">
+                        <span id="statement_container">{{ job.pc_message }}</span>
+                    </div>
+                 </div>
+            </div>
+            <div id="progress_container" class="row row-even">
+                <div class="container status col-md-12">
+                    <div class="col-md-4"> </div>
+                    <div class="col-md-8">
+                        <div class="progress">
+                            <div id="pc_container" class="progress-bar progress-bar-striped" role="progressbar"
+                                 aria-valuenow="{{job.pc_complete}}" aria-valuemin="0" aria-valuemax="100"
+                                 style="min-width: 2em; width: {{job.pc_complete}}%;">
+                                {{job.pc_complete}}%
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+            <div class="row"><br/></div>
+            {% for fp, fn in job.filename %}
+                <div id="download_container" class="row">
+                    <a href="{{url_for('download_file', job_id=job.job_id, filename=fn)}}"
+                       class="btn btn-primary col-md-12" id="download_link">
+                        {% if job.status_code == "complete" %}
+                            Download final result for
+                        {% else %}
+                            Download current progress for
+                        {% endif %}
+                        {% if 'reactor_details' in fn %}
+                            Reactor details
+                        {% elif 'operating_history' in fn %}
+                            Operating history
+                        {% else %}
+                            {{ fn }}
+                        {% endif %}
+                    </a>
+                </div>
+                <div class="row"><br/></div>
+            {% endfor %}
+        </div>
+     </div>
+</div>
+
+{% endblock %}
+{% block extra_js_bottom %}
+<script type="text/javascript">var job_id = "{{job.job_id}}";</script>
+<script type="text/javascript" src="{{url_for('static', filename='js/progress.js')}}"></script>
+
+{% endblock extra_js_bottom %}
+
