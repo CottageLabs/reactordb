@@ -43,8 +43,24 @@ class ScraperJobDAO(dao.ESDAO):
             # we will get a divide-by-zero error
             return 0.0    # 100% isn't right, but 0% isn't really right either
         pc = (float(current) / float(total)) * 100.0
+        pc = float("{0:.2f}".format(pc))
         return pc
 
+    @property
+    def progress2json(self):
+        obj = {
+            "pc": 0.0,
+            "status": self.status_code,
+            "message": self.status_message,
+            "pc_message": "%2d of %2d" % (len(self.status_per_page), int(self.max_pages))
+        }
+        if self.status_code == "submitted":
+            obj["pc"] = 0.0
+        elif self.status_code == "processing":
+            obj["pc"] = self.pc_complete
+        elif self.status_code == "complete":
+            obj["pc"] = 100.0
+        return obj
 
 class ScraperStatusQuery(object):
     def __init__(self, status, size=10):
