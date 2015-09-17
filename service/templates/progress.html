@@ -74,31 +74,29 @@
                     {% endfor %}
                  </div>
             {% endif %}
-            {% if job.job_type == "all pages" %}
-                <div id="progress_statement" class="row row-even">
-                    <div class="container status col-md-12">
-                        <div class="col-md-4"></div>
-                        <div class="col-md-4">Number of pages scraped</div>
-                        <div class="col-md-4">
-                            <span id="statement_container">{{ job.pc_message }}</span>
-                        </div>
-                     </div>
-                </div>
-                <div id="progress_container" class="row row-even">
-                    <div class="container status col-md-12">
-                        <div class="col-md-4"> </div>
-                        <div class="col-md-8">
-                            <div class="progress">
-                                <div id="pc_container" class="progress-bar progress-bar-striped" role="progressbar"
-                                     aria-valuenow="{{job.pc_complete}}" aria-valuemin="0" aria-valuemax="100"
-                                     style="min-width: 2em; width: {{job.pc_complete}}%;">
-                                    {{job.pc_complete}}%
-                                </div>
+            <div id="progress_statement" class="row row-even">
+                <div class="container status col-md-12">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4">Number of pages requested</div>
+                    <div class="col-md-4">
+                        <span id="statement_container">{{ job.pc_message }}</span>
+                    </div>
+                 </div>
+            </div>
+            <div id="progress_container" class="row row-even">
+                <div class="container status col-md-12">
+                    <div class="col-md-4"> </div>
+                    <div class="col-md-8">
+                        <div class="progress">
+                            <div id="pc_container" class="progress-bar progress-bar-striped" role="progressbar"
+                                 aria-valuenow="{{job.pc_complete}}" aria-valuemin="0" aria-valuemax="100"
+                                 style="min-width: 2em; width: {{job.pc_complete}}%;">
+                                {{job.pc_complete}}%
                             </div>
                         </div>
-                     </div>
-                </div>
-            {% endif %}
+                    </div>
+                 </div>
+            </div>
             <div class="row"><br/></div>
             {% for fp, fn in job.filename %}
                 <div id="download_container" class="row">
