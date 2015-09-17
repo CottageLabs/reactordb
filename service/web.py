@@ -1,12 +1,13 @@
+from multiprocessing import Process
+import os
+import json
 from octopus.core import app, initialise, add_configuration
+from octopus.lib.webapp import jsonp
 from flask import Flask, request, abort, render_template, redirect, make_response, jsonify, send_file, \
     send_from_directory, url_for
 from wtforms import Form, IntegerField, HiddenField, validators
 from service.lib.pageScraper import scrape_all_pages, scrape_page
 from service import models
-from multiprocessing import Process
-
-import os
 
 if __name__ == "__main__":
     import argparse
@@ -78,6 +79,18 @@ def download_file(job_id, filename):
 def progress(job_id):
     job = models.ScraperJob.pull(job_id)
     return render_template("progress.html", job=job)
+
+
+@app.route("/progress/<job_id>/status")
+@jsonp
+def status(job_id):
+    job = models.ScraperJob.pull(job_id)
+    if not job:
+        abort(404)
+    obj = job.progress2json
+    resp = make_response(json.dumps(obj))
+    resp.mimetype = "application/json"
+    return resp
 
 
 @app.route("/docs")

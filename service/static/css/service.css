@@ -14,3 +14,7 @@
 .row-odd {
   background-color: #ccc;
 }
+
+.progress {
+  margin-top: 20px;
+}
