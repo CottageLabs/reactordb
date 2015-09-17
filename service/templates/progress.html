@@ -21,7 +21,7 @@
                     </div>
                  </div>
             </div>
-            {% if job.job_type == "single page" %}
+            {% if job.job_type == "single page" and job.status_per_page %}
                 <div class="row row-odd">
                     <div class="container status col-md-12">
                         <div class="col-md-4">Page number:</div>
@@ -30,7 +30,7 @@
                         </div>
                     </div>
                 </div>
-            {% else %}
+            {% elif job.job_type == "all pages"  %}
                 <div class="row row-odd">
                     <div class="container status col-md-12">
                         <div class="col-md-4">Largest page number:</div>
@@ -51,7 +51,17 @@
                     </div>
                 </div>
             </div>
-            {% if job.status_code == "complete" and job.job_type == "all pages" %}
+            {% if job.status_code == "error" and job.job_type == "single page" and job.status_per_page %}
+                <div id="complete_statement" class="row row-even">
+                    <div class="container status col-md-12">
+                        <div class="col-md-4"></div>
+                        <div class="col-md-8">
+                            <span id="complete_container">{{ job.status_per_page[0]['message'] }}</span>
+                        </div>
+                     </div>
+                </div>
+            {% endif %}
+            {% if job.success_count %}
                 <div class="row row-even">
                     {% for sc in job.success_count %}
                         <div class="container status col-md-12">
@@ -70,7 +80,7 @@
                         <div class="col-md-4"></div>
                         <div class="col-md-4">Number of pages scraped</div>
                         <div class="col-md-4">
-                            <span id="statement_container">{{ job.status_per_page|length() }} of {{ job.max_pages }}</span>
+                            <span id="statement_container">{{ job.pc_message }}</span>
                         </div>
                      </div>
                 </div>
@@ -85,16 +95,6 @@
                                     {{job.pc_complete}}%
                                 </div>
                             </div>
-                        </div>
-                     </div>
-                </div>
-            {% endif %}
-            {% if job.status_code == "error" and job.job_type == "single page" %}
-                <div id="complete_statement" class="row row-even">
-                    <div class="container status col-md-12">
-                        <div class="col-md-4"></div>
-                        <div class="col-md-8">
-                            <span id="complete_container">{{ job.status_per_page[0]['message'] }}</span>
                         </div>
                      </div>
                 </div>
