@@ -47,7 +47,7 @@ class ScrapeAllForm(Form):
 
 
 @app.route("/", methods=['GET', 'POST'])
-def root():  # do not rename this function - the octopus 404 page refers to "root" with url_for to get people back to a known area of the site
+def index():
     # form_page = ScrapePageForm(request.form, prefix="page")
     # form_all = ScrapePageForm(request.form, prefix="all")
     form_page = ScrapePageForm(request.form)
