@@ -1,90 +1,27 @@
-default_max_pages = 1200
+from octopus.core import app
 
-PRISURL="https://www.iaea.org/PRIS/CountryStatistics/ReactorDetails.aspx"
+default_max_pages = app.config.get("DEFAULT_MAX_PAGES")
 
-sections_available = [
-    u'reactor details',
-    u'lifeTime performance',
-    u'operating history'
-]
+PRISURL = app.config.get("PRISURL")
 
-sections_scraped = [
-    u'reactor details',
-    u'operating history'
-]
+sections_available = app.config.get("SECTIONS_AVAILABLE")
 
-reactor_details_data_dir = '/tmp/WNA/'
+sections_scraped = app.config.get("SECTIONS_SCRAPED")
 
-page_details_id = {
-    u'reactor_name':          {'id': 'MainContent_MainContent_lblReactorName',   'label': u'Reactor Name'},
-    u'reactor_alternate_name': {'id': 'MainContent_MainContent_lblAlternateName', 'label': u'Alternate Name'},
-    u'reactor_status':        {'id': 'MainContent_MainContent_lblReactorStatus', 'label': u'Status'},
-    u'reactor_country':       {'id': 'MainContent_litCaption',                   'label': u'Location'},
-}
+reactor_details_data_dir = app.config.get("REACTOR_DETAILS_DATA_DIR")
 
-reactor_details_id = {
-    u'MainContent_MainContent_hypOperatorUrl':             u'Operator',
-	u'MainContent_MainContent_lblType':                    u'Reactor Type',
-	u'MainContent_MainContent_lblGridConnectionDate':      u'First Grid Connection',
-	u'MainContent_MainContent_lblFirstCriticality':        u'First Criticality Date',
-	u'MainContent_MainContent_lblNetCapacity':             u'Reference Unit Power (Net Capacity)',
-	u'MainContent_MainContent_lblThermalCapacity':         u'Thermal Capacity',
-	u'MainContent_MainContent_lblDesignNetCapacity':       u'Design Net Capacity',
-	u'MainContent_MainContent_lblModel':                   u'Model',
-	u'MainContent_MainContent_lblConstrSuspendedDate':     u'Construction Suspended Date',
-	u'MainContent_MainContent_lblCommercialOperationDate': u'Commercial Operation Date',
-	u'MainContent_MainContent_lblPermanentShutdownDate':   u'Permanent Shutdown Date',
-	u'MainContent_MainContent_lblLongTermShutdownDate':    u'Longterm Shutdown Date',
-	u'MainContent_MainContent_lblConstrRestartDate':       u'Construction Restart Date',
-	u'MainContent_MainContent_hypOwnerUrl':                u'Owner',
-	u'MainContent_MainContent_lblConstructionStartDate':   u'Construction Start Date',
-	u'MainContent_MainContent_lblGrossCapacity':           u'Gross Capacity',
-	u'MainContent_MainContent_lblRestartDate':             u'Restart Date',
-	u'Owner':                                              u'Owner',
-	u'Operator':                                           u'Operator',
-}
+page_details_id = app.config.get("PAGE_DETAILS_ID")
 
-reactor_details_header = (
-    u'Reactor Name',
-    u'Alternate Name',
-    u'Location',
-    u'Status',
-    u'Operator',
-    u'Reactor Type',
-    u'First Grid Connection',
-    u'First Criticality Date',
-    u'Reference Unit Power (Net Capacity)',
-    u'Thermal Capacity',
-    u'Design Net Capacity',
-	u'Model',
-    u'Construction Suspended Date',
-    u'Commercial Operation Date',
-    u'Permanent Shutdown Date',
-    u'Longterm Shutdown Date',
-    u'Construction Restart Date',
-    u'Owner',
-    u'Construction Start Date',
-    u'Gross Capacity',
-    u'Restart Date',
-)
+reactor_details_id = app.config.get("REACTOR_DETAILS_ID")
 
-operating_history_data_dir = '/tmp/WNA/'
+reactor_details_header = app.config.get("REACTOR_DETAILS_HEADER")
 
-operating_history_header = (
-    u'Reactor Name',
-    u'Year',
-    u'Electricity Supplied [GW.h]',
-    u'Reference Unit Power [MW]',
-    u'Annual Time On Line [h]',
-    u'Operation Factor [%]',
-    u'Energy Availability Factor Annual [%]',
-    u'Energy Availability Factor Cumulative [%]',
-    u'Load Factor Annual [%]',
-    u'Load Factor Cumulative [%]',
-    u'Comment'
-)
+operating_history_data_dir = app.config.get("OPERATING_HISTORY_DATA_DIR")
+
+operating_history_header = app.config.get("OPERATING_HISTORY_HEADER")
+
 # No reactor name and comment in operating history table
-operating_history_data_columns = operating_history_header[1:-1]
+operating_history_data_columns = app.config.get("OPERATING_HISTORY_DATA_COLUMNS")
 
 # Minimum success rate for page scraper
-success_rate = 25
+success_rate = app.config.get("SUCCESS_RATE")

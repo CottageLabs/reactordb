@@ -6,7 +6,9 @@ src*
 build/*
 dist/*
 local.cfg
+datadir/*.csv
 
 .idea/
+
 
 
