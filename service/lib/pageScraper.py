@@ -365,7 +365,7 @@ class WNAScraper(object):
         success_count = 0
         success_rd_count = 0
         success_oh_count = 0
-        for page_number in range(1, self.max_pages):
+        for page_number in range(1, self.max_pages+1):
             page_scraper = WNAPageScraper(page_number)
             ans = page_scraper.get_page()
             if ans:
@@ -418,7 +418,7 @@ class WNAScraper(object):
         job = models.ScraperJob()
         job.job_type = "single page"
         job.status_code = "processing"
-        job.max_pages = self.max_pages
+        job.max_pages = 1
         job.save()
         page_scraper = WNAPageScraper(page_number)
         ans = page_scraper.get_page()
