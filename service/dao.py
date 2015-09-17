@@ -47,19 +47,18 @@ class ScraperJobDAO(dao.ESDAO):
         return pc
 
     @property
+    def pc_message(self):
+        msg = "%2d of %2d" % (len(self.status_per_page), int(self.max_pages))
+        return msg
+
+    @property
     def progress2json(self):
         obj = {
-            "pc": 0.0,
+            "pc": self.pc_complete,
             "status": self.status_code,
             "message": self.status_message,
-            "pc_message": "%2d of %2d" % (len(self.status_per_page), int(self.max_pages))
+            "pc_message": self.pc_message
         }
-        if self.status_code == "submitted":
-            obj["pc"] = 0.0
-        elif self.status_code == "processing":
-            obj["pc"] = self.pc_complete
-        elif self.status_code == "complete":
-            obj["pc"] = 100.0
         return obj
 
 class ScraperStatusQuery(object):
