@@ -14,7 +14,7 @@
         "url" : "<reactor website>",
         "status" : "<operational status of the reactor at this time>",
         
-        "site_name" : "<name of the site>"
+        "site_name" : "<name of the site>",
         "site_id" : "<WNA site id>",
         
         "owner" : [
@@ -66,7 +66,7 @@
     },
     
     "admin" : {
-        "visible" : <displayed in search: true|false>
+        "visible" : "<available via the UI: true|false>"
     },
     
     "index" : {
