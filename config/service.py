@@ -37,8 +37,8 @@ SECRET_KEY = "super-secret-key"
 #############################################
 # important overrides for storage module
 
-#STORE_IMPL = "octopus.modules.store.store.StoreLocal"
-#STORE_TMP_IMPL = "octopus.modules.store.store.TempStore"
+# STORE_IMPL = "octopus.modules.store.store.StoreLocal"
+# STORE_TMP_IMPL = "octopus.modules.store.store.TempStore"
 
 from octopus.lib import paths
 STORE_LOCAL_DIR = paths.rel2abs(__file__, "..", "service", "tests", "local_store", "live")
@@ -89,7 +89,7 @@ PAGE_DETAILS_ID = {
 
 REACTOR_DETAILS_ID = {
     u'MainContent_MainContent_hypOperatorUrl':             u'Operator',
-    u'MainContent_MainContent_lblType':                    u'Reactor Type',
+    u'MainContent_MainContent_lblType':                    u'Process',
     u'MainContent_MainContent_lblGridConnectionDate':      u'First Grid Connection',
     u'MainContent_MainContent_lblFirstCriticality':        u'First Criticality Date',
     u'MainContent_MainContent_lblNetCapacity':             u'Reference Unit Power (Net Capacity)',
@@ -114,23 +114,23 @@ REACTOR_DETAILS_HEADER = (
     u'Alternate Name',
     u'Location',
     u'Status',
+    u'Owner',
     u'Operator',
-    u'Reactor Type',
-    u'First Grid Connection',
-    u'First Criticality Date',
+    u'Model',
+    u'Process',
     u'Reference Unit Power (Net Capacity)',
     u'Thermal Capacity',
     u'Design Net Capacity',
-    u'Model',
-    u'Construction Suspended Date',
-    u'Commercial Operation Date',
-    u'Permanent Shutdown Date',
-    u'Longterm Shutdown Date',
-    u'Construction Restart Date',
-    u'Owner',
-    u'Construction Start Date',
     u'Gross Capacity',
+    u'Construction Start Date',
+    u'Construction Suspended Date',
+    u'Construction Restart Date',
+    u'First Criticality Date',
+    u'First Grid Connection',
+    u'Commercial Operation Date',
+    u'Longterm Shutdown Date',
     u'Restart Date',
+    u'Permanent Shutdown Date',
 )
 
 OPERATING_HISTORY_DATA_DIR = 'datadir'

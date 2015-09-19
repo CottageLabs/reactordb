@@ -90,7 +90,7 @@ class WNAPageScraper(object):
 
     def get_reactor_alternate_name(self):
         txt = self.soup.find(id=page_details_id[u'reactor_alternate_name']['id']).text
-        self.reactor_alternate_name = txt.strip('\r\n\t ')
+        self.reactor_alternate_name = txt.strip('\r\n\t ()')
         return
 
     def get_reactor_status(self):
@@ -252,7 +252,7 @@ class WNAPageScraper(object):
             else:
                 # TODO: Add exception. The table layout has been modified
                 pass
-            if data_row:
+            if len(data_row) > 1:
                 self.operating_history.append(data_row)
         return True
         
