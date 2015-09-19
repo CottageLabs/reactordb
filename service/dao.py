@@ -1,5 +1,7 @@
 from octopus.modules.es import dao
 
+class ReactorDAO(dao.ESDAO):
+    __type__ = "reactor"
 
 class ScraperJobDAO(dao.ESDAO):
     __type__ = 'scraper'

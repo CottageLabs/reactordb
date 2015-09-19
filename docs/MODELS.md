@@ -15,8 +15,6 @@
         "status" : "<operational status of the reactor at this time>",
         
         "site_name" : "<name of the site>",
-        "site_id" : "<WNA site id>",
-        
         "owner" : [
             {"name" : "<name of the owner>", "share" : "<share of ownership (e.g. %)>"}
         ],
@@ -26,7 +24,7 @@
         "process" : "<reactor process type>",
         "type" : "<type of reactor (e.g. commercial)>",
         
-        "continent" : "<continent the reactor lies on>",
+        "region" : ["<continent the reactor lies on>", "<other grouped region>"],
         "country" : "<country the reactor lies in>",
         "area" : "<sub-country area>",
         "location" : {
@@ -47,10 +45,10 @@
         "construction_restart" : "<construction restart date (YYYY-MM-DD)>",
         "construction_start" : "<construction start date (YYYY-MM-DD)>",
         "restart" : "<restart date (YYYY-MM-DD)>",
-        "first_concrete" : "<first concrete date (YYYY-MM-DD)>",
+        "project_start" : "<reactor building project start (not necessarily when construction started) (YYYY-MM-DD)>",
         "contract_year" : "<4 digit year, int>",
         
-        "reference_unit_power" : "<reference unit power, Units?, float>",
+        "reference_unit_power_net_capacity" : "<reference unit power/net capacity, Units?, float>",
         "thermal_capacity" : "<thermal capacity, Units?, float>",
         "design_net_capacity" : "<design net capacity, Units?, float>",
         "gross_capacity" : "<gross capacity, Units?, float>",
@@ -63,10 +61,6 @@
             }
         ],
         "additional_info" : "<additional textual information>"
-    },
-    
-    "admin" : {
-        "visible" : "<available via the UI: true|false>"
     },
     
     "index" : {

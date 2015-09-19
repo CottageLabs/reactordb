@@ -1,4 +1,4 @@
-from service.dao import ScraperJobDAO
+from service.dao import ScraperJobDAO, ReactorDAO
 from octopus.lib.dataobj import DataObj
 from config.wnaConfig import sections_scraped
 from dateutil.parser import parse
@@ -125,3 +125,7 @@ class ScraperJob(ScraperJobDAO, DataObj):
     @webhook_callback.setter
     def webhook_callback(self, val):
         self._set_single("webhook_callback", val, self._utf8_unicode(), ignore_none=True)
+
+class Reactor(DataObj, ReactorDAO):
+    def __init__(self, raw=None):
+        super(Reactor, self).__init__(raw=raw)
