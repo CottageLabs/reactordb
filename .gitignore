@@ -7,6 +7,7 @@ build/*
 dist/*
 local.cfg
 datadir/*.csv
+service/tests/resources/.~lock.*
 
 .idea/
 

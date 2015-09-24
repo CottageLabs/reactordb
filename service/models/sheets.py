@@ -78,6 +78,7 @@ class MasterSheet(clcsv.SheetWrapper):
     }
 
     COERCE = {
+        # fields unique to the master sheet
         "latitude" : dataobj.to_float(),
         "longitude" : dataobj.to_float(),
         "site_latitude" : dataobj.to_float(),
@@ -85,6 +86,8 @@ class MasterSheet(clcsv.SheetWrapper):
         "project_start" : dataobj.date_str(out_format="%Y-%m-%d"),
         "wna_links" : weblinks,
         "wnn_links" : weblinks,
+
+        # fields shared with the pris scrape
         "owner" : owner,
         "reference_unit_power_capacity_net" : dataobj.to_float(),
         "thermal_capacity" : dataobj.to_float(),
@@ -114,6 +117,8 @@ class MasterSheet(clcsv.SheetWrapper):
         "restart" : ["N/A"],
         "permanent_shutdown" : ["N/A"]
     }
+
+    EMPTY_STRING_AS_NONE = True
 
     def __init__(self, path):
         super(MasterSheet, self).__init__(path)
@@ -147,6 +152,7 @@ class PRISSheet(clcsv.SheetWrapper):
     }
 
     COERCE = {
+        "owner" : owner,
         "reference_unit_power_capacity_net" : dataobj.to_float(),
         "thermal_capacity" : dataobj.to_float(),
         "design_net_capacity" : dataobj.to_float(),
@@ -175,6 +181,8 @@ class PRISSheet(clcsv.SheetWrapper):
         "restart" : ["N/A"],
         "permanent_shutdown" : ["N/A"]
     }
+
+    EMPTY_STRING_AS_NONE = True
 
     def __init__(self, path):
         super(PRISSheet, self).__init__(path)

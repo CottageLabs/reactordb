@@ -14,11 +14,14 @@ ELASTIC_SEARCH_HOST = "http://localhost:9200"
 ELASTIC_SEARCH_INDEX = "reactordb"
 ELASTIC_SEARCH_VERSION = "1.4.4"
 
+from esprit import mappings1x
+ELASTIC_SEARCH_DEFAULT_MAPPING = mappings1x.make_mapping("_default_", [mappings1x.EXACT])
+
 # Classes from which to retrieve ES mappings to be used in this application
-# (note that if ELASTIC_SEARCH_DEFAULT_MAPPINGS is sufficient, you don't need to
+# (note that if ELASTIC_SEARCH_DEFAULT_MAPPING is sufficient, you don't need to
 # add anything here
 ELASTIC_SEARCH_MAPPINGS = [
-    # "service.dao.MyDAO"
+    "service.dao.ReactorDAO"
 ]
 
 # initialise the index with example documents from each of the types

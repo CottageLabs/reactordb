@@ -1,7 +1,53 @@
 from octopus.modules.es import dao
+from esprit import mappings1x
 
 class ReactorDAO(dao.ESDAO):
     __type__ = "reactor"
+
+    @classmethod
+    def mappings(cls):
+        return {
+            cls.__type__ : mappings1x.make_mapping(cls.__type__, properties=mappings1x.make_properties({
+                "reactor.location" : mappings1x.make_field("geo_point"),
+                "reactor.site_location" : mappings1x.make_field("geo_point")
+            }))
+        }
+        """
+        return {
+            cls.__type__ : {
+                cls.__type__ : {
+                    "properties" : {
+                        "reactor" : {
+                            "properties" : {
+                                "location" : {
+                                    "type" : "geo_point"
+                                },
+                                "site_location" : {
+                                    "type" : "geo_point"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        """
+
+        """
+        return {
+            cls.__type__ : mappings.for_type(
+                cls.__type__,
+                    mappings.properties({"reactor" : mappings.properties(mappings.type_mapping("location", "geo_point"))}),
+                    mappings.properties({"reactor" : mappings.properties(mappings.type_mapping("site_location", "geo_point"))}),
+                    mappings.dynamic_templates(
+                    [
+                        mappings.EXACT,
+                    ]
+                )
+            )
+        }
+        """
+
 
 class ScraperJobDAO(dao.ESDAO):
     __type__ = 'scraper'
