@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div id="reactor-preview"></div>
+
+{% endblock %}
+
+
+{% block extra_js_bottom %}
+
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/vendor/d3-v3/d3.min.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/vendor/nvd3-1.8.1/nv.d3.js')}}"></script>
+
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/es.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/edges.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/bs3.edges.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/nvd3.edges.js')}}"></script>
+
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+
+    e = edges.newEdge({
+        selector: "#reactor-preview",
+        template: edges.bs3.newFacetview(),
+        search_url: current_scheme + "//" + current_domain + octopus.config.reactor_endpoint + "/_search",
+        manageUrl : false,
+        openingQuery : es.newQuery({
+            sort : {field: "index.sort_name.exact", order: "asc"},
+            size: 25
+        }),
+        components : [
+            // First configure our facets (category: facet)
+            edges.newORTermSelector({
+                id: "country",
+                field : "reactor.country.exact",
+                display: "Location",
+                size: 200,
+                category: "facet",
+                renderer : edges.bs3.newORTermSelectorRenderer({
+                    showCount: true
+                })
+            }),
+            edges.newORTermSelector({
+                id: "status",
+                field : "reactor.status.exact",
+                display: "Current Status",
+                size: 200,
+                category: "facet",
+                renderer : edges.bs3.newORTermSelectorRenderer({
+                    showCount: true
+                })
+            }),
+            edges.newORTermSelector({
+                id: "process",
+                field : "reactor.process.exact",
+                display: "Reactor Type",
+                size: 200,
+                category: "facet",
+                renderer : edges.bs3.newORTermSelectorRenderer({
+                    showCount: true
+                })
+            }),
+            edges.newNumericRangeEntry({
+                id: "construction_start",
+                field: "index.construction_start_year",
+                display: "Construction Start Date",
+                category: "facet"
+            }),
+            edges.newNumericRangeEntry({
+                id: "grid_connection",
+                field: "index.first_grid_connection_year",
+                display: "Grid Connection",
+                category: "facet"
+            }),
+            edges.newNumericRangeEntry({
+                id: "permanent_shutdown",
+                field: "index.permanent_shutdown_year",
+                display: "Permanent Shutdown Date",
+                category: "facet"
+            }),
+            edges.newORTermSelector({
+                id: "owner",
+                field : "reactor.owner.name.exact",
+                display: "Owner",
+                size: 200,
+                category: "facet",
+                renderer : edges.bs3.newORTermSelectorRenderer({
+                    showCount: true
+                })
+            }),
+            edges.newORTermSelector({
+                id: "vendor",
+                field : "reactor.vendor.exact",
+                display: "Vendor",
+                size: 200,
+                category: "facet",
+                renderer : edges.bs3.newORTermSelectorRenderer({
+                    showCount: true
+                })
+            }),
+            edges.newORTermSelector({
+                id: "operator",
+                field : "reactor.operator.exact",
+                display: "Operator",
+                size: 200,
+                category: "facet",
+                renderer : edges.bs3.newORTermSelectorRenderer({
+                    showCount: true
+                })
+            }),
+            edges.newNumericRangeEntry({
+                id: "capacity_net",
+                field: "reactor.reference_unit_power_capacity_net",
+                display: "Reference Unit Power (Net Capacity)",
+                lower: 0,
+                increment: 300,
+                category: "facet"
+            }),
+
+            // configure the search controller
+            edges.newFullSearchController({
+                id: "search-controller",
+                category: "controller",
+                sortOptions : [
+                    {field: "index.sort_name.exact", display: "Reactor Name"},
+                    {field: "reactor.country.exact", display: "Location"},
+                    {field: "index.first_grid_connection_year", display: "Start Year"}
+                ],
+                fieldOptions : [
+                    {field: "reactor.name", display: "Reactor Name"},
+                    {field: "reactor.process", display: "Reactor Type"},
+                    {field: "reactor.owner.name", display: "Owner"},
+                    {field: "reactor.vendor", display: "Vendor"},
+                    {field: "reactor.operator", display: "Operator"},
+                    {field: "reactor.model", display: "Model"}
+                ],
+                defaultOperator : "AND"
+            }),
+
+            // the pager, with the explicitly set page size options (see the openingQuery for the initial size)
+            edges.newPager({
+                id: "top-pager",
+                category: "top-pager",
+                rederer : edges.bs3.newPagerRenderer({
+                    sizeOptions : [10, 25, 50, 100]
+                })
+            }),
+            edges.newPager({
+                id: "bottom-pager",
+                category: "bottom-pager",
+                rederer : edges.bs3.newPagerRenderer({
+                    sizeOptions : [10, 25, 50, 100]
+                })
+            }),
+
+            // results display holding pattern - to be replaced with the real thing
+            edges.newResultsDisplay({
+                id: "results",
+                category: "results",
+                renderer : edges.bs3.newResultsDisplayRenderer({
+                    fieldDisplayMap: [
+                        {field: "reactor.name", display: "Name"},
+                        {field: "reactor.country", display: "Location"}
+                    ]
+                })
+            }),
+
+            // selected filters display, with all the fields given their display names
+            edges.newSelectedFilters({
+                id: "selected-filters",
+                category: "selected-filters",
+                fieldDisplays : {
+                    "reactor.country.exact" : "Location",
+                    "reactor.status.exact" : "Current Status",
+                    "reactor.process.exact" : "Reactor Type",
+                    "index.construction_start_year" : "Construction Start Date",
+                    "index.first_grid_connection_year" : "Grid Connection",
+                    "index.permanent_shutdown_year" : "Permanent Shutdown Date",
+                    "reactor.owner.name.exact" : "Owner",
+                    "reactor.vendor.exact" : "Vendor",
+                    "reactor.operator.exact" : "Operator",
+                    "reactor.reference_unit_power_capacity_net" : "Reference Unit Power (Net Capacity)"
+                }
+            }),
+
+            // the standard searching notification
+            edges.newSearchingNotification({
+                id: "searching-notification",
+                category: "searching-notification"
+            })
+        ]
+    });
+
+});
+</script>
+
+{% endblock%}

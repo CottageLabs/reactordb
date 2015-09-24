@@ -31,6 +31,19 @@ ELASTIC_SEARCH_EXAMPLE_DOCS = [
     # "service.dao.MyDAO"
 ]
 
+QUERY_ROUTE = {
+    "query" : {                                 # the URL route at which it is mounted
+        "reactor" : {                             # the URL name for the index type being queried
+            "auth" : False,                     # whether the route requires authentication
+            "role" : None,                      # if authenticated, what role is required to access the query endpoint
+            "filters" : [],            # names of the standard filters to apply to the query
+            "dao" : "service.dao.ReactorDAO"       # classpath for DAO which accesses the underlying ES index
+        }
+    }
+}
+
+CLIENTJS_REACTOR_ENDPOINT = "/query/reactor"
+
 ############################################
 # important overrides for account module
 

@@ -1,6 +1,6 @@
 """
 from service.models import sheets
-sheet = sheets.MasterSheet("/home/richard/Dropbox/Projects/WNA/MasterSheet.csv")
+sheet = sheets.MasterSheet("/home/richard/Code/External/reactordb/service/tests/resources/MasterSheet.csv")
 obs = [o for o in sheet.objects()]
 """
 
@@ -16,6 +16,9 @@ r.wnn_links
 r.reactor_name
 print "hello"
 """
+
+from octopus.core import initialise
+initialise()
 
 from service.tests import fixtures
 from service.lib import importer

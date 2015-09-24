@@ -12,41 +12,6 @@ class ReactorDAO(dao.ESDAO):
                 "reactor.site_location" : mappings1x.make_field("geo_point")
             }))
         }
-        """
-        return {
-            cls.__type__ : {
-                cls.__type__ : {
-                    "properties" : {
-                        "reactor" : {
-                            "properties" : {
-                                "location" : {
-                                    "type" : "geo_point"
-                                },
-                                "site_location" : {
-                                    "type" : "geo_point"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        """
-
-        """
-        return {
-            cls.__type__ : mappings.for_type(
-                cls.__type__,
-                    mappings.properties({"reactor" : mappings.properties(mappings.type_mapping("location", "geo_point"))}),
-                    mappings.properties({"reactor" : mappings.properties(mappings.type_mapping("site_location", "geo_point"))}),
-                    mappings.dynamic_templates(
-                    [
-                        mappings.EXACT,
-                    ]
-                )
-            )
-        }
-        """
 
 
 class ScraperJobDAO(dao.ESDAO):

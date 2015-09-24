@@ -14,6 +14,9 @@ def import_reactordb(master_path, pris_path, history_path):
         # get the pris record if there is one
         pris_record = scrape.get(obj.get("reactor_name"))
 
+        # use the reactor name as the id too
+        obj["id"] = obj["reactor_name"]
+
         # overwrite the reactor name if an wna_name has been provided
         if obj.get("wna_name", "") != "":
             obj["reactor_name"] = obj["wna_name"]

@@ -1,5 +1,5 @@
 from service.dao import ScraperJobDAO, ReactorDAO
-from octopus.lib import dataobj
+from octopus.lib import dataobj, strings, dates
 from config.wnaConfig import sections_scraped
 from dateutil.parser import parse
 import os
@@ -142,34 +142,34 @@ class Reactor(dataobj.DataObj, ReactorDAO):
             "structs" : {
                 "reactor" : {
                     "fields" : {
-                        "name" : {"coerce" : "unicode", "ignore_none" : True},
+                        "additional_info" : {"coerce" : "unicode", "ignore_none" : True},
                         "alternate_name" : {"coerce" : "unicode", "ignore_none" : True},
-                        "url" : {"coerce" : "unicode", "ignore_none" : True},
-                        "status" : {"coerce" : "unicode", "ignore_none" : True},
-                        "site_name" : {"coerce" : "unicode", "ignore_none" : True},
-                        "operator" : {"coerce" : "unicode", "ignore_none" : True},
-                        "vendor" : {"coerce" : "unicode", "ignore_none" : True},
-                        "model" : {"coerce" : "unicode", "ignore_none" : True},
-                        "process" : {"coerce" : "unicode", "ignore_none" : True},
-                        "type" : {"coerce" : "unicode", "ignore_none" : True},
-                        "country" : {"coerce" : "unicode", "ignore_none" : True},
                         "area" : {"coerce" : "unicode", "ignore_none" : True},
-                        "first_grid_connection" : {"coerce" : "bigenddate", "ignore_none" : True},
-                        "first_criticality" : {"coerce" : "bigenddate", "ignore_none" : True},
-                        "construction_suspend" : {"coerce" : "bigenddate", "ignore_none" : True},
                         "commercial_operation" : {"coerce" : "bigenddate", "ignore_none" : True},
-                        "permanent_shutdown" : {"coerce" : "bigenddate", "ignore_none" : True},
-                        "longterm_shutdown" : {"coerce" : "bigenddate", "ignore_none" : True},
                         "construction_restart" : {"coerce" : "bigenddate", "ignore_none" : True},
                         "construction_start" : {"coerce" : "bigenddate", "ignore_none" : True},
-                        "restart" : {"coerce" : "bigenddate", "ignore_none" : True},
-                        "project_start" : {"coerce" : "bigenddate", "ignore_none" : True},
+                        "construction_suspend" : {"coerce" : "bigenddate", "ignore_none" : True},
                         "contract_year" : {"coerce" : "integer", "allowed_range" : (1000, 9999), "ignore_none" : True},
-                        "reference_unit_power_net_capacity" : {"coerce" : "float", "ignore_none" : True},
-                        "thermal_capacity" : {"coerce" : "float", "ignore_none" : True},
+                        "country" : {"coerce" : "unicode", "ignore_none" : True},
                         "design_net_capacity" : {"coerce" : "float", "ignore_none" : True},
+                        "first_criticality" : {"coerce" : "bigenddate", "ignore_none" : True},
+                        "first_grid_connection" : {"coerce" : "bigenddate", "ignore_none" : True},
                         "gross_capacity" : {"coerce" : "float", "ignore_none" : True},
-                        "additional_info" : {"coerce" : "unicode", "ignore_none" : True},
+                        "longterm_shutdown" : {"coerce" : "bigenddate", "ignore_none" : True},
+                        "model" : {"coerce" : "unicode", "ignore_none" : True},
+                        "name" : {"coerce" : "unicode", "ignore_none" : True},
+                        "operator" : {"coerce" : "unicode", "ignore_none" : True},
+                        "permanent_shutdown" : {"coerce" : "bigenddate", "ignore_none" : True},
+                        "process" : {"coerce" : "unicode", "ignore_none" : True},
+                        "project_start" : {"coerce" : "bigenddate", "ignore_none" : True},
+                        "reference_unit_power_capacity_net" : {"coerce" : "float", "ignore_none" : True},
+                        "restart" : {"coerce" : "bigenddate", "ignore_none" : True},
+                        "site_name" : {"coerce" : "unicode", "ignore_none" : True},
+                        "status" : {"coerce" : "unicode", "ignore_none" : True},
+                        "thermal_capacity" : {"coerce" : "float", "ignore_none" : True},
+                        "type" : {"coerce" : "unicode", "ignore_none" : True},
+                        "url" : {"coerce" : "unicode", "ignore_none" : True},
+                        "vendor" : {"coerce" : "unicode", "ignore_none" : True}
                     },
                     "objects" : [
                         "location",
@@ -221,38 +221,39 @@ class Reactor(dataobj.DataObj, ReactorDAO):
         }
 
         properties = {
-            "reactor_name" : ("reactor.name", None),
-            "latitude" : ("reactor.location.lat", None),
-            "longitude" : ("reactor.location.lon", None),
-            "region" : ("reactor.region", None),
-            "country_area" : ("reactor.area", None),
-            "site_name" : ("reactor.site_name", None),
-            "site_latitude" : ("reactor.site_location.lat", None),
-            "site_longitude" : ("reactor.site_location.lon", None),
-            "reactor_type" : ("reactor.type", None),
-            "project_start" : ("reactor.project_start", None),
-            "website" : ("reactor.website", None),
             "additional_info" : ("reactor.additional_info", None),
             "alternate_name" : ("reactor.alternate_name", None),
-            "country" : ("reactor.country", None),
-            "status" : ("reactor.status", None),
-            "owner" : ("reactor.owner", dataobj.DataObj),
-            "operator" : ("reactor.operator", None),
-            "model" : ("reactor.model", None),
-            "process" : ("reactor.process", None),
-            "reference_unit_power_capacity_net" : ("reactor.reference_unit_power_capacity_net", None),
-            "thermal_capacity" : ("reactor.thermal_capacity", None),
-            "design_net_capacity" : ("reactor.design_net_capacity", None),
-            "gross_capacity" : ("reactor.gross_capacity", None),
+            "commercial_operation" : ("reactor.commercial_operation", None),
+            "construction_restart" : ("reactor.construction_restart", None),
             "construction_start" : ("reactor.construction_start", None),
             "construction_suspend" : ("reactor.construction_suspend", None),
-            "construction_restart" : ("reactor.construction_restart", None),
+            "country" : ("reactor.country", None),
+            "country_area" : ("reactor.area", None),
+            "design_net_capacity" : ("reactor.design_net_capacity", None),
             "first_criticality" : ("reactor.first_criticality", None),
             "first_grid_connection" : ("reactor.first_grid_connection", None),
-            "commercial_operation" : ("reactor.commercial_operation", None),
+            "gross_capacity" : ("reactor.gross_capacity", None),
+            "latitude" : ("reactor.location.lat", None),
+            "longitude" : ("reactor.location.lon", None),
             "longterm_shutdown" : ("reactor.longterm_shutdown", None),
+            "model" : ("reactor.model", None),
+            "operator" : ("reactor.operator", None),
+            "owner" : ("reactor.owner", dataobj.DataObj),
+            "permanent_shutdown" : ("reactor.permanent_shutdown", None),
+            "process" : ("reactor.process", None),
+            "project_start" : ("reactor.project_start", None),
+            "reactor_name" : ("reactor.name", None),
+            "reactor_type" : ("reactor.type", None),
+            "reference_unit_power_capacity_net" : ("reactor.reference_unit_power_capacity_net", None),
+            "region" : ("reactor.region", None),
             "restart" : ("reactor.restart", None),
-            "permanent_shutdown" : ("reactor.permanent_shutdown", None)
+            "site_latitude" : ("reactor.site_location.lat", None),
+            "site_longitude" : ("reactor.site_location.lon", None),
+            "site_name" : ("reactor.site_name", None),
+            "status" : ("reactor.status", None),
+            "thermal_capacity" : ("reactor.thermal_capacity", None),
+            "vendor" : ("reactor.vendor", None),
+            "website" : ("reactor.website", None)
         }
 
         self._add_struct(struct)
@@ -297,3 +298,25 @@ class Reactor(dataobj.DataObj, ReactorDAO):
         self._delete_from_list("reactor.links", matchsub={"type" : "wnn"})
         for v in cv:
             self._add_to_list("reactor.links", v)
+
+    def prep(self):
+        # we need to set 4 internal index properties
+
+        # 1. index.sort_name - normalised version of the reactor name for sorting on
+        sn = strings.normalise(self.reactor_name)
+        self._set_single("index.sort_name", sn, coerce=dataobj.to_unicode())
+
+        # 2. index.first_grid_connection_year - just the year, as an int, from first_grid_connection
+        if self.first_grid_connection is not None:
+            fgcy = dates.reformat(self.first_grid_connection, out_format="%Y")
+            self._set_single("index.first_grid_connection_year", fgcy, dataobj.to_int())
+
+        # 3. index.permanent_shutdown_year - just the year, as an int, from permanent_shutdown
+        if self.permanent_shutdown is not None:
+            psy = dates.reformat(self.permanent_shutdown, out_format="%Y")
+            self._set_single("index.permanent_shutdown_year", psy, dataobj.to_int())
+
+        # 4. index.construction_start_year - just the year, as an int, from construction_start
+        if self.construction_start is not None:
+            csy = dates.reformat(self.construction_start, out_format="%Y")
+            self._set_single("index.construction_start_year", csy, dataobj.to_int())

@@ -98,6 +98,10 @@ def docs():
     return render_template("docs.html")
 
 
+@app.route("/preview")
+def preview():
+    return render_template("preview.html")
+
 # this allows us to override the standard static file handling with our own dynamic version
 @app.route("/static/<path:filename>")
 def static(filename):
