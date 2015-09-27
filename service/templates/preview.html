@@ -95,17 +95,6 @@ jQuery(document).ready(function($) {
                 })
             }),
             edges.newORTermSelector({
-                id: "vendor",
-                field : "reactor.vendor.exact",
-                display: "Vendor",
-                size: 200,
-                lifecycle: "update",
-                category: "facet",
-                renderer : edges.bs3.newORTermSelectorRenderer({
-                    showCount: true
-                })
-            }),
-            edges.newORTermSelector({
                 id: "operator",
                 field : "reactor.operator.exact",
                 display: "Operator",
