@@ -20,6 +20,187 @@
 <script type="text/javascript">
 jQuery(document).ready(function($) {
 
+    var BASE_URL = current_scheme + "//" + current_domain;
+
+    var reactordb = {
+        newReactorRecords : function(params) {
+            if (!params) { params = {} }
+            reactordb.ReactorRecords.prototype = edges.newRenderer(params);
+            return new reactordb.ReactorRecords(params);
+        },
+        ReactorRecords : function(params) {
+            //////////////////////////////////////////////
+            // parameters that can be passed in
+
+            // what to display when there are no results
+            this.noResultsText = params.noResultsText || "No reactors match your search criteria";
+
+            //////////////////////////////////////////////
+            // parameters that are core parts of the object
+
+            // map of shorted to expanded types
+            this.typeMap = {
+                "BWR" : "Boiling Water Reactor",
+                "GCR" : "Gas-Cooled Reactor",
+                "HTGR" : "High Temperature Gas-Cooled Reactor",
+                "HWGCR" : "Heavy Water Gas-Cooled Reactor",
+                "FBR" : "Fast Reactor",
+                "HWLWR" : "Heavy Water Light Water Reactor",
+                "LWGR" : "Light Water Graphite Reactor",
+                "PHWR" : "Pressurized Heavy Water Reactor",
+                "PWR" : "Pressurised Water Reactor",
+                "SGHWR" : "Steam Generating Heavy Water Reactor",
+                "X" : "Other"
+            };
+
+            this.months = [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+
+            this.namespace = "reactordb-reactor-records";
+
+            this.draw = function() {
+                var frag = this.noResultsText;
+                if (this.component.results === false) {
+                    frag = "";
+                }
+
+                var results = this.component.results;
+                if (results && results.length > 0) {
+                    // list the css classes we'll require
+                    var recordClasses = edges.css_classes(this.namespace, "record", this);
+
+                    // now call the result renderer on each result to build the records
+                    frag = "";
+                    for (var i = 0; i < results.length; i++) {
+                        var rec = this._renderResult(results[i]);
+                        frag += '<div class="row"><div class="col-md-12"><div class="' + recordClasses + '">' + rec + '</div></div></div>';
+                    }
+                }
+
+                // finally stick it all together into the container
+                var containerClasses = edges.css_classes(this.namespace, "container", this);
+                var container = '<div class="' + containerClasses + '">' + frag + '</div>';
+                this.component.context.html(container);
+            };
+
+            this._renderResult = function(res) {
+                // extract from the object the fields that we want to display
+                var id = this._getValue("id", res);
+                var reactor_name = this._getValue("reactor.name", res);
+                var country = this._getValue("reactor.country", res);
+                var capacity_net = this._getValue("reactor.reference_unit_power_capacity_net", res);
+                var status = this._getValue("reactor.status", res);
+                var type = this._getValue("reactor.process", res);
+                var owners = this._getValue("reactor.owner", res);
+                var operator = this._getValue("reactor.operator", res);
+                var grid = this._getValue("reactor.first_grid_connection", res);
+
+                // set some defaults/normalise the values we are going to display
+                if (capacity_net === false) {
+                    capacity_net = "-";
+                }
+                var expandedType = type in this.typeMap ? this.typeMap[type] : "";
+                var oarr = [];
+                for (var i = 0; i < owners.length; i++) {
+                    var o = owners[i];
+                    oarr.push(o.name);
+                }
+                var owner = oarr.join(", ");
+                var gridconn = "";
+                if (grid !== false) {
+                    var griddate = new Date(grid);
+                    gridconn = griddate.getDate() + "&nbsp;" + this.months[griddate.getMonth()] + "&nbsp;" + griddate.getFullYear();
+                }
+                var url = BASE_URL + "/reactor/" + id;
+
+                // now prep all the relevant values for html rendering
+                reactor_name = edges.escapeHtml(reactor_name);
+                country = edges.escapeHtml(country);
+                capacity_net = edges.escapeHtml(capacity_net);
+                status = edges.escapeHtml(status);
+                type = edges.escapeHtml(type);
+                expandedType = edges.escapeHtml(expandedType);
+                owner = edges.escapeHtml(owner);
+                operator = edges.escapeHtml(operator);
+
+                // list the css classes we'll require
+                var expandedTypeClasses = edges.css_classes(this.namespace, "expanded-type", this);
+                var typeClasses = edges.css_classes(this.namespace, "type", this);
+                var typeContainerClasses = edges.css_classes(this.namespace, "type-container", this);
+                var gridClasses = edges.css_classes(this.namespace, "grid", this);
+                var nameClasses = edges.css_classes(this.namespace, "name", this);
+                var urlClasses = edges.css_classes(this.namespace, "url", this);
+                var locationClasses = edges.css_classes(this.namespace, "location", this);
+                var statusClasses = edges.css_classes(this.namespace, "status", this);
+                var capacityClasses = edges.css_classes(this.namespace, "capacity", this);
+                var ownersClasses = edges.css_classes(this.namespace, "owners", this);
+                var operatorClasses = edges.css_classes(this.namespace, "operator", this);
+                var firstRowClasses = edges.css_classes(this.namespace, "first-row", this);
+                var secondRowClasses = edges.css_classes(this.namespace, "second-row", this);
+
+                // build the sub-frags which only appear if there are values to go in them
+                var typefrag = "";
+                if (expandedType === "") {
+                    typefrag = '<div class="' + typeContainerClasses + '"><span class="' + expandedTypeClasses + '">' + type + '</span></div>';
+                } else {
+                    typefrag = '<div class="' + typeContainerClasses + '"><span class="' + expandedTypeClasses + '">' + expandedType + '</span> <span class="' + typeClasses + '">(or ' + type + ')</span></div>';
+                }
+
+                var gridfrag = "";
+                if (gridconn !== "") {
+                    gridfrag = '<strong>Grid Connection:</strong>&nbsp;<span class="' + gridClasses + '">' + gridconn + '</span>';
+                }
+
+                // build the template for the record:
+                var frag = '<div class="row ' + firstRowClasses + '">\
+                                <div class="col-md-7">\
+                                    <span class="' + nameClasses + '"><a href="URL" class="' + urlClasses + '">NAME</a></span>,&nbsp;\
+                                    <span class="' + locationClasses + '">COUNTRY</span><br>\
+                                    <span class="' + statusClasses + '">STATUS</span>\
+                                </div>\
+                                <div class="col-md-5">\
+                                    <div class="' + capacityClasses + '">CAPACITY&nbsp;MWe</div>\
+                                    TYPE_FRAG \
+                                </div>\
+                            </div>\
+                            <div class="row ' + secondRowClasses + '"><div class="col-md-12">\
+                                <strong>Owner:</strong>&nbsp;<span class="' + ownersClasses + '">OWNERS</span>&nbsp;\
+                                <strong>Operator:</strong>&nbsp;<span class="' + operatorClasses + '">OPERATOR</span><br>\
+                                GRID_FRAG \
+                            </div></div>';
+
+                // substitute in all the values
+                frag = frag.replace(/URL/g, url)
+                    .replace(/NAME/g, reactor_name)
+                    .replace(/COUNTRY/g, country)
+                    .replace(/STATUS/g, status)
+                    .replace(/CAPACITY/g, capacity_net)
+                    .replace(/TYPE_FRAG/g, typefrag)
+                    .replace(/OWNERS/g, owner)
+                    .replace(/OPERATOR/g, operator)
+                    .replace(/GRID_FRAG/g, gridfrag);
+
+                return frag;
+            };
+
+            this._getValue = function(path, rec) {
+                var bits = path.split(".");
+                var val = rec;
+                for (var i = 0; i < bits.length; i++) {
+                    var field = bits[i];
+                    if (field in val) {
+                        val = val[field];
+                    } else {
+                        return false;
+                    }
+                }
+                return val;
+            };
+        }
+    };
+
     e = edges.newEdge({
         selector: "#reactor-preview",
         template: edges.bs3.newFacetview(),
@@ -108,7 +289,7 @@ jQuery(document).ready(function($) {
             edges.newNumericRangeEntry({
                 id: "capacity_net",
                 field: "reactor.reference_unit_power_capacity_net",
-                display: "Reference Unit Power (Net Capacity)",
+                display: "Reference Unit Power<br>(Net Capacity)",
                 lower: 0,
                 increment: 300,
                 category: "facet"
@@ -154,12 +335,7 @@ jQuery(document).ready(function($) {
             edges.newResultsDisplay({
                 id: "results",
                 category: "results",
-                renderer : edges.bs3.newResultsDisplayRenderer({
-                    fieldDisplayMap: [
-                        {field: "reactor.name", display: "Name"},
-                        {field: "reactor.country", display: "Location"}
-                    ]
-                })
+                renderer : reactordb.newReactorRecords()
             }),
 
             // selected filters display, with all the fields given their display names
@@ -174,7 +350,6 @@ jQuery(document).ready(function($) {
                     "index.first_grid_connection_year" : "Grid Connection",
                     "index.permanent_shutdown_year" : "Permanent Shutdown Date",
                     "reactor.owner.name.exact" : "Owner",
-                    "reactor.vendor.exact" : "Vendor",
                     "reactor.operator.exact" : "Operator",
                     "reactor.reference_unit_power_capacity_net" : "Reference Unit Power (Net Capacity)"
                 }

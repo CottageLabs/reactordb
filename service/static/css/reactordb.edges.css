@@ -7,3 +7,73 @@
     max-height: none !important;
     overflow-y: visible !important;
 }
+
+.reactordb-reactor-records-record  {
+    padding-bottom: 15px;
+    padding-top: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-bottom: 1px dashed #cccccc;
+}
+
+.reactordb-reactor-records-record:hover  {
+    background-color: #eeeeee;
+}
+
+.reactordb-reactor-records-first-row {
+    margin-bottom: 10px;
+}
+
+.reactordb-reactor-records-second-row {
+
+}
+
+.reactordb-reactor-records-type-container {
+    width: 100%;
+    text-align: right;
+}
+
+.reactordb-reactor-records-expanded-type {
+
+}
+
+.reactordb-reactor-records-type {
+    font-style: italic;
+}
+
+.reactordb-reactor-records-grid {
+
+}
+
+.reactordb-reactor-records-name {
+    font-weight: bold;
+    font-size: 150%;
+}
+
+.reactordb-reactor-records-url {
+
+}
+
+.reactordb-reactor-records-location {
+    font-weight: bold;
+    font-size: 150%;
+}
+
+.reactordb-reactor-records-status {
+    font-weight: bold;
+}
+
+.reactordb-reactor-records-capacity {
+    font-weight: bold;
+    font-size: 150%;
+    width: 100%;
+    text-align: right;
+}
+
+.reactordb-reactor-records-owners {
+
+}
+
+.reactordb-reactor-records-operator {
+
+}
