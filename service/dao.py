@@ -13,6 +13,8 @@ class ReactorDAO(dao.ESDAO):
             }))
         }
 
+class OperationDAO(dao.ESDAO):
+    __type__ = "operation"
 
 class ScraperJobDAO(dao.ESDAO):
     __type__ = 'scraper'

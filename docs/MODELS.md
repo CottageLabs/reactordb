@@ -48,7 +48,7 @@
         "project_start" : "<reactor building project start (not necessarily when construction started) (YYYY-MM-DD)>",
         "contract_year" : "<4 digit year, int>",
         
-        "reference_unit_power_net_capacity" : "<reference unit power/net capacity, Units?, float>",
+        "reference_unit_power_capacity_net" : "<reference unit power/net capacity, Units?, float>",
         "thermal_capacity" : "<thermal capacity, Units?, float>",
         "design_net_capacity" : "<design net capacity, Units?, float>",
         "gross_capacity" : "<gross capacity, Units?, float>",
@@ -90,7 +90,7 @@
     "operation_factor" : "<operation factor, Unit? float>",
     "energy_availability_factor_annual" : "<energy availability factor annual, Unit? float>",
     "energy_availability_factor_cumulative" : "<energy availability factor cumulative, Unit? float>",
-    "load_factor" : "<load factor, Unit? float>",
+    "load_factor_annual" : "<load factor, Unit? float>",
     "load_factor_cumulative" : "<load factor cumulative, Unit? float>",
     
     "comment" : "<any comments associated with this history record>"

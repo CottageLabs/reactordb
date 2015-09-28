@@ -1,4 +1,4 @@
-from service.dao import ScraperJobDAO, ReactorDAO
+from service.dao import ScraperJobDAO, ReactorDAO, OperationDAO
 from octopus.lib import dataobj, strings, dates
 from config.wnaConfig import sections_scraped
 from dateutil.parser import parse
@@ -320,3 +320,30 @@ class Reactor(dataobj.DataObj, ReactorDAO):
         if self.construction_start is not None:
             csy = dates.reformat(self.construction_start, out_format="%Y")
             self._set_single("index.construction_start_year", csy, dataobj.to_int())
+
+class Operation(dataobj.DataObj, OperationDAO):
+    def __init__(self, raw=None):
+        struct = {
+            "fields" : {
+                "id" : {"coerce" : "unicode"},
+                "created_date" : {"coerce" : "utcdatetime"},
+                "last_updated" : {"coerce" : "utcdatetime"},
+
+                "reactor" : {"coerce" : "unicode", "allow_none" : False},
+                "year" : {"coerce" : "integer", "allow_none" : False},
+
+                "electricity_supplied" : {"coerce" : "float", "ignore_none" : True},
+                "reference_unit_power" : {"coerce" : "float", "ignore_none" : True},
+                "annual_time_online" : {"coerce" : "float", "ignore_none" : True},
+                "operation_factor" : {"coerce" : "float", "ignore_none" : True},
+                "energy_availability_factor_annual" : {"coerce" : "float", "ignore_none" : True},
+                "energy_availability_factor_cumulative" : {"coerce" : "float", "ignore_none" : True},
+                "load_factor_annual" : {"coerce" : "float", "ignore_none" : True},
+                "load_factor_cumulative" : {"coerce" : "float", "ignore_none" : True},
+
+                "comment" : {"coerce" : "unicode", "ignore_none" : True}
+            }
+        }
+
+        self._add_struct(struct)
+        super(Operation, self).__init__(raw=raw, expose_data=True)

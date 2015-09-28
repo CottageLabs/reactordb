@@ -17,6 +17,7 @@ r.reactor_name
 print "hello"
 """
 
+"""
 from octopus.core import initialise
 initialise()
 
@@ -25,3 +26,14 @@ from service.lib import importer
 master_path = fixtures.SheetFactory.master_sheet_path()
 pris_path = fixtures.SheetFactory.pris_sheet_path()
 importer.import_reactordb(master_path, pris_path, None)
+"""
+
+from octopus.core import initialise
+initialise()
+
+from service.tests import fixtures
+from service.lib import importer
+master_path = fixtures.SheetFactory.master_sheet_path()
+pris_path = fixtures.SheetFactory.pris_sheet_path()
+history_path = fixtures.SheetFactory.history_sheet_path()
+importer.import_reactordb(master_path, pris_path, history_path)

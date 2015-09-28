@@ -187,3 +187,37 @@ class PRISSheet(clcsv.SheetWrapper):
 
     def __init__(self, path):
         super(PRISSheet, self).__init__(path)
+
+
+class OperatingHistorySheet(clcsv.SheetWrapper):
+
+    HEADERS = {
+        u"Reactor Name" : "reactor",
+        u"Year" : "year",
+
+        u"Electricity Supplied [GW.h]" : "electricity_supplied",
+        u"Reference Unit Power [MW]" : "reference_unit_power",
+        u"Annual Time On Line [h]" : "annual_time_online",
+        u"Operation Factor [%]" : "operation_factor",
+        u"Energy Availability Factor Annual [%]" : "energy_availability_factor_annual",
+        u"Energy Availability Factor Cumulative [%]" : "energy_availability_factor_cumulative",
+        u"Load Factor Annual [%]" : "load_factor_annual",
+        u"Load Factor Cumulative [%]" : "load_factor_cumulative",
+
+        u"Comment" : "comment"
+    }
+
+    COERCE = {
+        "reactor" : dataobj.to_unicode(),
+        "year" : dataobj.to_int(),
+        "comment" : dataobj.to_unicode()
+    }
+
+    DEFAULT_COERCE = [dataobj.to_float()]
+
+    IGNORE_VALUES = {
+        "energy_availability_factor_cumulative" : ["NC"],
+        "load_factor_cumulative" : ["NC"]
+    }
+
+    EMPTY_STRING_AS_NONE = True

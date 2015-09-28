@@ -11,3 +11,7 @@ class SheetFactory(object):
     @classmethod
     def pris_sheet_path(cls):
         return os.path.join(RESOURCES, "PRISScrape.csv")
+
+    @classmethod
+    def history_sheet_path(cls):
+        return os.path.join(RESOURCES, "OperatingHistory.csv")
