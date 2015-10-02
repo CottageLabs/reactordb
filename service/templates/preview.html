@@ -221,7 +221,7 @@ jQuery(document).ready(function($) {
                 category: "facet",
                 renderer : edges.bs3.newORTermSelectorRenderer({
                     showCount: true,
-                    hideEmpty: true
+                    hideEmpty: false
                 })
             }),
             edges.newORTermSelector({
@@ -232,7 +232,8 @@ jQuery(document).ready(function($) {
                 lifecycle: "update",
                 category: "facet",
                 renderer : edges.bs3.newORTermSelectorRenderer({
-                    showCount: true
+                    showCount: true,
+                    hideEmpty: false
                 })
             }),
             edges.newORTermSelector({
@@ -240,10 +241,11 @@ jQuery(document).ready(function($) {
                 field : "reactor.process.exact",
                 display: "Reactor Type",
                 size: 200,
-                lifecycle: "static",
+                lifecycle: "update",
                 category: "facet",
                 renderer : edges.bs3.newORTermSelectorRenderer({
-                    showCount: true
+                    showCount: true,
+                    hideEmpty: false
                 })
             }),
             edges.newNumericRangeEntry({
@@ -272,7 +274,8 @@ jQuery(document).ready(function($) {
                 lifecycle: "update",
                 category: "facet",
                 renderer : edges.bs3.newORTermSelectorRenderer({
-                    showCount: true
+                    showCount: true,
+                    hideEmpty: true
                 })
             }),
             edges.newORTermSelector({
@@ -283,7 +286,8 @@ jQuery(document).ready(function($) {
                 lifecycle: "update",
                 category: "facet",
                 renderer : edges.bs3.newORTermSelectorRenderer({
-                    showCount: true
+                    showCount: true,
+                    hideEmpty: true
                 })
             }),
             edges.newNumericRangeEntry({
