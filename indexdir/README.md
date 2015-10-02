@@ -1,0 +1,1 @@
+This is the directory where, by default, we'll store the rolling index live settings
