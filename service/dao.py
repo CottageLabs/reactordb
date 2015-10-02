@@ -1,8 +1,15 @@
 from octopus.modules.es import dao
 from esprit import mappings1x
 
-class ReactorDAO(dao.ESDAO):
+class PublishedReactorDAO(dao.RollingTypeESDAO):
     __type__ = "reactor"
+    __read_preference__ = ["curr"]
+
+class ReactorDAO(dao.RollingTypeESDAO):
+    __type__ = "reactor"
+    __init_dynamic_type__ = True
+    __init_by_mapping__ = True
+    __read_preference__ = ["next", "curr"]
 
     @classmethod
     def mappings(cls):
@@ -13,8 +20,13 @@ class ReactorDAO(dao.ESDAO):
             }))
         }
 
-class OperationDAO(dao.ESDAO):
+class PublishedOperationDAO(dao.RollingTypeESDAO):
     __type__ = "operation"
+    __read_preference__ = ["curr"]
+
+class OperationDAO(dao.RollingTypeESDAO):
+    __type__ = "operation"
+    __read_preference__ = ["next", "curr"]
 
 class ScraperJobDAO(dao.ESDAO):
     __type__ = 'scraper'

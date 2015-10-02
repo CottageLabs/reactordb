@@ -17,10 +17,10 @@ ELASTIC_SEARCH_VERSION = "1.4.4"
 from esprit import mappings1x
 ELASTIC_SEARCH_DEFAULT_MAPPING = mappings1x.make_mapping("_default_", [mappings1x.EXACT])
 
-# Classes from which to retrieve ES mappings to be used in this application
+# Classes which will initialise themselves in the index with their self_init() method
 # (note that if ELASTIC_SEARCH_DEFAULT_MAPPING is sufficient, you don't need to
 # add anything here
-ELASTIC_SEARCH_MAPPINGS = [
+ELASTIC_SEARCH_SELF_INIT = [
     "service.dao.ReactorDAO"
 ]
 
@@ -43,6 +43,11 @@ QUERY_ROUTE = {
 }
 
 CLIENTJS_REACTOR_ENDPOINT = "/query/reactor"
+
+ESDAO_ROLLING_PLUGINS = {
+    "reactor" : "service.dao.ReactorDAO",
+    "operation" : "service.dao.OperationDAO"
+}
 
 ############################################
 # important overrides for account module

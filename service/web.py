@@ -102,6 +102,10 @@ def docs():
 def preview():
     return render_template("preview.html")
 
+@app.route("/reactor/<reactor_id>")
+def reactor(reactor_id):
+    return render_template("reactor.html")
+
 # this allows us to override the standard static file handling with our own dynamic version
 @app.route("/static/<path:filename>")
 def static(filename):
@@ -114,6 +118,8 @@ app.register_blueprint(configjs)
 from octopus.modules.es.query import blueprint as query
 app.register_blueprint(query, url_prefix="/query")
 
+from octopus.modules.es.rolling import blueprint as rolling
+app.register_blueprint(rolling, url_prefix="/rolling")
 
 @app.errorhandler(404)
 def page_not_found(e):

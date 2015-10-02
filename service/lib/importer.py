@@ -1,6 +1,12 @@
 from service.models import MasterSheet, PRISSheet, Reactor, OperatingHistorySheet, Operation
 
 def import_reactordb(master_path, pris_path, history_path):
+
+    # first thing to do is drop the preview indexes ("next"), so the following import
+    # can re-create them
+    Reactor.drop_next()
+    Operation.drop_next()
+
     master = MasterSheet(master_path)
     pris = PRISSheet(pris_path)
     history = OperatingHistorySheet(history_path)
