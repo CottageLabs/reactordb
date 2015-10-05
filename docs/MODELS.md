@@ -12,6 +12,7 @@
         "name" : "<standard reactor name>",
         "alternative_name" : "<alternative name for this reactor>",
         "url" : "<reactor website>",
+        "image" : "<url for image of reactor>",
         "status" : "<operational status of the reactor at this time>",
         
         "site_name" : "<name of the site>",

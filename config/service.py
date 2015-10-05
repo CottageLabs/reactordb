@@ -81,6 +81,11 @@ HTTP_RETRY_CODES = [
     504     # gateway timeout; retry to see if it responds next time
 ]
 
+#############################################
+## Google map configuration (needs to be set in local.cfg
+
+GOOGLE_MAP_API_KEY = None
+
 ##############################################
 # Service specific config
 

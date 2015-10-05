@@ -41,6 +41,7 @@ class MasterSheet(clcsv.SheetWrapper):
         # fields unique to the master sheet
         u"Additional Info" : "additional_info",
         u"Country Area" : "country_area",
+        u"Image" : "image",
         u'Latitude' : "latitude",
         u'Longitude' : "longitude",
         u"Project Start" : "project_start",

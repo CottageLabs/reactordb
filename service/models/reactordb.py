@@ -155,6 +155,7 @@ class Reactor(dataobj.DataObj, ReactorDAO):
                         "first_criticality" : {"coerce" : "bigenddate", "ignore_none" : True},
                         "first_grid_connection" : {"coerce" : "bigenddate", "ignore_none" : True},
                         "gross_capacity" : {"coerce" : "float", "ignore_none" : True},
+                        "image" : {"coerce" : "unicode", "ignore_none" : True},
                         "longterm_shutdown" : {"coerce" : "bigenddate", "ignore_none" : True},
                         "model" : {"coerce" : "unicode", "ignore_none" : True},
                         "name" : {"coerce" : "unicode", "ignore_none" : True},
@@ -233,6 +234,7 @@ class Reactor(dataobj.DataObj, ReactorDAO):
             "first_criticality" : ("reactor.first_criticality", None),
             "first_grid_connection" : ("reactor.first_grid_connection", None),
             "gross_capacity" : ("reactor.gross_capacity", None),
+            "image" : ("reactor.image", None),
             "latitude" : ("reactor.location.lat", None),
             "longitude" : ("reactor.location.lon", None),
             "longterm_shutdown" : ("reactor.longterm_shutdown", None),
@@ -252,8 +254,9 @@ class Reactor(dataobj.DataObj, ReactorDAO):
             "site_name" : ("reactor.site_name", None),
             "status" : ("reactor.status", None),
             "thermal_capacity" : ("reactor.thermal_capacity", None),
+            "url" : ("reactor.url", None),
             "vendor" : ("reactor.vendor", None),
-            "website" : ("reactor.website", None)
+            "website" : ("reactor.url", None)
         }
 
         self._add_struct(struct)
