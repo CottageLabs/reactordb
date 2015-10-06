@@ -38,11 +38,18 @@ QUERY_ROUTE = {
             "role" : None,                      # if authenticated, what role is required to access the query endpoint
             "filters" : [],            # names of the standard filters to apply to the query
             "dao" : "service.dao.ReactorDAO"       # classpath for DAO which accesses the underlying ES index
+        },
+        "operation" : {
+            "auth" : False,
+            "role" : None,
+            "filters" : [],
+            "dao" : "service.dao.OperationDAO"
         }
     }
 }
 
 CLIENTJS_REACTOR_ENDPOINT = "/query/reactor"
+CLIENTJS_OPERATION_ENDPOINT = "/query/operation"
 
 ESDAO_ROLLING_PLUGINS = {
     "reactor" : "service.dao.ReactorDAO",

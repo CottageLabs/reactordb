@@ -75,6 +75,47 @@ jQuery(document).ready(function($) {
             };
         },
 
+        newReactorOperationTemplate : function(params) {
+            if (!params) { params = {} }
+            reactordb.ReactorOperationTemplate.prototype = edges.newTemplate(params);
+            return new reactordb.ReactorOperationTemplate(params);
+        },
+        ReactorOperationTemplate : function(params) {
+
+            this.namespace = "reactordb-reactor-operation";
+
+            this.draw = function(edge) {
+                this.edge = edge;
+
+                // the classes we're going to need
+                var containerClass = edges.css_classes(this.namespace, "container");
+                var searchingClass = edges.css_classes(this.namespace, "searching");
+                var chartClasses = edges.css_classes(this.namespace, "chart");
+
+                // start building the page template
+                var frag = '<div class="' + containerClass + '"><div class="row">';
+                frag += '<div class="col-md-12">';
+
+                // loading notification (note that the notification implementation is responsible for its own visibility)
+                var loading = edge.category("searching-notification");
+                if (loading.length > 0) {
+                    frag += '<div class="row"><div class="col-md-12"><div class="' + searchingClass + '"><div id="' + loading[0].id + '"></div></div></div></div>'
+                }
+
+                // create a container for each chart
+                var charts = edge.category("chart");
+                for (var i = 0; i < charts.length; i++) {
+                    var chart = charts[i];
+                    frag += '<div class="row"><div class="col-md-12"><div class="' + chartClasses + '" dir="auto"><div id="' + chart.id + '"></div></div></div></div>';
+                }
+
+                // close off all the big containers and return
+                frag += '</div></div></div>';
+
+                edge.context.html(frag);
+            };
+        },
+
         newReactorMetadata : function(params) {
             if (!params) { params = {} }
             reactordb.ReactorMetadata.prototype = edges.newComponent(params);
@@ -122,7 +163,7 @@ jQuery(document).ready(function($) {
                 "Under Construction" : "info",
                 "Long-term Shutdown" : "warning",
                 "Permanent Shutdown" : "danger"
-            }
+            };
 
             this.months = [
                 "January", "February", "March", "April", "May", "June",
@@ -445,10 +486,94 @@ jQuery(document).ready(function($) {
             }),
             // the standard searching notification
             edges.newSearchingNotification({
-                id: "searching-notification",
+                id: "reactor-searching",
                 category: "searching-notification",
                 renderer : edges.bs3.newSearchingNotificationRenderer({
                     searchingMessage: "Loading reactor information ..."
+                })
+            })
+        ]
+    });
+
+    e2 = edges.newEdge({
+        selector: "#reactor-operation",
+        template: reactordb.newReactorOperationTemplate(),
+        search_url: current_scheme + "//" + current_domain + octopus.config.operation_endpoint + "/_search",
+        manageUrl : false,
+        baseQuery : es.newQuery({
+            must : [
+                es.newTermFilter({field: "reactor.exact", value: REACTOR})
+            ],
+            size: 100,
+            sort : [
+                es.newSort({field: "year", order: "asc"})
+            ]
+        }),
+        components : [
+            // electricity supplied bar chart
+            edges.newMultibar({
+                id: "electricity_supplied",
+                category: "chart",
+                dataFunction : edges.ChartDataFunctions.recordsXY({
+                    key: "Electricity Supplied",
+                    x: "year",
+                    y: "electricity_supplied",
+                    y_default: 0
+                })
+            }),
+            // annual energy availability factor
+            edges.newSimpleLineChart({
+                id : "energy_availability_annual",
+                category: "chart",
+                dataFunction : edges.ChartDataFunctions.recordsXY({
+                    key: "Energy Availability Factor",
+                    x: "year",
+                    y: "energy_availability_factor_annual",
+                    y_default: 0
+                }),
+                renderer : edges.nvd3.newSimpleLineChartRenderer({
+                    xTickFormat: ".0f"
+                })
+            }),
+            // total electricity supplied
+            edges.newSimpleLineChart({
+                id : "total_electricity",
+                category: "chart",
+                dataFunction : edges.ChartDataFunctions.cumulativeXY({
+                    key: "Total Electricity Supplied",
+                    x: "year",
+                    y: "electricity_supplied",
+                    y_default: 0
+                }),
+                renderer : edges.nvd3.newSimpleLineChartRenderer({
+                    xTickFormat: ".0f"
+                })
+            }),
+            // a table of all the data
+            edges.newResultsDisplay({
+                id : "results_table",
+                category: "chart",
+                renderer : edges.bs3.newTabularResultsRenderer({
+                    fieldDisplay : [
+                        {field: "year", display: "Year"},
+                        {field: "reference_unit_power", display: "Reference Unit Power (MW)"},
+                        {field: "annual_time_online", display: "Annual Time Online (Hours)"},
+                        {field: "electricity_supplied", display: "Electricity Supplied (MWe)"},
+                        {field: "operation_factor", display: "Operation Factor (?)"},
+                        {field: "energy_availability_factor_annual", display: "Energy Availability Annual (?)"},
+                        {field: "energy_availability_factor_cumulative", display: "Energy Availability Cumulative (?)"},
+                        {field: "load_factor_annual", display: "Load Factor Annual (?)"},
+                        {field: "load_factor_cumulative", display: "Load Factor Cumulative (?)"}
+                    ]
+                })
+            }),
+            
+            // the standard searching notification
+            edges.newSearchingNotification({
+                id: "history-searching",
+                category: "searching-notification",
+                renderer : edges.bs3.newSearchingNotificationRenderer({
+                    searchingMessage: "Loading operation history ..."
                 })
             })
         ]
