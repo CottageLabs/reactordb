@@ -20,6 +20,8 @@ operating_history_data_dir = app.config.get("OPERATING_HISTORY_DATA_DIR")
 
 operating_history_header = app.config.get("OPERATING_HISTORY_HEADER")
 
+reactor_details_process_case = app.config.get("REACTOR_DETAILS_PROCESS_CASE")
+
 # No reactor name and comment in operating history table
 operating_history_data_columns = app.config.get("OPERATING_HISTORY_DATA_COLUMNS")
 
