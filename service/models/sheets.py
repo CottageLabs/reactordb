@@ -52,12 +52,12 @@ class MasterSheet(clcsv.SheetWrapper):
         u"Site Name" : "site_name",
         u"Vendor" : "vendor",
         u"Website" : "website",
-        u'WNA Name' : "wna_name",
         u"WNA Web Links" : "wna_links",
         u"WNN Web Links" : "wnn_links",
 
         # fields shared with the scraped sheet
         u"Alternate Name" : "alternate_name",
+        u'Display Name' : "wna_name",
         u"Location" : "country",
         u"Status" : "status",
         u"Owner" : "owner",
