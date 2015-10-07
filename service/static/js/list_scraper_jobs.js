@@ -1,6 +1,7 @@
 $(document).ready(function(){
 
     var url = "/list_scraper_jobs";
+    var count = 0;
 
     function receiveScraperJobs(data, status, jqXHR) {
 
@@ -8,7 +9,10 @@ $(document).ready(function(){
         $("#scraperjobs").html(data);
 
         // update the values on page
-        setTimeout(updateScraperJobs, 1000);
+        if (count < 10) {
+            count = count + 1;
+            setTimeout(updateScraperJobs, 1000);
+        }
     }
 
     function updateScraperJobs() {
