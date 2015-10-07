@@ -65,7 +65,6 @@ def index():
     jobs = job.list_all()
     return render_template("index.html", form_page=form_page, form_all=form_all, jobs=jobs)
 
-
 @app.route("/download/<job_id>/<filename>")
 def download_file(job_id, filename):
     job = models.ScraperJob.pull(job_id)
@@ -92,6 +91,15 @@ def status(job_id):
     resp.mimetype = "application/json"
     return resp
 
+@app.route("/list_scraper_jobs")
+@jsonp
+def list_scraper_jobs():
+    job = models.ScraperJob()
+    jobs = job.list_all()
+    ans = render_template("list_scraper_jobs.html", jobs=jobs)
+    resp = make_response(json.dumps(ans))
+    resp.mimetype = "application/json"
+    return resp
 
 @app.route("/docs")
 def docs():
