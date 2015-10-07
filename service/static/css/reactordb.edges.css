@@ -1,3 +1,7 @@
+/**
+ * Styles for the search interface
+ */
+
 .edges-bs3-or-term-selector-selections-process {
     max-height: none !important;
     overflow-y: visible !important;
@@ -76,4 +80,110 @@
 
 .reactordb-reactor-records-operator {
 
+}
+
+
+/**
+ * Styles for the reactor page
+ */
+
+.reactordb-reactor-metadata-name {
+    font-weight: bold;
+    font-size: 150%;
+}
+
+.reactordb-reactor-metadata-location {
+    font-weight: bold;
+    font-size: 150%;
+}
+
+.reactordb-reactor-metadata-status {
+    font-weight: bold;
+    text-align: center;
+}
+
+.reactordb-reactor-metadata-links {
+    padding: 10px;
+}
+
+.reactordb-reactor-metadata-link_header {
+    font-weight: bold;
+    font-size: 120%;
+}
+
+.reactordb-reactor-metadata-img_container {
+    text-align: center;
+}
+
+.reactordb-reactor-metadata-img {
+    width: 100%;
+}
+
+.reactordb-reactor-metadata-table {
+    width: 100%;
+    margin: 10px;
+    border: 1px solid #1e9dd8;
+}
+
+.reactordb-reactor-metadata-table tr {
+    border-bottom: 1px solid #1e9dd8;
+}
+
+.reactordb-reactor-metadata-table td {
+    padding: 5px;
+}
+
+.reactordb-reactor-metadata-table_head {
+    background: #1e9dd8 none repeat scroll 0 0;
+    color: #ffffff;
+}
+
+.reactordb-reactor-metadata-table_key {
+    font-weight: bold;
+}
+
+.reactordb-reactor-page-map {
+    text-align: center;
+}
+
+.reactordb-reactor-operation-title {
+    font-weight: bold;
+    font-size: 130%;
+}
+
+#edges-nvd3-multibar-svg-electricity_supplied {
+    height: 300px;
+}
+
+#edges-nvd3-simple-line-chart-svg-energy_availability_annual {
+    height: 300px;
+}
+
+#edges-nvd3-simple-line-chart-svg-total_electricity {
+    height: 300px;
+}
+
+.edges-bs3-tabular-results-table {
+    width: 100%;
+    margin: 10px;
+    border: 1px solid #1e9dd8;
+}
+
+.edges-bs3-tabular-results-table tr {
+    border-bottom: 1px solid #1e9dd8;
+}
+
+.edges-bs3-tabular-results-table td {
+    padding: 5px;
+}
+
+.edges-bs3-tabular-results-header {
+    background: #1e9dd8 none repeat scroll 0 0;
+    color: #ffffff;
+}
+
+.edges-bs3-tabular-results-cell-year {
+    background: #1e9dd8 none repeat scroll 0 0;
+    color: #ffffff;
+    border-bottom: 1px solid #ffffff;
 }

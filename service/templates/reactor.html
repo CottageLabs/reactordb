@@ -91,10 +91,14 @@ jQuery(document).ready(function($) {
                 var containerClass = edges.css_classes(this.namespace, "container");
                 var searchingClass = edges.css_classes(this.namespace, "searching");
                 var chartClasses = edges.css_classes(this.namespace, "chart");
+                var ohClasses = edges.css_classes(this.namespace, "title");
 
                 // start building the page template
                 var frag = '<div class="' + containerClass + '"><div class="row">';
                 frag += '<div class="col-md-12">';
+
+                // add a title for this section
+                frag += '<span class="' + ohClasses + '">Operation History</span><br>';
 
                 // loading notification (note that the notification implementation is responsible for its own visibility)
                 var loading = edge.category("searching-notification");
@@ -266,6 +270,7 @@ jQuery(document).ready(function($) {
                 var linksClasses = edges.css_classes(this.namespace, "links", this);
                 var linkHeaderClasses = edges.css_classes(this.namespace, "link_header", this);
                 var linkClasses = edges.css_classes(this.namespace, "link", this);
+                var imgContainerClasses = edges.css_classes(this.namespace, "img_container", this);
                 var imgClasses = edges.css_classes(this.namespace, "img", this);
                 var tableClasses = edges.css_classes(this.namespace, "table", this);
                 var tableHeadClasses = edges.css_classes(this.namespace, "table_head", this);
@@ -410,7 +415,7 @@ jQuery(document).ready(function($) {
                                 <div class="col-md-6">_WNNLINKS_</div>\
                             </div>\
                             <div class="row">\
-                                <div class="col-md-12">_IMAGE_</div>\
+                                <div class="col-md-12 ' + imgContainerClasses + '">_IMAGE_</div>\
                             </div>\
                             <div class="row">\
                                 <div class="col-md-4">_DETAILS_</div>\
@@ -481,7 +486,9 @@ jQuery(document).ready(function($) {
                 geoPoint: "reactor.location",
                 category: "map",
                 renderer : edges.google.newMapViewRenderer({
-                    initialZoom : 15
+                    initialZoom : 15,
+                    onNoGeoPoints: "hide",
+                    mapHiddenText: "No location information available for this reactor"
                 })
             }),
             // the standard searching notification
