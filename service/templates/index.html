@@ -47,45 +47,13 @@
         </div>
     </div>
 </div>
-<div class="panel">
-    <h1>Download data</h1>
-    <div class="row">
-        <div class="col-md-11">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Job #</th>
-                        <th>Date started</th>
-                        <th>Status</th>
-                        <th>Type</th>
-                        <th>Download files</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for job in jobs %}
-                        <tr>
-                            <td><a href="/progress/{{job.job_id}}">{{loop.revindex}}</a></td>
-                            <td>{{job.started}}</td>
-                            <td>{{job.status_code}}</td>
-                            <td>{{job.job_type}}</td>
-                            <td>
-                                {% if job.status_code == "complete" %}
-                                    {% for fp, fn in job.filename %}
-                                        <p><a href="/download/{{job.job_id}}/{{fn}}">{{fn}}</a></p>
-                                    {% endfor %}
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+<div class="panel" id="scraperjobs">
+    {% include 'list_scraper_jobs.html' %}
 </div>
 
 {% endblock %}
 
 
 {% block extra_js_bottom %}
-
-{% endblock%}
+<script type="text/javascript" src="{{url_for('static', filename='js/list_scraper_jobs.js')}}"></script>
+{% endblock extra_js_bottom %}
