@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="panel">
+    <h1>PRIS data Upload</h1>
+    <div class="form-group input-lg">
+        <form method="POST" enctype="multipart/form-data" role="form" id="form_upload">
+            {% if msg %}
+            <div class="row">
+                <div class="col-md-11">
+                    <div class="alert alert-success" role="alert">{{msg}}</div>
+                </div>
+            </div>
+            {% endif %}
+            <div class="row">
+                <div class="col-md-11">
+                    <label class="required" for="upload_master">Upload master spreadsheet</label>
+                    <input type="file" class="form-control" style="height:100%;" name="upload_master" id="upload-master">
+                            {% if valid_file_master == False %}
+                             <div style="color: red;">Please upload a valid master CSV file.</div>
+                            {% endif %}
+                </div>
+            </div>
+            <div class="row">&nbsp;</div>
+            <div class="row">
+                <div class="col-md-11">
+                    <label class="required" for="upload_pris">Upload PRIS spreadsheet</label>
+                    <input type="file" class="form-control" style="height:100%;" name="upload_pris" id="upload-pris">
+                            {% if valid_file_pris == False %}
+                             <div style="color: red;">Please upload a valid PRIS CSV file.</div>
+                            {% endif %}
+                </div>
+            </div>
+            <div class="row">&nbsp;</div>
+            <div class="row">
+                <div class="col-md-11">
+                    <label class="required" for="upload_history">Upload operating history spreadsheet</label>
+                    <input type="file" class="form-control" style="height:100%;" name="upload_history" id="upload-history">
+                            {% if valid_file_history == False %}
+                             <div style="color: red;">Please upload a valid operating history CSV file.</div>
+                            {% endif %}
+                </div>
+            </div>
+            <div class="row">&nbsp;</div>
+            <div class="row">
+                <div class="col-md-5">
+                    <br/>
+                    <button type="submit" class="btn btn-default btn-block">Submit</button>
+                </div>
+                <div class="col-md-6">&nbsp;</div>
+            </div>
+        </form>
+     </div>
+</div>
+{% endblock %}
+
+
+{% block extra_js_bottom %}
+
+{% endblock extra_js_bottom %}

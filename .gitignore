@@ -9,6 +9,7 @@ local.cfg
 datadir/*.csv
 service/tests/resources/.~lock.*
 indexdir/*
+uploaddir/*.csv
 
 .idea/
 

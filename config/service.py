@@ -197,3 +197,7 @@ OPERATING_HISTORY_DATA_COLUMNS = OPERATING_HISTORY_HEADER[1:-1]
 
 # Minimum success rate for page scraper
 SUCCESS_RATE = 25
+
+ALLOWED_EXTENSIONS = ['csv']
+
+UPLOAD_DIR = 'uploaddir'
