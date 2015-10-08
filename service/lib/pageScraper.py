@@ -186,7 +186,7 @@ class WNAPageScraper(object):
         self.get_reactor_status()
         self.get_reactor_country()
         self.reactor_details[page_details_id['reactor_name']['label']] = self.reactor_name
-        self.reactor_details[page_details_id['display_name']['label']] = self.reactor_name
+        self.reactor_details[page_details_id['display_name']['label']] = self.reactor_name.replace('-', ' ')
         self.reactor_details[page_details_id['reactor_alternate_name']['label']] = self.reactor_alternate_name
         self.reactor_details[page_details_id['reactor_status']['label']] = self.reactor_status
         self.reactor_details[page_details_id['reactor_country']['label']] = self.reactor_country
