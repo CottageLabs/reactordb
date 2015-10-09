@@ -33,23 +33,35 @@ ELASTIC_SEARCH_EXAMPLE_DOCS = [
 
 QUERY_ROUTE = {
     "query" : {                                 # the URL route at which it is mounted
-        "reactor" : {                             # the URL name for the index type being queried
+        "preview_reactor" : {                             # the URL name for the index type being queried
             "auth" : False,                     # whether the route requires authentication
             "role" : None,                      # if authenticated, what role is required to access the query endpoint
             "filters" : [],            # names of the standard filters to apply to the query
             "dao" : "service.dao.ReactorDAO"       # classpath for DAO which accesses the underlying ES index
         },
-        "operation" : {
+        "preview_operation" : {
             "auth" : False,
             "role" : None,
             "filters" : [],
             "dao" : "service.dao.OperationDAO"
+        },
+        "reactor" : {
+            "auth" : False,
+            "role" : None,
+            "filters" : [],
+            "dao" : "service.dao.PublishedReactorDAO"
+        },
+        "operation" : {
+            "auth" : False,
+            "role" : None,
+            "filters" : [],
+            "dao" : "service.dao.PublishedOperationDAO"
         }
     }
 }
 
-CLIENTJS_REACTOR_ENDPOINT = "/query/reactor"
-CLIENTJS_OPERATION_ENDPOINT = "/query/operation"
+#CLIENTJS_REACTOR_ENDPOINT = "/query/reactor"
+#CLIENTJS_OPERATION_ENDPOINT = "/query/operation"
 
 ESDAO_ROLLING_PLUGINS = {
     "reactor" : "service.dao.ReactorDAO",

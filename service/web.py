@@ -156,9 +156,17 @@ def docs():
 def preview():
     return render_template("preview.html")
 
-@app.route("/reactor/<reactor_id>")
+@app.route("/preview_reactor/<reactor_id>")
 def reactor(reactor_id):
-    return render_template("reactor.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"))
+    return render_template("preview_reactor.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"))
+
+@app.route("/live")
+def live():
+    return render_template("live.html")
+
+@app.route("/reactor/<reactor_id>")
+def live_reactor(reactor_id):
+    return render_template("live_reactor.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"))
 
 # this allows us to override the standard static file handling with our own dynamic version
 @app.route("/static/<path:filename>")
