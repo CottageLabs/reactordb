@@ -7,6 +7,7 @@ import re
 from config.wnaConfig import PRISURL, default_max_pages, sections_scraped, page_details_id, success_rate
 from config.wnaConfig import reactor_details_id, reactor_details_data_dir, reactor_details_header
 from config.wnaConfig import operating_history_header, operating_history_data_columns, operating_history_data_dir
+from config.wnaConfig import reactor_details_process_case
 from config.http import HTTP_RETRY_CODES
 from service.lib.unicodeCSV import UnicodeWriter
 from service import models
@@ -185,6 +186,7 @@ class WNAPageScraper(object):
         self.get_reactor_status()
         self.get_reactor_country()
         self.reactor_details[page_details_id['reactor_name']['label']] = self.reactor_name
+        self.reactor_details[page_details_id['display_name']['label']] = self.reactor_name.replace('-', ' ')
         self.reactor_details[page_details_id['reactor_alternate_name']['label']] = self.reactor_alternate_name
         self.reactor_details[page_details_id['reactor_status']['label']] = self.reactor_status
         self.reactor_details[page_details_id['reactor_country']['label']] = self.reactor_country
@@ -221,6 +223,13 @@ class WNAPageScraper(object):
                     # if no id, use label as key
                     self.reactor_details[reactor_details_id[label]] = value
         self.reactor_details['Owner'] = self.parse_owner(self.reactor_details['Owner'])
+        # Process selected columns to capitalize words
+        for col in reactor_details_process_case:
+            if col in self.reactor_details:
+                if type(self.reactor_details[col]) == list:
+                    self.reactor_details[col] = [val.title() for val in self.reactor_details[col]]
+                else:
+                    self.reactor_details[col] = self.reactor_details[col].title()
         return True
         
     def get_operating_history(self):

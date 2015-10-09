@@ -115,6 +115,7 @@ REACTOR_DETAILS_DATA_DIR = 'datadir'
 
 PAGE_DETAILS_ID = {
     u'reactor_name':          {'id': 'MainContent_MainContent_lblReactorName',   'label': u'Reactor Name'},
+    u'display_name':          {'id': 'MainContent_MainContent_lblReactorName',   'label':u'Display Name'},
     u'reactor_alternate_name': {'id': 'MainContent_MainContent_lblAlternateName', 'label': u'Alternate Name'},
     u'reactor_status':        {'id': 'MainContent_MainContent_lblReactorStatus', 'label': u'Status'},
     u'reactor_country':       {'id': 'MainContent_litCaption',                   'label': u'Location'},
@@ -145,6 +146,7 @@ REACTOR_DETAILS_ID = {
 REACTOR_DETAILS_HEADER = (
     u'Reactor Name',
     u'Alternate Name',
+    u'Display Name',
     u'Location',
     u'Status',
     u'Owner',
@@ -181,8 +183,21 @@ OPERATING_HISTORY_HEADER = (
     u'Load Factor Cumulative [%]',
     u'Comment'
 )
+
+REACTOR_DETAILS_PROCESS_CASE = [
+    u'Display Name',
+    u'Alternate Name',
+    u'Location',
+    u'Owner',
+    u'Operator',
+]
+
 # No reactor name and comment in operating history table
 OPERATING_HISTORY_DATA_COLUMNS = OPERATING_HISTORY_HEADER[1:-1]
 
 # Minimum success rate for page scraper
 SUCCESS_RATE = 25
+
+ALLOWED_EXTENSIONS = ['csv']
+
+UPLOAD_DIR = 'uploaddir'

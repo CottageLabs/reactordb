@@ -1,12 +1,14 @@
 from multiprocessing import Process
 import os
 import json
+import time
 from octopus.core import app, initialise, add_configuration
 from octopus.lib.webapp import jsonp
 from flask import Flask, request, abort, render_template, redirect, make_response, jsonify, send_file, \
     send_from_directory, url_for
 from wtforms import Form, IntegerField, HiddenField, validators
 from service.lib.pageScraper import scrape_all_pages, scrape_page
+from service.lib.importer import import_reactordb
 from service import models
 
 if __name__ == "__main__":
@@ -46,6 +48,11 @@ class ScrapeAllForm(Form):
     prefix = HiddenField('prefix', validators=[])
 
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in app.config["ALLOWED_EXTENSIONS"]
+
+
 @app.route("/", methods=['GET', 'POST'])
 def index():
     # form_page = ScrapePageForm(request.form, prefix="page")
@@ -64,6 +71,7 @@ def index():
     job = models.ScraperJob()
     jobs = job.list_all()
     return render_template("index.html", form_page=form_page, form_all=form_all, jobs=jobs)
+
 
 @app.route("/download/<job_id>/<filename>")
 def download_file(job_id, filename):
@@ -91,6 +99,7 @@ def status(job_id):
     resp.mimetype = "application/json"
     return resp
 
+
 @app.route("/list_scraper_jobs")
 @jsonp
 def list_scraper_jobs():
@@ -100,6 +109,43 @@ def list_scraper_jobs():
     resp = make_response(json.dumps(ans))
     resp.mimetype = "application/json"
     return resp
+
+
+@app.route("/upload", methods=['GET', 'POST'])
+def upload():
+    msg = None
+    valid_file_master = False
+    valid_file_pris = False
+    valid_file_history = False
+    if request.method == "POST":
+        timestr = time.strftime("%Y%m%d-%H%M%S")
+        upload_dir = app.config.get("UPLOAD_DIR")
+        file_master = request.files["upload_master"]
+        if file_master and allowed_file(file_master.filename):
+            # save the file
+            master_path = os.path.join(upload_dir, "%s-%s.csv" % (timestr, 'master'))
+            file_master.save(master_path)
+            valid_file_master = True
+        file_pris = request.files["upload_pris"]
+        if file_pris and allowed_file(file_pris.filename):
+            # save the file
+            pris_path = os.path.join(upload_dir, "%s-%s.csv" % (timestr, 'reactor_details'))
+            file_pris.save(pris_path)
+            valid_file_pris = True
+        file_history = request.files["upload_history"]
+        if file_history and allowed_file(file_history.filename):
+            # save the file
+            history_path = os.path.join(upload_dir, "%s-%s.csv" % (timestr, 'operating_history'))
+            file_history.save(history_path)
+            valid_file_history = True
+        if valid_file_master and valid_file_pris and valid_file_history:
+            msg = "Data import from spreadsheets started successfully"
+            # Start multiprocess
+            Process(target=import_reactordb, args=(master_path, pris_path, history_path)).start()
+
+    return render_template("upload_csv.html", msg=msg, valid_file_master=valid_file_master, \
+                           valid_file_pris=valid_file_pris, valid_file_history=valid_file_history)
+
 
 @app.route("/docs")
 def docs():
@@ -128,6 +174,7 @@ app.register_blueprint(query, url_prefix="/query")
 
 from octopus.modules.es.rolling import blueprint as rolling
 app.register_blueprint(rolling, url_prefix="/rolling")
+
 
 @app.errorhandler(404)
 def page_not_found(e):
