@@ -2,6 +2,16 @@
 
 {% block content %}
 
+<div class="row">
+    <div class="col-md-12" style="margin-bottom: 30px">
+        <form class="form-inline pull-right">
+            <button id="publish" class="form-control btn btn-success" disabled>Publish this data to Live</button>
+            <button id="rollback" class="form-control btn btn-danger" disabled>Rollback Live to previous version</button>
+        </form>
+        <div id="current-rollout-status">Checking rollout status ...</div>
+    </div>
+</div>
+
 <div id="reactor-preview"></div>
 
 {% endblock %}
@@ -21,6 +31,119 @@
 jQuery(document).ready(function($) {
 
     var BASE_URL = current_scheme + "//" + current_domain;
+
+    ////////////////////////////////////////////
+    // this is the control for the publish lifecycle
+    // and needs only to appear on this page
+
+    function updateStatus(data) {
+        var info = "Currently viewing:&nbsp;";
+
+        var reactor_index = false;
+        var operation_index = false;
+
+        // if there's no "next" we're looking at the live database,
+        // otherwise we're looking at the preview
+        if (!data.reactor.next.cfg && !data.reactor.next.file) {
+            info += "Live Database (no current Preview available)";
+            reactor_index = data.reactor.curr.cfg ? data.reactor.curr.cfg : data.reactor.curr.file;
+        } else {
+            info += "Preview Database";
+            reactor_index = data.reactor.next.cfg ?  data.reactor.next.cfg : data.reactor.next.file;
+        }
+
+        // record which reactor index we're looking at
+        info += "<br>Reactor Index:&nbsp;" + reactor_index;
+
+        // now find out which operation index we're looking at
+        if (data.operation.next.cfg || data.operation.next.file) {
+            operation_index = data.operation.next.cfg ? data.operation.next.cfg : data.operation.next.file;
+        } else {
+            operation_index = data.operation.curr.cfg ? data.operation.curr.cfg : data.operation.curr.file;
+        }
+        info += "<br>Operation Index:&nbsp;" + operation_index;
+
+        $("#current-rollout-status").html(info);
+    }
+
+    function refresh() {
+        $.ajax({
+            type: "GET",
+            url: BASE_URL + "/rolling/refresh",
+            success: requestStatus
+        });
+    }
+
+    function rolloutStatus(data) {
+        if (data.reactor.next.cfg !== data.reactor.next.file) {
+            refresh();
+        } else if (data.reactor.curr.cfg !== data.reactor.curr.file) {
+            refresh();
+        } else if (data.operation.next.cfg !== data.operation.next.file) {
+            refresh();
+        } else if (data.operation.curr.cfg !== data.operation.curr.file) {
+            refresh();
+        } else {
+            updateStatus(data);
+            rebindButtons(data);
+            e.doQuery();
+        }
+    }
+
+    function requestStatus() {
+        // check the rollout status
+        $.ajax({
+            type: "GET",
+            dataType: "jsonp",
+            url: BASE_URL + "/rolling/status",
+            success: rolloutStatus
+        });
+    }
+
+    function rebindButtons(data) {
+        var hasNext = data.reactor.next.cfg || data.reactor.next.file;
+        var hasPrev = data.reactor.prev.cfg || data.reactor.prev.file;
+
+        if (hasNext) {
+            $("#publish").removeAttr("disabled").unbind("click").on("click", function (event) {
+                event.preventDefault();
+                var pub = confirm("Are you sure you want to publish this dataset?\n\nIt will become visible to the public in its current state.");
+                if (!pub) { return }
+                var postdata = JSON.stringify({types: ["reactor", "operation"]});
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: BASE_URL + "/rolling/publish",
+                    data : postdata,
+                    success: requestStatus
+                })
+            });
+        } else {
+            $("#publish").unbind("click").attr("disabled", "disabled");
+        }
+
+        if (hasPrev) {
+            $("#rollback").removeAttr("disabled").unbind("click").on("click", function (event) {
+                event.preventDefault();
+                var roll = confirm("Are you sure you want to rollback this dataset?\n\nThe old version will become visible to the public, the most recent Preview data will be destroyed, and the current Live will revert back to Preview status.");
+                if (!roll) { return }
+                var postdata = JSON.stringify({types: ["reactor", "operation"]});
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: BASE_URL + "/rolling/rollback",
+                    data : postdata,
+                    success: requestStatus
+                })
+            });
+        } else {
+            $("#rollback").unbind("click").attr("disabled", "disabled");
+        }
+    }
+
+    //////////////////////////////////////////////
+
+
 
     var reactordb = {
         newReactorRecords : function(params) {
@@ -366,6 +489,10 @@ jQuery(document).ready(function($) {
             })
         ]
     });
+
+
+    // do this last so everything is in scope
+    requestStatus();
 
 });
 </script>
