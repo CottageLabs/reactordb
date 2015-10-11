@@ -42,6 +42,7 @@ class MasterSheet(clcsv.SheetWrapper):
         u"Additional Info" : "additional_info",
         u"Country Area" : "country_area",
         u"Image" : "image",
+        u"Image Label" : "image_label",
         u'Latitude' : "latitude",
         u'Longitude' : "longitude",
         u"Project Start" : "project_start",

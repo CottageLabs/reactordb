@@ -1,5 +1,9 @@
 from service.models import MasterSheet, PRISSheet, Reactor, OperatingHistorySheet, Operation
 
+STATUS_MAP = {
+    "Operational" : "Operable"
+}
+
 def import_reactordb(master_path, pris_path, history_path):
 
     # first thing to do is drop the preview indexes ("next"), so the following import
@@ -53,6 +57,9 @@ def import_reactordb(master_path, pris_path, history_path):
         for k, v in obj.items():
             if v == "-":
                 del obj[k]
+
+        # translate the status to the internally preferred value if necessary
+        obj["status"] = STATUS_MAP.get(obj.get("status"), obj.get("status"))
 
         # make and populate a reactor object, then save it
         r = Reactor()

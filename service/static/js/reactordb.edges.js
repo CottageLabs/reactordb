@@ -16,7 +16,7 @@ var reactordb = {
             selector: selector,
             template: edges.bs3.newFacetview(),
             search_url: search_url,
-            manageUrl : false,
+            manageUrl : true,
             openingQuery : es.newQuery({
                 sort : {field: "index.sort_name.exact", order: "asc"},
                 size: 25
@@ -188,19 +188,28 @@ var reactordb = {
         var current_scheme = window.location.protocol;
         if (!params) { params = {} }
 
-        var record_selector = params.record_selector || "#reactor-record";
+        // pull all of the important information out of the params
         var reactor_index = params.reactor_index || "reactor";
         var reactor_search_url = params.reactor_search_url || current_scheme + "//" + current_domain + "/query/" + reactor_index + "/_search";
 
-        var operation_selector = params.operation_selector || "#reactor-operation";
         var operation_index = params.operation_index || "operation";
         var operation_search_url = params.operation_search_url || current_scheme + "//" + current_domain + "/query/" + operation_index + "/_search";
 
         var id_regex = params.id_regex || new RegExp("reactor\/(.+)");
         var reactor_name = params.reactor_name || id_regex.exec(window.location.pathname)[1];
 
+        // make the frame for both of the edges
+        var selector = params.selector || "#reactor-page";
+        $("#reactor-page").html('<div id="reactor-record"></div>\
+            <div id="reactor-operation"></div>\
+            <div id="reactor-links"><div id="reactor_links"></div></div>'
+        );
+
+        // create the 3 edges ...
+
+        // first for the main body of reactor information
         var e1 = edges.newEdge({
-            selector: record_selector,
+            selector: "#reactor-record",
             template: reactordb.newReactorPageTemplate(),
             search_url: reactor_search_url,
             manageUrl : false,
@@ -238,8 +247,9 @@ var reactordb = {
             ]
         });
 
+        // second for all the operation history
         var e2 = edges.newEdge({
-            selector: operation_selector,
+            selector: "#reactor-operation",
             template: reactordb.newReactorOperationTemplate(),
             search_url: operation_search_url,
             manageUrl : false,
@@ -256,17 +266,26 @@ var reactordb = {
                 // electricity supplied bar chart
                 edges.newMultibar({
                     id: "electricity_supplied",
+                    display: "<h3>Electricty Supplied (MWe)</h3>",
                     category: "chart",
                     dataFunction : edges.ChartDataFunctions.recordsXY({
                         key: "Electricity Supplied",
                         x: "year",
                         y: "electricity_supplied",
                         y_default: 0
+                    }),
+                    renderer : edges.nvd3.newMultibarRenderer({
+                        barColor : ["#1e9dd8"],
+                        yTickFormat : ",.0f",
+                        showLegend: false,
+                        xAxisLabel: "Year",
+                        yAxisLabel: "Electricty Supplied (MWe)"
                     })
                 }),
                 // annual energy availability factor
                 edges.newSimpleLineChart({
                     id : "energy_availability_annual",
+                    display: "<h3>Energy Availability Factor (%)</h3>",
                     category: "chart",
                     dataFunction : edges.ChartDataFunctions.recordsXY({
                         key: "Energy Availability Factor",
@@ -275,12 +294,19 @@ var reactordb = {
                         y_default: 0
                     }),
                     renderer : edges.nvd3.newSimpleLineChartRenderer({
-                        xTickFormat: ".0f"
+                        xTickFormat: ".0f",
+                        lineColor : ["#1e9dd8"],
+                        includeOnY: [0],
+                        yTickFormat : ",.0f",
+                        showLegend: false,
+                        xAxisLabel: "Year",
+                        yAxisLabel: "Energy Availability Factor (%)"
                     })
                 }),
                 // total electricity supplied
                 edges.newSimpleLineChart({
                     id : "total_electricity",
+                    display: "<h3>Total Electricity Supplied (MWe)</h3>",
                     category: "chart",
                     dataFunction : edges.ChartDataFunctions.cumulativeXY({
                         key: "Total Electricity Supplied",
@@ -289,7 +315,13 @@ var reactordb = {
                         y_default: 0
                     }),
                     renderer : edges.nvd3.newSimpleLineChartRenderer({
-                        xTickFormat: ".0f"
+                        xTickFormat: ".0f",
+                        lineColor : ["#1e9dd8"],
+                        includeOnY: [0],
+                        yTickFormat : ",.0f",
+                        showLegend: false,
+                        xAxisLabel: "Year",
+                        yAxisLabel: "Total Electricity Supplied (MWe)"
                     })
                 }),
                 // a table of all the data
@@ -299,14 +331,14 @@ var reactordb = {
                     renderer : edges.bs3.newTabularResultsRenderer({
                         fieldDisplay : [
                             {field: "year", display: "Year"},
-                            {field: "reference_unit_power", display: "Reference Unit Power (MW)"},
+                            {field: "reference_unit_power", display: "Reference Unit Power (MWe)"},
                             {field: "annual_time_online", display: "Annual Time Online (Hours)"},
                             {field: "electricity_supplied", display: "Electricity Supplied (MWe)"},
-                            {field: "operation_factor", display: "Operation Factor (?)"},
-                            {field: "energy_availability_factor_annual", display: "Energy Availability Annual (?)"},
-                            {field: "energy_availability_factor_cumulative", display: "Energy Availability Cumulative (?)"},
-                            {field: "load_factor_annual", display: "Load Factor Annual (?)"},
-                            {field: "load_factor_cumulative", display: "Load Factor Cumulative (?)"}
+                            {field: "operation_factor", display: "Operation Factor (%)"},
+                            {field: "energy_availability_factor_annual", display: "Energy Availability Annual (%)"},
+                            {field: "energy_availability_factor_cumulative", display: "Energy Availability Cumulative (%)"},
+                            {field: "load_factor_annual", display: "Load Factor Annual (%)"},
+                            {field: "load_factor_cumulative", display: "Load Factor Cumulative (%)"}
                         ]
                     })
                 }),
@@ -322,8 +354,29 @@ var reactordb = {
             ]
         });
 
-        reactordb.activeEdges[record_selector] = e1;
-        reactordb.activeEdges[operation_selector] = e2;
+        // third for the links at the bottom
+        var e3 = edges.newEdge({
+            selector: "#reactor-links",
+            search_url: reactor_search_url,
+            manageUrl : false,
+            baseQuery : es.newQuery({
+                must : [
+                    es.newTermFilter({field: "id.exact", value: reactor_name})
+                ],
+                size: 1
+            }),
+            components : [
+                // the reactor metadata display component
+                reactordb.newReactorLinks({
+                    id: "reactor_links",
+                    renderer: reactordb.newReactorLinksRenderer({})
+                })
+            ]
+        });
+
+        reactordb.activeEdges["#reactor-record"] = e1;
+        reactordb.activeEdges["#reactor-operation"] = e2;
+        reactordb.activeEdges["#reactor-links"] = e3;
     },
 
     newReactorRecords: function (params) {
@@ -544,7 +597,7 @@ var reactordb = {
             // insert the frame within which the map will go
             var maps = edge.category("map");
             if (maps.length > 0) {
-                frag += '<div class="row"><div class="col-md-12"><div class="' + mapClass + '"><div id="' + maps[0].id + '"></div></div></div></div>';
+                frag += '<div class="row"><div class="col-md-10 col-sm-11"><div class="' + mapClass + '"><div id="' + maps[0].id + '"></div></div></div></div>';
             }
 
             // close off all the big containers and return
@@ -571,13 +624,14 @@ var reactordb = {
             var searchingClass = edges.css_classes(this.namespace, "searching");
             var chartClasses = edges.css_classes(this.namespace, "chart");
             var ohClasses = edges.css_classes(this.namespace, "title");
+            var prisClasses = edges.css_classes(this.namespace, "pris");
 
             // start building the page template
             var frag = '<div class="' + containerClass + '"><div class="row">';
             frag += '<div class="col-md-12">';
 
             // add a title for this section
-            frag += '<span class="' + ohClasses + '">Operation History</span><br>';
+            frag += '<h2><span class="' + ohClasses + '">Operational History</span></h2><br>';
 
             // loading notification (note that the notification implementation is responsible for its own visibility)
             var loading = edge.category("searching-notification");
@@ -592,11 +646,88 @@ var reactordb = {
                 frag += '<div class="row"><div class="col-md-12"><div class="' + chartClasses + '" dir="auto"><div id="' + chart.id + '"></div></div></div></div>';
             }
 
+            // insert the back-reference to the PRIS data
+            frag += '<div class="row"><div class="col-md-12"><div class="pull-right '+ prisClasses +'">Source: Operating details - <a href="http://www.iaea.org/pris/">IAEA PRIS</a></div></div></div>'
+
             // close off all the big containers and return
             frag += '</div></div></div>';
 
             edge.context.html(frag);
         };
+    },
+
+    newReactorLinks : function(params) {
+        if (!params) { params = {} }
+        reactordb.ReactorLinks.prototype = edges.newComponent(params);
+        return new reactordb.ReactorLinks(params);
+    },
+    ReactorLinks : function(params) {
+        this.reactor = false;
+
+        this.synchronise = function() {
+            this.reactor = false;
+            if (this.edge.result) {
+                var results = this.edge.result.results();
+                if (results.length == 0) {
+                    return
+                }
+                this.reactor = results[0];
+            }
+        }
+    },
+
+    newReactorLinksRenderer : function(params) {
+        if (!params) { params = {} }
+        reactordb.ReactorLinksRenderer.prototype = edges.newRenderer(params);
+        return new reactordb.ReactorLinksRenderer(params);
+    },
+    ReactorLinksRenderer : function(params) {
+
+        this.namespace = "reactordb-reactor-links";
+
+        this.draw = function () {
+            if (!this.component.reactor) {
+                this.component.context.html("");
+                return
+            }
+
+            var links = edges.objVal("reactor.links", this.component.reactor);
+
+            var linksClasses = edges.css_classes(this.namespace, "links", this);
+            var linkHeaderClasses = edges.css_classes(this.namespace, "link_header", this);
+            var linkClasses = edges.css_classes(this.namespace, "link", this);
+
+            // prep the wna and wnn links
+            var wnalinks = '<div class="' + linksClasses + '"><span class="' + linkHeaderClasses + '">See Also</span><br>_LINKS_</div>';
+            var wnnlinks = '<div class="' + linksClasses + '"><span class="' + linkHeaderClasses + '">Related News</span><br>_LINKS_</div>';
+            var wnasub = "";
+            var wnnsub = "";
+            for (var i = 0; i < links.length; i++) {
+                var link = links[i];
+                if (link.type === "wnn") {
+                    wnnsub += '<a href="' + link.url + '" class="' + linkClasses + '">' + link.text + '</a><br>';
+                } else if (link.type === "wna") {
+                    wnasub += '<a href="' + link.url + '" class="' + linkClasses + '">' + link.text + '</a><br>';
+                }
+            }
+            if (wnasub === "") {
+                wnasub = "No current links";
+            }
+            if (wnnsub === "") {
+                wnnsub = "No current links";
+            }
+            wnalinks = wnalinks.replace(/_LINKS_/g, wnasub);
+            wnnlinks = wnnlinks.replace(/_LINKS_/g, wnnsub);
+
+            var frag = '<div class="row">\
+                            <div class="col-md-6">_WNALINKS_</div>\
+                            <div class="col-md-6">_WNNLINKS_</div>\
+                        </div>';
+            frag = frag.replace(/_WNALINKS_/g, wnalinks)
+                        .replace(/_WNNLINKS_/g, wnnlinks);
+
+            this.component.context.html(frag);
+        }
     },
 
     newReactorMetadata : function(params) {
@@ -668,12 +799,11 @@ var reactordb = {
             var country = this._getValue("reactor.country", this.component.reactor);
             var status = this._getValue("reactor.status", this.component.reactor);
             var image = this._getValue("reactor.image", this.component.reactor);
+            var image_label = this._getValue("reactor.image_label", this.component.reactor);
 
             var info = this._getValue("reactor.additional_info", this.component.reactor, "");
-            var links = this._getValue("reactor.links", this.component.reactor);
 
             var site = this._getValue("reactor.site_name", this.component.reactor);
-            var type = this._getValue("reactor.type", this.component.reactor);
             var process = this._getValue("reactor.process", this.component.reactor);
             var vendor = this._getValue("reactor.vendor", this.component.reactor);
             var owners = this._getValue("reactor.owner", this.component.reactor);
@@ -724,11 +854,11 @@ var reactordb = {
             // now prep all the relevant values for html rendering
             reactor_name = edges.escapeHtml(reactor_name);
             var escaped_url = edges.escapeHtml(reactor_url);
+            image_label = converter.makeHtml(image_label);
             info = converter.makeHtml(info);
             country = edges.escapeHtml(country);
             status = edges.escapeHtml(status);
             site = edges.escapeHtml(site);
-            type = edges.escapeHtml(type);
             process = edges.escapeHtml(process);
             expandedProcess = edges.escapeHtml(expandedProcess);
             vendor = edges.escapeHtml(vendor);
@@ -746,11 +876,9 @@ var reactordb = {
             var urlClasses = edges.css_classes(this.namespace, "url", this);
             var infoClasses = edges.css_classes(this.namespace, "info", this);
             var statusClasses = edges.css_classes(this.namespace, "status", this);
-            var linksClasses = edges.css_classes(this.namespace, "links", this);
-            var linkHeaderClasses = edges.css_classes(this.namespace, "link_header", this);
-            var linkClasses = edges.css_classes(this.namespace, "link", this);
             var imgContainerClasses = edges.css_classes(this.namespace, "img_container", this);
             var imgClasses = edges.css_classes(this.namespace, "img", this);
+            var imgLabelClasses = edges.css_classes(this.namespace, "imglabel", this);
             var tableClasses = edges.css_classes(this.namespace, "table", this);
             var tableHeadClasses = edges.css_classes(this.namespace, "table_head", this);
             var tableKeyClasses = edges.css_classes(this.namespace, "table_key", this);
@@ -761,8 +889,8 @@ var reactordb = {
             if (reactor_url) {
                 url = '<a href="' + reactor_url + '" class="' + urlClasses + '">' + escaped_url + '</a><br>';
             }
-            var highlight = '<span class="' + nameClasses + '">_NAME_</span>,&nbsp;\
-                                <span class="' + locationClasses + '">_COUNTRY_</span><br>\
+            var highlight = '<h1><span class="' + nameClasses + '">_NAME_</span>,&nbsp;\
+                                <span class="' + locationClasses + '">_COUNTRY_</span></h1><br>\
                                 _URL_\
                                 <p class="' + infoClasses + '">_ADDITIONALINFO_</p>';
             highlight = highlight.replace(/_NAME_/g, reactor_name)
@@ -774,32 +902,13 @@ var reactordb = {
             var alertType = status in this.statusMap ? this.statusMap[status] : "success";
             var status_box = '<div class="alert alert-' + alertType + ' ' + statusClasses + '">' + status + '</div>';
 
-            // prep the wna and wnn links
-            var wnalinks = '<div class="' + linksClasses + '"><span class="' + linkHeaderClasses + '">Important Pages</span><br>_LINKS_</div>';
-            var wnnlinks = '<div class="' + linksClasses + '"><span class="' + linkHeaderClasses + '">News</span><br>_LINKS_</div>';
-            var wnasub = "";
-            var wnnsub = "";
-            for (var i = 0; i < links.length; i++) {
-                var link = links[i];
-                if (link.type === "wnn") {
-                    wnnsub += '<a href="' + link.url + '" class="' + linkClasses + '">' + link.text + '</a><br>';
-                } else if (link.type === "wna") {
-                    wnasub += '<a href="' + link.url + '" class="' + linkClasses + '">' + link.text + '</a><br>';
-                }
-            }
-            if (wnasub === "") {
-                wnasub = "No current links";
-            }
-            if (wnnsub === "") {
-                wnnsub = "No current links";
-            }
-            wnalinks = wnalinks.replace(/_LINKS_/g, wnasub);
-            wnnlinks = wnnlinks.replace(/_LINKS_/g, wnnsub);
-
             // sort the image out
-            var img = "No image available for this reactor";
+            var img = "";
             if (image) {
-                var img = '<img src="' + image + '" class="' + imgClasses + '">';
+                var img = '<img src="' + image + '" class="' + imgClasses + '"><br>';
+                if (image_label) {
+                    img += '<span class="' + imgLabelClasses + '">' + image_label + "</span>";
+                }
             }
 
             // table of details
@@ -808,24 +917,21 @@ var reactordb = {
             if (site) {
                 detailsRows += '<tr><td class="' + tableKeyClasses + '">Site Name</td><td class="' + tableValClasses + '">' + site + '</td></tr>';
             }
-            if (type) {
-                detailsRows += '<tr><td class="' + tableKeyClasses + '">Reactor Type</td><td class="' + tableValClasses + '">' + type + '</td></tr>';
-            }
             if (process) {
                 if (expandedProcess === "") {
-                    detailsRows += '<tr><td class="' + tableKeyClasses + '">Process</td><td class="' + tableValClasses + '">' + process + '</td></tr>';
+                    detailsRows += '<tr><td class="' + tableKeyClasses + '">Reactor Type</td><td class="' + tableValClasses + '">' + process + '</td></tr>';
                 } else {
                     detailsRows += '<tr><td class="' + tableKeyClasses + '">Reactor Type</td><td class="' + tableValClasses + '">' + expandedProcess + ' (' + process + ')</td></tr>';
                 }
+            }
+            if (model) {
+                detailsRows += '<tr><td class="' + tableKeyClasses + '">Model</td><td class="' + tableValClasses + '">' + model + '</td></tr>';
             }
             if (vendor) {
                 detailsRows += '<tr><td class="' + tableKeyClasses + '">Vendor</td><td class="' + tableValClasses + '">' + vendor + '</td></tr>';
             }
             if (owner) {
                 detailsRows += '<tr><td class="' + tableKeyClasses + '">Owner</td><td class="' + tableValClasses + '">' + owner + '</td></tr>';
-            }
-            if (model) {
-                detailsRows += '<tr><td class="' + tableKeyClasses + '">Model</td><td class="' + tableValClasses + '">' + model + '</td></tr>';
             }
             if (operator) {
                 detailsRows += '<tr><td class="' + tableKeyClasses + '">Operator</td><td class="' + tableValClasses + '">' + operator + '</td></tr>';
@@ -868,7 +974,7 @@ var reactordb = {
             timeline = timeline.replace(/_ROWS_/g, timelineRows);
 
             // table of numbers
-            var numbers = '<table class="' + tableClasses + '"><thead><tr><td colspan="2" class="' + tableHeadClasses + '">Performance</td></tr></thead><tbody>_ROWS_</tbody></table>';
+            var numbers = '<table class="' + tableClasses + '"><thead><tr><td colspan="2" class="' + tableHeadClasses + '">Specification</td></tr></thead><tbody>_ROWS_</tbody></table>';
             var numbersRows = "";
             if (capacity_net) {
                 numbersRows += '<tr><td class="' + tableKeyClasses + '">Capacity Net</td><td class="' + tableValClasses + '">' + capacity_net + ' MWe</td></tr>';
@@ -890,11 +996,7 @@ var reactordb = {
                             <div class="col-md-3">_STATUS_</div>\
                         </div>\
                         <div class="row">\
-                            <div class="col-md-6">_WNALINKS_</div>\
-                            <div class="col-md-6">_WNNLINKS_</div>\
-                        </div>\
-                        <div class="row">\
-                            <div class="col-md-12 ' + imgContainerClasses + '">_IMAGE_</div>\
+                            <div class="col-md-8 col-sm-12' + imgContainerClasses + '">_IMAGE_</div>\
                         </div>\
                         <div class="row">\
                             <div class="col-md-4">_DETAILS_</div>\
@@ -904,8 +1006,6 @@ var reactordb = {
 
             frag = frag.replace(/_HIGHLIGHT_/g, highlight)
                         .replace(/_STATUS_/g, status_box)
-                        .replace(/_WNALINKS_/g, wnalinks)
-                        .replace(/_WNNLINKS_/g, wnnlinks)
                         .replace(/_IMAGE_/g, img)
                         .replace(/_DETAILS_/g, details)
                         .replace(/_DATES_/g, timeline)

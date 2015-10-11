@@ -88,13 +88,13 @@
  */
 
 .reactordb-reactor-metadata-name {
-    font-weight: bold;
-    font-size: 150%;
+    /*font-weight: bold;*/
+    /*font-size: 150%;*/
 }
 
 .reactordb-reactor-metadata-location {
-    font-weight: bold;
-    font-size: 150%;
+    /*font-weight: bold;*/
+    /*font-size: 150%;*/
 }
 
 .reactordb-reactor-metadata-status {
@@ -102,11 +102,11 @@
     text-align: center;
 }
 
-.reactordb-reactor-metadata-links {
-    padding: 10px;
+.reactordb-reactor-links-links {
+
 }
 
-.reactordb-reactor-metadata-link_header {
+.reactordb-reactor-links-link_header {
     font-weight: bold;
     font-size: 120%;
 }
@@ -121,7 +121,8 @@
 
 .reactordb-reactor-metadata-table {
     width: 100%;
-    margin: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
     border: 1px solid #1e9dd8;
 }
 
@@ -165,7 +166,8 @@
 
 .edges-bs3-tabular-results-table {
     width: 100%;
-    margin: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
     border: 1px solid #1e9dd8;
 }
 

@@ -235,6 +235,7 @@ class Reactor(dataobj.DataObj, ReactorDAO):
             "first_grid_connection" : ("reactor.first_grid_connection", None),
             "gross_capacity" : ("reactor.gross_capacity", None),
             "image" : ("reactor.image", None),
+            "image_label" : ("reactor.image_label", None),
             "latitude" : ("reactor.location.lat", None),
             "longitude" : ("reactor.location.lon", None),
             "longterm_shutdown" : ("reactor.longterm_shutdown", None),

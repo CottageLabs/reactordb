@@ -13,6 +13,7 @@
         "alternative_name" : "<alternative name for this reactor>",
         "url" : "<reactor website>",
         "image" : "<url for image of reactor>",
+        "image_label" : "<label to go alongisde image - can be markdown>",
         "status" : "<operational status of the reactor at this time>",
         
         "site_name" : "<name of the site>",
