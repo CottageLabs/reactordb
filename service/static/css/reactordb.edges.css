@@ -148,8 +148,8 @@
 }
 
 .reactordb-reactor-operation-title {
-    font-weight: bold;
-    font-size: 130%;
+    /*font-weight: bold;*/
+    /*font-size: 130%;*/
 }
 
 #edges-nvd3-multibar-svg-electricity_supplied {
