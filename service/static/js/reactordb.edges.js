@@ -275,6 +275,7 @@ var reactordb = {
                         y_default: 0
                     }),
                     renderer : edges.nvd3.newMultibarRenderer({
+                        xTickFormat: ".0f",
                         barColor : ["#1e9dd8"],
                         yTickFormat : ",.0f",
                         showLegend: false,
