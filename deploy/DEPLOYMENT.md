@@ -15,3 +15,6 @@ This is a Python app running on an Elasticsearch datastore back-end.
 - Dedicated WSGI web server in production. gunicorn (pip install gunicorn) is a common choice.
 - Finally, something to respond to HTTP requests is needed. A recent-ish version of nginx forwarding locally to gunicorn is again very common though Apache can be used as well - just forward to 127.0.0.1:5050 (or whatever the gunicorn port has been set to when running the app)
 
+# Things to customise
+
+1. user under which the app will run in supervisor config
