@@ -699,8 +699,8 @@ var reactordb = {
             var linkClasses = edges.css_classes(this.namespace, "link", this);
 
             // prep the wna and wnn links
-            var wnalinks = '<div class="' + linksClasses + '"><span class="' + linkHeaderClasses + '">See Also</span><br>_LINKS_</div>';
-            var wnnlinks = '<div class="' + linksClasses + '"><span class="' + linkHeaderClasses + '">Related News</span><br>_LINKS_</div>';
+            var wnalinks = '<div class="' + linksClasses + '"><hr/><h1><span class="' + linkHeaderClasses + '">See Also</span></h1><h3>_LINKS_</h3></div>';
+            var wnnlinks = '<div class="' + linksClasses + '"><hr/><h1><span class="' + linkHeaderClasses + '">Related News</span></h1><h3>_LINKS_</h3></div>';
             var wnasub = "";
             var wnnsub = "";
             for (var i = 0; i < links.length; i++) {
@@ -721,8 +721,8 @@ var reactordb = {
             wnnlinks = wnnlinks.replace(/_LINKS_/g, wnnsub);
 
             var frag = '<div class="row">\
-                            <div class="col-md-6">_WNALINKS_</div>\
-                            <div class="col-md-6">_WNNLINKS_</div>\
+                            <div class="col-md-12">_WNALINKS_</div>\
+                            <div class="col-md-12">_WNNLINKS_</div>\
                         </div>';
             frag = frag.replace(/_WNALINKS_/g, wnalinks)
                         .replace(/_WNNLINKS_/g, wnnlinks);
@@ -911,7 +911,6 @@ var reactordb = {
                     img += '<span class="' + imgLabelClasses + '">' + image_label + "</span>";
                 }
             }
-
             // table of details
             var details = '<table class="' + tableClasses + '"><thead><tr><td colspan="2" class="' + tableHeadClasses + '">Details</td></tr></thead><tbody>_ROWS_</tbody></table>';
             var detailsRows = "";
