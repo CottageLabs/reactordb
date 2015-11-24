@@ -9,7 +9,7 @@ setup(
         "esprit",
         "Flask",
         "beautifulsoup4"
-    ],
+    ]  + (["setproctitle", "gunicorn"] if "linux" in sys.platform else []),
     url = 'http://cottagelabs.com/',
     author = 'Cottage Labs',
     author_email = 'us@cottagelabs.com',
