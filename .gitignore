@@ -8,7 +8,10 @@ dist/*
 local.cfg
 datadir/*.csv
 service/tests/resources/.~lock.*
-indexdir/*
+indexdir/operation/curr
+indexdir/operation/prev
+indexdir/reactor/curr
+indexdir/reactor/prev
 uploaddir/*.csv
 
 .idea/
