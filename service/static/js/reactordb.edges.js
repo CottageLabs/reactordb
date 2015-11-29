@@ -598,7 +598,7 @@ var reactordb = {
             // insert the frame within which the map will go
             var maps = edge.category("map");
             if (maps.length > 0) {
-                frag += '<div class="row"><div class="col-md-10 col-sm-11"><div class="' + mapClass + '"><div id="' + maps[0].id + '"></div></div></div></div>';
+                frag += '<div class="row"><div class="col-md-8 col-sm-9"><div class="' + mapClass + '"><div id="' + maps[0].id + '"></div></div></div></div>';
             }
 
             // close off all the big containers and return
@@ -996,7 +996,7 @@ var reactordb = {
                             <div class="col-md-3">_STATUS_</div>\
                         </div>\
                         <div class="row">\
-                            <div class="col-md-8 col-sm-12' + imgContainerClasses + '">_IMAGE_</div>\
+                            <div class="col-md-4 col-sm-8' + imgContainerClasses + '">_IMAGE_</div>\
                         </div>\
                         <div class="row">\
                             <div class="col-md-4">_DETAILS_</div>\
