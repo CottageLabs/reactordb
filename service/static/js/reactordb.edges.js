@@ -914,9 +914,9 @@ var reactordb = {
             // table of details
             var details = '<table class="' + tableClasses + '"><thead><tr><td colspan="2" class="' + tableHeadClasses + '">Details</td></tr></thead><tbody>_ROWS_</tbody></table>';
             var detailsRows = "";
-            if (site) {
-                detailsRows += '<tr><td class="' + tableKeyClasses + '">Site Name</td><td class="' + tableValClasses + '">' + site + '</td></tr>';
-            }
+            //if (site) {
+            //    detailsRows += '<tr><td class="' + tableKeyClasses + '">Site Name</td><td class="' + tableValClasses + '">' + site + '</td></tr>';
+            //}
             if (process) {
                 if (expandedProcess === "") {
                     detailsRows += '<tr><td class="' + tableKeyClasses + '">Reactor Type</td><td class="' + tableValClasses + '">' + process + '</td></tr>';
