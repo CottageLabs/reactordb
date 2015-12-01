@@ -890,7 +890,7 @@ var reactordb = {
             if (reactor_url) {
                 url = '<a href="' + reactor_url + '" class="' + urlClasses + '">' + escaped_url + '</a><br>';
             }
-            var highlight = '<h1><span class="' + nameClasses + '">_NAME_</span>,&nbsp;\
+            var highlight = '<h1><span class="' + nameClasses + '">_NAME_</span>,\
                                 <span class="' + locationClasses + '">_COUNTRY_</span></h1><br>\
                                 _URL_\
                                 <p class="' + infoClasses + '">_ADDITIONALINFO_</p>';
