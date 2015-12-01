@@ -133,6 +133,7 @@ class PRISSheet(clcsv.SheetWrapper):
         # main identifying field
         u'Reactor Name' : "reactor_name",
         u"Alternate Name" : "alternate_name",
+        u'Display Name' : "wna_name",
         u"Location" : "country",
         u"Status" : "status",
         u"Owner" : "owner",
@@ -205,7 +206,6 @@ class OperatingHistorySheet(clcsv.SheetWrapper):
         u"Energy Availability Factor Cumulative [%]" : "energy_availability_factor_cumulative",
         u"Load Factor Annual [%]" : "load_factor_annual",
         u"Load Factor Cumulative [%]" : "load_factor_cumulative",
-
         u"Comment" : "comment"
     }
 

@@ -39,11 +39,6 @@ def import_reactordb(master_path, pris_path, history_path):
         # use the reactor name as the id too
         obj["id"] = obj["reactor_name"]
 
-        # overwrite the reactor name if an wna_name has been provided
-        if obj.get("wna_name", "") != "":
-            obj["reactor_name"] = obj["wna_name"]
-            del obj["wna_name"]
-
         # now write the values from the pris record to the master record if
         # the master does not have a value
         if pris_record is not None:
@@ -52,6 +47,11 @@ def import_reactordb(master_path, pris_path, history_path):
                     obj[k] = v
                 elif obj[k] is None:
                     obj[k] = v
+
+        # overwrite the reactor name if an wna_name has been provided
+        if obj.get("wna_name", None) is not None:
+            obj["reactor_name"] = obj["wna_name"]
+            del obj["wna_name"]
 
         # finally check the master for the "delete value" marker (a "-")
         for k, v in obj.items():

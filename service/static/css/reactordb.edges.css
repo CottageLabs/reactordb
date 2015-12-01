@@ -12,6 +12,10 @@
     overflow-y: visible !important;
 }
 
+.edges-bs3-or-term-selector-value {
+    color: #1A9DD8;
+}
+
 .reactordb-reactor-records-record  {
     padding-bottom: 15px;
     padding-top: 15px;
@@ -55,7 +59,7 @@
 }
 
 .reactordb-reactor-records-url {
-
+    color: #1A9DD8;
 }
 
 .reactordb-reactor-records-location {
@@ -188,4 +192,28 @@
     background: #1e9dd8 none repeat scroll 0 0;
     color: #ffffff;
     border-bottom: 1px solid #ffffff;
+}
+
+.reactordb-reactor-metadata-status.alert-danger {
+    color: #d6763b;
+    background-color: #f2ddd0;
+    border-color: #f2d1bd;
+}
+
+.reactordb-reactor-metadata-status.alert-warning {
+    color: #9487b6;
+    background-color: #e0ddeb;
+    border-color: #d8d1ed;
+}
+
+.reactordb-reactor-metadata-status.alert-info {
+    color: #00b7cb;
+    background-color: #e1f5f7;
+    border-color: #bce8f1;
+}
+
+.reactordb-reactor-metadata-status.alert-success {
+    color: #006f7a;
+    background-color: #d5f2ea;
+    border-color: #b1f0df;
 }

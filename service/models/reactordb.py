@@ -156,6 +156,7 @@ class Reactor(dataobj.DataObj, ReactorDAO):
                         "first_grid_connection" : {"coerce" : "bigenddate", "ignore_none" : True},
                         "gross_capacity" : {"coerce" : "float", "ignore_none" : True},
                         "image" : {"coerce" : "unicode", "ignore_none" : True},
+                        "image_label" : {"coerce" : "unicode", "ignore_none" : True},
                         "longterm_shutdown" : {"coerce" : "bigenddate", "ignore_none" : True},
                         "model" : {"coerce" : "unicode", "ignore_none" : True},
                         "name" : {"coerce" : "unicode", "ignore_none" : True},
