@@ -7,6 +7,7 @@ and reactor pages can be deployed.
 
 The following CSS are required by both the reactor search and the reactor page:
 
+* Font Awesome 4.5.0 - https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css
 * Bootstrap 3.3.1 - magnificent-octopus/octopus/static/vendor/bootstrap-3.3.1/css/bootstrap.min.css
 * Reactor DB CSS - service/static/css/reactordb.edges.css
 * Edges Bootstrap 3 layout additional CSS - magnificent-octopus/octopus/static/vendor/edges/css/bs3.edges.css
@@ -14,6 +15,7 @@ The following CSS are required by both the reactor search and the reactor page:
 For example:
 
 ```html
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/static/vendor/bootstrap-3.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/reactordb.edges.css">
     <link rel="stylesheet" href="/static/vendor/edges/css/bs3.edges.css">
