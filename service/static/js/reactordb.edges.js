@@ -233,7 +233,7 @@ var reactordb = {
                     renderer : edges.google.newMapViewRenderer({
                         initialZoom : 15,
                         onNoGeoPoints: "hide",
-                        mapHiddenText: "No location information available for this reactor"
+                        mapHiddenText: ""
                     })
                 }),
                 // the standard searching notification
