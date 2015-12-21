@@ -895,7 +895,7 @@ var reactordb = {
             }
             var highlight = '<h1><span class="' + nameClasses + '">_NAME_</span>,\
                                 <span class="' + locationClasses + '">_COUNTRY_</span></h1><br>\
-                                <span class="' + statusClasses + ' ' + alertType + '">' + status + '</span>\
+                                <span class="' + statusClasses + ' ' + alertType + '">' + status + '</span><br>\
                                 _URL_\
                                 <p class="' + infoClasses + '">_ADDITIONALINFO_</p>';
             highlight = highlight.replace(/_NAME_/g, reactor_name)

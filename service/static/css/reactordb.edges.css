@@ -200,7 +200,7 @@
 }
 
 .reactordb-reactor-metadata-status {
-    font-size: 24px;
+    font-size: 130%;
 }
 
 .reactordb-reactor-metadata-status.permanent {
@@ -217,4 +217,12 @@
 
 .reactordb-reactor-metadata-status.operational {
     color: #006f7a;
+}
+
+.reactordb-reactor-operation-container h2 {
+    font-weight: normal;
+}
+
+.reactordb-reactor-operation-container h3 {
+    font-weight: normal;
 }
