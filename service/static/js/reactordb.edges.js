@@ -699,8 +699,8 @@ var reactordb = {
             var linkClasses = edges.css_classes(this.namespace, "link", this);
 
             // prep the wna and wnn links
-            var wnalinks = '<div class="' + linksClasses + '"><hr/><h1><span class="' + linkHeaderClasses + '">See Also</span></h1><h3>_LINKS_</h3></div>';
-            var wnnlinks = '<div class="' + linksClasses + '"><hr/><h1><span class="' + linkHeaderClasses + '">Related News</span></h1><h3>_LINKS_</h3></div>';
+            var wnalinks = '<div class="' + linksClasses + ' afterArticle"><hr/><h2><span class="' + linkHeaderClasses + '">See Also</span></h2><h3>_LINKS_</h3></div>';
+            var wnnlinks = '<div class="' + linksClasses + ' afterArticle"><hr/><h2><span class="' + linkHeaderClasses + '">Related News</span></h2><h3>_LINKS_</h3></div>';
             var wnasub = "";
             var wnnsub = "";
             for (var i = 0; i < links.length; i++) {
@@ -774,10 +774,10 @@ var reactordb = {
 
         // map of statuses to bootstrap alert statuses
         this.statusMap = {
-            "Operational" : "success",
-            "Under Construction" : "info",
-            "Long-term Shutdown" : "warning",
-            "Permanent Shutdown" : "danger"
+            "Operational" : "operational",
+            "Under Construction" : "construction",
+            "Long-term Shutdown" : "longterm",
+            "Permanent Shutdown" : "permanent"
         };
 
         this.months = [
@@ -885,6 +885,9 @@ var reactordb = {
             var tableKeyClasses = edges.css_classes(this.namespace, "table_key", this);
             var tableValClasses = edges.css_classes(this.namespace, "table_val", this);
 
+            // reactor status alert type
+            var alertType = status in this.statusMap ? this.statusMap[status] : "operational";
+
             // prep the highlight information about the reactor
             var url = "";
             if (reactor_url) {
@@ -892,6 +895,7 @@ var reactordb = {
             }
             var highlight = '<h1><span class="' + nameClasses + '">_NAME_</span>,\
                                 <span class="' + locationClasses + '">_COUNTRY_</span></h1><br>\
+                                <span class="' + statusClasses + ' ' + alertType + '">' + status + '</span>\
                                 _URL_\
                                 <p class="' + infoClasses + '">_ADDITIONALINFO_</p>';
             highlight = highlight.replace(/_NAME_/g, reactor_name)
@@ -900,8 +904,8 @@ var reactordb = {
                     .replace(/_ADDITIONALINFO_/g, info);
 
             // prep the status box
-            var alertType = status in this.statusMap ? this.statusMap[status] : "success";
-            var status_box = '<div class="alert alert-' + alertType + ' ' + statusClasses + '">' + status + '</div>';
+            //var alertType = status in this.statusMap ? this.statusMap[status] : "success";
+            //var status_box = '<div class="alert alert-' + alertType + ' ' + statusClasses + '">' + status + '</div>';
 
             // sort the image out
             var img = "";
@@ -992,8 +996,7 @@ var reactordb = {
 
             // finally assemble the full fragment
             var frag = '<div class="row">\
-                            <div class="col-md-9">_HIGHLIGHT_</div>\
-                            <div class="col-md-3">_STATUS_</div>\
+                            <div class="col-md-12">_HIGHLIGHT_</div>\
                         </div>\
                         <div class="row">\
                             <div class="col-md-4 col-sm-8' + imgContainerClasses + '">_IMAGE_</div>\
@@ -1005,7 +1008,6 @@ var reactordb = {
                         </div>';
 
             frag = frag.replace(/_HIGHLIGHT_/g, highlight)
-                        .replace(/_STATUS_/g, status_box)
                         .replace(/_IMAGE_/g, img)
                         .replace(/_DETAILS_/g, details)
                         .replace(/_DATES_/g, timeline)
