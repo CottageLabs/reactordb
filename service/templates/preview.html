@@ -84,6 +84,8 @@ jQuery(document).ready(function($) {
     }
 
     function rolloutStatus(data) {
+        /*
+        We are now not reliant on the config value, we are only interested in the file value
         if (data.reactor.next.cfg !== data.reactor.next.file) {
             refresh();
         } else if (data.reactor.curr.cfg !== data.reactor.curr.file) {
@@ -97,6 +99,10 @@ jQuery(document).ready(function($) {
             rebindButtons(data);
             reactordb.activeEdges["#reactor-search"].doQuery();
         }
+        */
+        updateStatus(data);
+        rebindButtons(data);
+        reactordb.activeEdges["#reactor-search"].doQuery();
     }
 
     function requestStatus() {
