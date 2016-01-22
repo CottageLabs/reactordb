@@ -127,7 +127,10 @@ var reactordb = {
                         {field: "reactor.operator", display: "Operator"},
                         {field: "reactor.model", display: "Model"}
                     ],
-                    defaultOperator : "AND"
+                    defaultOperator : "AND",
+                    renderer : edges.bs3.newFullSearchControllerRenderer({
+                        freetextSubmitDelay: -1
+                    })
                 }),
 
                 // the pager, with the explicitly set page size options (see the openingQuery for the initial size)
