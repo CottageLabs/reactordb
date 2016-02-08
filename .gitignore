@@ -10,8 +10,10 @@ datadir/*.csv
 service/tests/resources/.~lock.*
 indexdir/operation/curr
 indexdir/operation/prev
+indexdir/operation/next
 indexdir/reactor/curr
 indexdir/reactor/prev
+indexdir/reactor/next
 uploaddir/*.csv
 
 .idea/
