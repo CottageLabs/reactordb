@@ -2,6 +2,31 @@
 
 This is a Python app running on an Elasticsearch datastore back-end.
 
+# Rolling out updates after the initial setup
+
+1. ssh into server. su to root.
+2. su reactordb
+3. cd /opt/reactordb/reactordb
+4. git status. Should show
+
+    On branch develop
+    Your branch is up-to-date with 'origin/develop'.
+
+5. git pull
+6. git submodule update --init --recursive
+7. git submodule update --recursive
+8. exit (to go back to being root)
+9. supervisorctl status. Should show something like
+
+    reactordb-production             RUNNING   pid 57021, uptime 66 days, 17:07:05
+
+10. kill -HUP $(supervisorctl pid reactordb-production). Wait 2-3 seconds.
+11. supervisorctl status. Should (still) show something like
+
+    reactordb-production             RUNNING   pid 57021, uptime 66 days, 17:07:05
+
+12. That's it. Double-check changes are live on the live site if you know what they are supposed to be. Proceed to have a cup of tea.
+
 # Hardware
 
 2GB RAM and 2 or more cores (virtual is ok) to keep Elasticsearch happy should be plenty. Disc space should be negligible, only requirement is that the disk isn't completely full, so e.g. 500 MB should be enough.
