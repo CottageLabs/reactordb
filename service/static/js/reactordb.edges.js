@@ -269,7 +269,7 @@ var reactordb = {
                 // electricity supplied bar chart
                 edges.newMultibar({
                     id: "electricity_supplied",
-                    display: "<h3>Electricty Supplied (MWh)</h3>",
+                    display: "<h3>Electricty Supplied (GWh)</h3>",
                     category: "chart",
                     dataFunction : edges.ChartDataFunctions.recordsXY({
                         key: "Electricity Supplied",
@@ -283,7 +283,7 @@ var reactordb = {
                         yTickFormat : ",.0f",
                         showLegend: false,
                         xAxisLabel: "Year",
-                        yAxisLabel: "Electricty Supplied (MWh)"
+                        yAxisLabel: "Electricty Supplied (GWh)"
                     })
                 }),
                 // annual energy availability factor
@@ -310,7 +310,7 @@ var reactordb = {
                 // total electricity supplied
                 edges.newSimpleLineChart({
                     id : "total_electricity",
-                    display: "<h3>Total Electricity Supplied (MWh)</h3>",
+                    display: "<h3>Total Electricity Supplied (GWh)</h3>",
                     category: "chart",
                     dataFunction : edges.ChartDataFunctions.cumulativeXY({
                         key: "Total Electricity Supplied",
@@ -325,7 +325,7 @@ var reactordb = {
                         yTickFormat : ",.0f",
                         showLegend: false,
                         xAxisLabel: "Year",
-                        yAxisLabel: "Total Electricity Supplied (MWh)"
+                        yAxisLabel: "Total Electricity Supplied (GWh)"
                     })
                 }),
                 // a table of all the data
@@ -337,7 +337,7 @@ var reactordb = {
                             {field: "year", display: "Year"},
                             {field: "reference_unit_power", display: "Reference Unit Power (MWe)"},
                             {field: "annual_time_online", display: "Annual Time Online (Hours)"},
-                            {field: "electricity_supplied", display: "Electricity Supplied (MWh)"},
+                            {field: "electricity_supplied", display: "Electricity Supplied (GWh)"},
                             {field: "operation_factor", display: "Operation Factor (%)"},
                             {field: "energy_availability_factor_annual", display: "Energy Availability Annual (%)"},
                             {field: "energy_availability_factor_cumulative", display: "Energy Availability Cumulative (%)"},
