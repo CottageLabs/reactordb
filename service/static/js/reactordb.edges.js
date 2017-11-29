@@ -269,7 +269,7 @@ var reactordb = {
                 // electricity supplied bar chart
                 edges.newMultibar({
                     id: "electricity_supplied",
-                    display: "<h3>Electricty Supplied (GWh)</h3>",
+                    display: "<h3>Electricity Supplied (GWh)</h3>",
                     category: "chart",
                     dataFunction : edges.ChartDataFunctions.recordsXY({
                         key: "Electricity Supplied",
@@ -283,7 +283,7 @@ var reactordb = {
                         yTickFormat : ",.0f",
                         showLegend: false,
                         xAxisLabel: "Year",
-                        yAxisLabel: "Electricty Supplied (GWh)"
+                        yAxisLabel: "Electricity Supplied (GWh)"
                     })
                 }),
                 // annual energy availability factor
