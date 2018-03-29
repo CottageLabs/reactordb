@@ -4,7 +4,7 @@ from config.wnaConfig import sections_scraped
 from dateutil.parser import parse
 import os
 
-class ScraperJob(ScraperJobDAO, dataobj.DataObj):
+class ScraperJob(dataobj.DataObj, ScraperJobDAO):
     """
     {
         "id" : "<opaque identifier for upload>",
