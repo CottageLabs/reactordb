@@ -129,7 +129,8 @@ var reactordb = {
                     ],
                     defaultOperator : "AND",
                     renderer : edges.bs3.newFullSearchControllerRenderer({
-                        freetextSubmitDelay: -1
+                        freetextSubmitDelay: -1,
+                        searchButton: true
                     })
                 }),
 

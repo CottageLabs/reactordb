@@ -20,15 +20,30 @@
 
 {% block extra_js_bottom %}
 
-<!-- <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/vendor/d3-v3/d3.min.js')}}"></script> -->
-<!-- <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/vendor/nvd3-1.8.1/nv.d3.js')}}"></script> -->
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/es.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/edges.jquery.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/edges.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/templates/bs3.Facetview.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/components/selectors.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/components/ranges.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/components/search.js')}}"></script>
 
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.ORTermSelectorRenderer.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.NumericRangeEntryRenderer.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.FullSearchControllerRenderer.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.PagerRenderer.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.SelectedFiltersRenderer.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.SearchingNotificationRenderer.js')}}"></script>
+
+<script type="text/javascript" src="{{url_for('static', filename='js/reactordb.edges.js')}}"></script>
+
+    <!--
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/es.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/edges.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/bs3.edges.js')}}"></script>
-<!-- <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/nvd3.edges.js')}}"></script> -->
 
 <script type="text/javascript" src="{{url_for('static', filename='js/reactordb.edges.js')}}"></script>
+-->
 
 <script type="text/javascript">
 jQuery(document).ready(function($) {
@@ -84,22 +99,6 @@ jQuery(document).ready(function($) {
     }
 
     function rolloutStatus(data) {
-        /*
-        We are now not reliant on the config value, we are only interested in the file value
-        if (data.reactor.next.cfg !== data.reactor.next.file) {
-            refresh();
-        } else if (data.reactor.curr.cfg !== data.reactor.curr.file) {
-            refresh();
-        } else if (data.operation.next.cfg !== data.operation.next.file) {
-            refresh();
-        } else if (data.operation.curr.cfg !== data.operation.curr.file) {
-            refresh();
-        } else {
-            updateStatus(data);
-            rebindButtons(data);
-            reactordb.activeEdges["#reactor-search"].doQuery();
-        }
-        */
         updateStatus(data);
         rebindButtons(data);
         reactordb.activeEdges["#reactor-search"].doQuery();

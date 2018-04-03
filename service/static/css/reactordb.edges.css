@@ -2,6 +2,10 @@
  * Styles for the search interface
  */
 
+.edges-bs3-search-controller-text {
+    width: 200px !important;
+}
+
 .edges-bs3-or-term-selector-selections-process {
     max-height: none !important;
     overflow-y: visible !important;
@@ -191,6 +195,8 @@
 .edges-bs3-tabular-results-header {
     background: #1e9dd8 none repeat scroll 0 0;
     color: #ffffff;
+    font-weight: normal;
+    padding: 5px;
 }
 
 .edges-bs3-tabular-results-cell-year {
