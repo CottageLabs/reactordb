@@ -1,6 +1,40 @@
 var reactordb = {
     activeEdges : {},
 
+    makeDashboard : function(params) {
+        var current_domain = document.location.host;
+        var current_scheme = window.location.protocol;
+        if (!params) { params = {} }
+
+        var selector = params.selector || "#dashboard";
+        var index = params.index || "reactor";
+        var search_url = params.search_url || current_scheme + "//" + current_domain + "/query/" + index + "/_search";
+
+        var e = edges.newEdge({
+            selector: selector,
+            search_url: search_url
+        });
+
+        reactordb.activeEdges[selector] = e;
+    },
+
+    makeCountryReport : function(params) {
+        var current_domain = document.location.host;
+        var current_scheme = window.location.protocol;
+        if (!params) { params = {} }
+
+        var selector = params.selector || "#country-report";
+        var index = params.index || "reactor";
+        var search_url = params.search_url || current_scheme + "//" + current_domain + "/query/" + index + "/_search";
+
+        var e = edges.newEdge({
+            selector: selector,
+            search_url: search_url
+        });
+
+        reactordb.activeEdges[selector] = e;
+    },
+
     makeSearch : function(params) {
 
         var current_domain = document.location.host;
@@ -186,6 +220,7 @@ var reactordb = {
 
         reactordb.activeEdges[selector] = e;
     },
+
     makeReactorPage : function(params) {
 
         var current_domain = document.location.host;

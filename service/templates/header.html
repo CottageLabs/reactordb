@@ -3,10 +3,10 @@
 
         <div class="navbar-nav" id="main-nav">
                 <ul class="nav navbar-nav" id="main-nav-admin-menu" style="margin-bottom: 10px">
-                    <li><a href="{{url_for('index')}}">PRIS</a></li>
-                    <li><a href="{{url_for('upload')}}">Upload</a></li>
-                    <li><a href="{{url_for('preview_search')}}">Preview</a></li>
-                    <li><a href="{{url_for('live_search')}}">Live</a></li>
+                    <li><a href="{{url_for('index')}}" {% if request.path == url_for('index') %}class="active"{% endif %}>PRIS</a></li>
+                    <li><a href="{{url_for('upload')}}" {% if request.path == url_for('upload') %}class="active"{% endif %}>Upload</a></li>
+                    <li><a href="{{url_for('preview_dashboard')}}" {% if request.path == url_for('preview_dashboard') %}class="active"{% endif %}>Preview</a></li>
+                    <li><a href="{{url_for('live_dashboard')}}" {% if request.path == url_for('live_dashboard') %}class="active"{% endif %}>Live</a></li>
                 </ul>
         </div>
 

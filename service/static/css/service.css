@@ -21,3 +21,22 @@
     margin-top: 0px !important;
 }
 
+.current {
+    font-weight: bold;
+}
+
+.active {
+    border: 0;
+    border-bottom: 5px solid #dff0d8;
+    background-color: transparent;
+    padding-top: 10px !important;
+    padding-bottom: 5px !important;
+}
+
+#navigation a:hover {
+    border: 0;
+    border-bottom: 5px solid #ffffff;
+    background-color: transparent;
+    padding-top: 10px !important;
+    padding-bottom: 5px !important;
+}

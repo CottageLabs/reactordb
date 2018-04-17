@@ -154,6 +154,10 @@ def docs():
 ######################################################
 ## All the preview pages
 
+@app.route("/preview_dashboard")
+def preview_dashboard():
+    return render_template("preview_dashboard.html")
+
 @app.route("/preview_search")
 def preview_search():
     return render_template("preview_search.html")
@@ -163,11 +167,21 @@ def preview_search():
 def preview_reactor(reactor_id=None):
     return render_template("preview_reactor.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"), reactor_id=reactor_id)
 
+@app.route("/preview_country")
+@app.route("/preview_country/<country_id>")
+def preview_country(country_id=None):
+    return render_template("preview_country.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"), country_id=country_id)
+
+
 #######################################################
 
 
 #######################################################
 ## All the "live" pages
+
+@app.route("/live_dashboard")
+def live_dashboard():
+    return render_template("live_dashboard.html")
 
 @app.route("/live_search")
 def live_search():
@@ -177,6 +191,12 @@ def live_search():
 @app.route("/live_reactor/<reactor_id>")
 def live_reactor(reactor_id=None):
     return render_template("live_reactor.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"), reactor_id=reactor_id)
+
+@app.route("/live_country")
+@app.route("/live_country/<country_id>")
+def live_country(country_id=None):
+    return render_template("live_country.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"), country_id=country_id)
+
 
 #######################################################
 
