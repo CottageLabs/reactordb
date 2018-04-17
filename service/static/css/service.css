@@ -1,22 +1,23 @@
-/*
-.form-group .required:after {
-  content:" *";color:red;
+#preview-status {
+    border-bottom: 2px solid #cccccc;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
 }
 
-.row {
-  padding-bottom: 5px;
-  font-size: medium;
+#preview-status h1 {
+    margin-top: 0px;
 }
 
-.row-even {
-  background-color: none;
+#live-status {
+    border-bottom: 2px solid #cccccc;
+    margin-bottom: 20px;
 }
 
-.row-odd {
-  background-color: #ccc;
+#live-status h1 {
+    margin-top: 0px;
 }
 
-.progress {
-  margin-top: 20px;
+.alert-messages {
+    margin-top: 0px !important;
 }
-*/
+

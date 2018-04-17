@@ -2,6 +2,12 @@
 
 {% block content %}
 
+{% include '_live-status.html' %}
+
+{% if not reactor_id %}
+    Insert the reactor ID in the URL bar above to see the reactor page
+{% endif %}
+
 <div id="reactor-page"></div>
 
 {% endblock %}
@@ -29,10 +35,12 @@
 
 <script type="text/javascript" src="{{url_for('static', filename='js/reactordb.edges.js')}}"></script>
 
+{% if reactor_id %}
 <script type="text/javascript">
 jQuery(document).ready(function($) {
     reactordb.makeReactorPage();
 });
 </script>
+{% endif %}
 
 {% endblock%}

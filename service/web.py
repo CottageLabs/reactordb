@@ -151,22 +151,34 @@ def upload():
 def docs():
     return render_template("docs.html")
 
+######################################################
+## All the preview pages
 
-@app.route("/preview")
-def preview():
-    return render_template("preview.html")
+@app.route("/preview_search")
+def preview_search():
+    return render_template("preview_search.html")
 
+@app.route("/preview_reactor")
 @app.route("/preview_reactor/<reactor_id>")
-def reactor(reactor_id):
-    return render_template("preview_reactor.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"))
+def preview_reactor(reactor_id=None):
+    return render_template("preview_reactor.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"), reactor_id=reactor_id)
 
-@app.route("/live")
-def live():
-    return render_template("live.html")
+#######################################################
 
-@app.route("/reactor/<reactor_id>")
-def live_reactor(reactor_id):
-    return render_template("live_reactor.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"))
+
+#######################################################
+## All the "live" pages
+
+@app.route("/live_search")
+def live_search():
+    return render_template("live_search.html")
+
+@app.route("/live_reactor")
+@app.route("/live_reactor/<reactor_id>")
+def live_reactor(reactor_id=None):
+    return render_template("live_reactor.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"), reactor_id=reactor_id)
+
+#######################################################
 
 # this allows us to override the standard static file handling with our own dynamic version
 @app.route("/static/<path:filename>")

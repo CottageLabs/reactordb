@@ -1,0 +1,17 @@
+<a href="">Dashboard</a> |
+<a href="{{ url_for('preview_search') }}">Search</a> |
+<a href="{{ url_for('preview_reactor') }}">Reactor</a> |
+<a href="">Country</a>
+
+<div id="preview-status">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Preview Latest Data</h1>
+            <form class="form-inline pull-right">
+                <button id="publish" class="form-control btn btn-success" disabled>Publish this data to Live</button>
+                <button id="rollback" class="form-control btn btn-danger" disabled>Rollback Live to previous version</button>
+            </form>
+            <div id="current-rollout-status">Checking rollout status ...</div>
+        </div>
+    </div>
+</div>

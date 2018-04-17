@@ -2,10 +2,12 @@
 
 {% block content %}
 
-<h1>Live Database</h1>
+{% include '_preview-status.html' %}
+
 <div id="reactor-search"></div>
 
 {% endblock %}
+
 
 {% block extra_js_bottom %}
 
@@ -25,10 +27,21 @@
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.SearchingNotificationRenderer.js')}}"></script>
 
 <script type="text/javascript" src="{{url_for('static', filename='js/reactordb.edges.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='js/reactordbadmin.js')}}"></script>
 
 <script type="text/javascript">
 jQuery(document).ready(function($) {
-    reactordb.makeSearch();
+    var current_domain = document.location.host;
+    var current_scheme = window.location.protocol;
+    var BASE_URL = current_scheme + "//" + current_domain;
+
+    reactordb.makeSearch({
+        index: "preview_reactor",
+        reactor_base_url: BASE_URL + "/preview_reactor/"
+    });
+
+    reactordbadmin.requestStatus(BASE_URL);
+
 });
 </script>
 
