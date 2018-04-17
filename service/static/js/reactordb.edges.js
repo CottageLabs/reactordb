@@ -12,7 +12,8 @@ var reactordb = {
 
         var e = edges.newEdge({
             selector: selector,
-            search_url: search_url
+            search_url: search_url,
+            template: reactordb.newDashboardTemplate()
         });
 
         reactordb.activeEdges[selector] = e;
@@ -600,11 +601,67 @@ var reactordb = {
         };
     },
 
+    newDashboardTemplate : function(params) {
+        if (!params) { params = {} }
+        reactordb.DasboardTemplate.prototype = edges.newTemplate(params);
+        return new reactordb.DasboardTemplate(params);
+    },
+    DasboardTemplate : function(params) {
+
+        this.namespace = "reactordb-dashboard";
+
+        this.draw = function(edge) {
+            this.edge = edge;
+
+            // the classes we're going to need
+            var containerClass = edges.css_classes(this.namespace, "container");
+            var bigNumberClass = edges.css_classes(this.namespace, "bignumber");
+            var panelClass = edges.css_classes(this.namespace, "panel");
+            var mapClass = edges.css_classes(this.namespace, "map");
+
+            // start building the page template
+            var frag = '<div class="' + containerClass + '"><div class="row">';
+            frag += '<div class="col-md-12">';
+
+            // the header for the page
+            frag += '<div class="row">\
+                <div class="col-md-10">\
+                    <h1>Reactor Database</h1>\
+                    <p>World Nuclear Association reactor database contains technical and performance information of nuclear power reactors worldwide</p>\
+                    <p>Data Sources: World Nuclear Association and IAEA Power Reactor Information System</p>\
+                </div>\
+            </div>';
+
+            // the big numbers along the top
+            var bignums = edge.category("big-number");
+            if (bignums.length > 0) {
+                frag += '<div class="row">';
+                for (var i = 0; i < bignums.length; i++) {
+                    frag += '<div class="col-md-4"><div class="' + bigNumberClass + '"><div id="' + bignums[i].id + '"></div></div></div>';
+                }
+                frag += "</div>";
+            }
+
+            // the full width panels beneath
+            var panel = edge.category("panel");
+            if (panel.length > 0) {
+                for (var i = 0; i < panel.length; i++) {
+                    frag += '<div class="row"><div class="col-md-12"><div class="' + panelClass + '" dir="auto"><div id="' + panel[i].id + '"></div></div></div></div>';
+                }
+            }
+            
+            // close off all the big containers and return
+            frag += '</div></div></div>';
+
+            edge.context.html(frag);
+        };
+    },
+
     newReactorPageTemplate : function(params) {
-            if (!params) { params = {} }
-            reactordb.ReactorPageTemplate.prototype = edges.newTemplate(params);
-            return new reactordb.ReactorPageTemplate(params);
-        },
+        if (!params) { params = {} }
+        reactordb.ReactorPageTemplate.prototype = edges.newTemplate(params);
+        return new reactordb.ReactorPageTemplate(params);
+    },
     ReactorPageTemplate : function(params) {
 
         this.namespace = "reactordb-reactor-page";
