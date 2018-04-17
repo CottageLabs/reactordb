@@ -1,6 +1,7 @@
 var reactordbadmin = {
 
     base_url : false,
+    selector : false,
 
     updateStatus : function(data) {
         var info = "Currently viewing:&nbsp;";
@@ -43,17 +44,15 @@ var reactordbadmin = {
     rolloutStatus : function(data) {
         reactordbadmin.updateStatus(data);
         reactordbadmin.rebindButtons(data);
-        reactordb.activeEdges["#reactor-search"].doQuery();
+        reactordb.activeEdges[reactordbadmin.selector].doQuery();
     },
 
-    requestStatus : function(base_url) {
-        reactordbadmin.base_url = base_url;
-
+    requestStatus : function() {
         // check the rollout status
         $.ajax({
             type: "GET",
             dataType: "jsonp",
-            url: base_url + "/rolling/status",
+            url: reactordbadmin.base_url + "/rolling/status",
             success: reactordbadmin.rolloutStatus
         });
     },

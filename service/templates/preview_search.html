@@ -40,7 +40,9 @@ jQuery(document).ready(function($) {
         reactor_base_url: BASE_URL + "/preview_reactor/"
     });
 
-    reactordbadmin.requestStatus(BASE_URL);
+    reactordbadmin.base_url = BASE_URL;
+    reactordbadmin.selector = "#reactor-search";
+    reactordbadmin.requestStatus();
 
 });
 </script>

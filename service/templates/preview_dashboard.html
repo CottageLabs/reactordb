@@ -39,7 +39,9 @@ jQuery(document).ready(function($) {
         index: "preview_reactor"
     });
 
-    reactordbadmin.requestStatus(BASE_URL);
+    reactordbadmin.base_url = BASE_URL;
+    reactordbadmin.selector = "#dashboard";
+    reactordbadmin.requestStatus();
 
 });
 </script>

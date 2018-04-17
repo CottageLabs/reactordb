@@ -44,7 +44,9 @@ jQuery(document).ready(function($) {
         index: "preview_reactor"
     });
 
-    reactordbadmin.requestStatus(BASE_URL);
+    reactordbadmin.base_url = BASE_URL;
+    reactordbadmin.selector = "#country-report";
+    reactordbadmin.requestStatus();
     {% else %}
     $("#current-rollout-status").html("Select a country to see the rollout status");
     {% endif %}
