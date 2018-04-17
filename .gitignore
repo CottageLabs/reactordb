@@ -18,5 +18,5 @@ uploaddir/*.csv
 
 .idea/
 
-
+service/static/tests/*
 

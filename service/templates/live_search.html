@@ -29,7 +29,13 @@
 
 <script type="text/javascript">
 jQuery(document).ready(function($) {
-    reactordb.makeSearch();
+    var current_domain = document.location.host;
+    var current_scheme = window.location.protocol;
+    var BASE_URL = current_scheme + "//" + current_domain;
+
+    reactordb.makeSearch({
+        reactor_base_url: BASE_URL + "/live_reactor/"
+    });
 });
 </script>
 

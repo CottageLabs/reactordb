@@ -603,10 +603,10 @@ var reactordb = {
 
     newDashboardTemplate : function(params) {
         if (!params) { params = {} }
-        reactordb.DasboardTemplate.prototype = edges.newTemplate(params);
-        return new reactordb.DasboardTemplate(params);
+        reactordb.DashboardTemplate.prototype = edges.newTemplate(params);
+        return new reactordb.DashboardTemplate(params);
     },
-    DasboardTemplate : function(params) {
+    DashboardTemplate : function(params) {
 
         this.namespace = "reactordb-dashboard";
 
@@ -649,7 +649,7 @@ var reactordb = {
                     frag += '<div class="row"><div class="col-md-12"><div class="' + panelClass + '" dir="auto"><div id="' + panel[i].id + '"></div></div></div></div>';
                 }
             }
-            
+
             // close off all the big containers and return
             frag += '</div></div></div>';
 
