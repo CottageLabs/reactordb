@@ -240,3 +240,11 @@
 #reactor-links h3 {
     font-weight: normal;
 }
+
+
+/*
+ * styles for the dashboard page
+ */
+#global_nuclear_generation_histogram {
+    height: 300px;
+}

@@ -1,19 +1,431 @@
 var reactordb = {
     activeEdges : {},
 
+    _electricityGenerationByYear : function(component) {
+        var seriesName = "Global Electricity Generation by Year";
+
+        var results = component.edge.secondaryResults.b;
+        var buckets = results.data.aggregations.year.buckets;
+        var values = [];
+        for (var i = 0; i < buckets.length; i++) {
+            var bucket = buckets[i];
+            var gen = bucket.electricity_generation.value;
+            values.push({label: bucket.key, value: gen});
+        }
+
+        return [{key: seriesName, values: values}]
+    },
+
+    _globalNuclearGeneration : function(params) {
+        var year = parseInt(params.year);
+
+        return function(component) {
+            var results = component.edge.secondaryResults.b;
+            var buckets = results.data.aggregations.year.buckets;
+            var gen = 0.0;
+            for (var i = 0; i < buckets.length; i++) {
+                var bucket = buckets[i];
+                if (bucket.key === year) {
+                    var gen = bucket.electricity_generation.value;
+                }
+            }
+
+            return {"a" : gen, "b" : year}
+        }
+    },
+
+    _preFilterGlobalNuclearShare : function(args) {
+        var year = args.year;
+
+        return function(params) {
+            var resource = params.resource;
+            var edge = params.edge;
+
+            resource.add_filter({filter: {field: "Country", value: "GLOBAL", type: "exact"}});
+            resource.add_filter({filter: {field: "Year", value: String(year), type: "exact"}});
+        }
+    },
+
+    _globalNuclearShare : function(component) {
+        var iter = component.edge.resources.nuclear_share.iterator();
+        var row = iter.next();
+
+        var seriesName = "Share of Global Electricity Generation";
+
+        if (row) {
+            var share = parseFloat(row["Nuclear Share [%]"]);
+            var other = 100.0 - share;
+
+            var values = [
+                {label: "Nuclear", value: share},
+                {label: "Other", value: other}
+            ];
+
+            return [{key: seriesName, values: values}]
+        } else {
+            var values = [
+                {label: "Nuclear", value: 0.0},
+                {label: "Other", value: 100.0}
+            ];
+
+            return [{key: seriesName, values: values}]
+        }
+    },
+
+    _operableReactorsCount : function(params) {
+        return function(component) {
+            var result = component.edge.result;
+
+            var main = result.total();
+            var second = result.aggregation("total_gwe").value;
+
+            return {main: main, second: second};
+        }
+    },
+
+    _underConstructionReactorsCount : function(params) {
+        return function(component) {
+            var result = component.edge.secondaryResults.a;
+
+            var main = result.total();
+            var second = result.aggregation("total_gwe").value;
+
+            return {main: main, second: second};
+        }
+    },
+
+    _topXReactorsByOperableCapacity : function(params) {
+        return function(component) {
+            var result = component.edge.result;
+
+            var values = [];
+            var countries = result.aggregation("country");
+            for (var i = 0; i < countries.buckets.length; i++){
+                var bucket = countries.buckets[i];
+                var name = bucket.key;
+                var total_gwe = bucket.total_gwe.value;
+                values.push({label: name, value: total_gwe});
+            }
+
+            values.sort(function(a, b) {
+                if (a.value < b.value) {
+                    return 1;
+                }
+                if (a.value > b.value) {
+                    return -1;
+                }
+                return 0;
+            });
+
+            var limitted = values.slice(0, params.x);
+            var seriesName = "Leading Countries: Total Operable Reactor Capacity";
+            return [{key: seriesName, values: limitted}];
+        }
+    },
+
+    _topXReactorsByUnderConstructionCapacity : function(params) {
+        return function(component) {
+            var result = component.edge.secondaryResults.a;
+
+            var values = [];
+            var countries = result.aggregation("country");
+            for (var i = 0; i < countries.buckets.length; i++){
+                var bucket = countries.buckets[i];
+                var name = bucket.key;
+                var total_gwe = bucket.total_gwe.value;
+                values.push({label: name, value: total_gwe});
+            }
+
+            values.sort(function(a, b) {
+                if (a.value < b.value) {
+                    return 1;
+                }
+                if (a.value > b.value) {
+                    return -1;
+                }
+                return 0;
+            });
+
+            var limitted = values.slice(0, params.x);
+            var seriesName = "Leading Countries: Reactors Under Construction Capacity";
+            return [{key: seriesName, values: limitted}];
+        }
+    },
+
     makeDashboard : function(params) {
         var current_domain = document.location.host;
         var current_scheme = window.location.protocol;
         if (!params) { params = {} }
 
         var selector = params.selector || "#dashboard";
-        var index = params.index || "reactor";
-        var search_url = params.search_url || current_scheme + "//" + current_domain + "/query/" + index + "/_search";
+        var operation_index = params.operation_index || "operation";
+        var reactor_index = params.reactor_index || "reactor";
+        var reactor_search_url = params.reactor_search_url || current_scheme + "//" + current_domain + "/query/" + reactor_index + "/_search";
+        var operation_search_url = params.operation_search_url || current_scheme + "//" + current_domain + "/query/" + operation_index + "/_search";
+
+        var nuclearShareURL = edges.getParam(params.nuclearShareURL, "/static/data/share-of-electricity-generation.csv");
+
+        var topOperableCapacities = edges.getParam(params.topOperableCapacities, 10);
+        var topUnderConstructionCapacities = edges.getParam(params.topUnderConstructionCapacities, 10);
+        var mostRecentGridConnections = edges.getParam(params.mostRecentGridConnections, 10);
+        var mostRecentConstructionStarts = edges.getParam(params.mostRecentConstructionStarts, 10);
+        var topLoadFactors = edges.getParam(params.topLoadFactors, 10);
+        var topLifetimeGenerations = edges.getParam(params.topLifetimeGenerations, 10);
+
+        var numbersBackground = edges.getParam(params.numbersBackground, "/static/images/reactor-web.svg");
+
+        var thisYear = edges.getParam(params.year, (new Date()).getUTCFullYear());
 
         var e = edges.newEdge({
             selector: selector,
-            search_url: search_url,
-            template: reactordb.newDashboardTemplate()
+            search_url: reactor_search_url,
+            template: reactordb.newDashboardTemplate(),
+            manageUrl: false,
+            staticFiles : [
+                {
+                    id : "nuclear_share",
+                    url : nuclearShareURL,
+                    processor : edges.csv.newObjectByRow,
+                    datatype : "text",
+                    opening: reactordb._preFilterGlobalNuclearShare({year: thisYear})
+                }
+            ],
+            openingQuery : es.newQuery({
+                must : [
+                    es.newTermFilter({field : "reactor.status.exact", value: "Operable"})
+                ],
+                size: 0,
+                aggs : [
+                    es.newSumAggregation({name: "total_gwe", field : "reactor.reference_unit_power_capacity_net"}),
+                    es.newTermsAggregation({name: "country", field : "reactor.country.exact", size: 300, aggs: [
+                        es.newSumAggregation({name: "total_gwe", field : "reactor.reference_unit_power_capacity_net"})
+                    ]})
+                ]
+            }),
+            secondaryQueries : {
+                a : function() {
+                    return es.newQuery({
+                        must : [
+                            es.newTermFilter({field : "reactor.status.exact", value: "Under Construction"})
+                        ],
+                        size: 0,
+                        aggs : [
+                            es.newSumAggregation({name: "total_gwe", field : "reactor.reference_unit_power_capacity_net"}),
+                            es.newTermsAggregation({name: "country", field : "reactor.country.exact", size: 300, aggs: [
+                                es.newSumAggregation({name: "total_gwe", field : "reactor.reference_unit_power_capacity_net"})
+                            ]})
+                        ]
+                    })
+                },
+                b : function() {
+                    return es.newQuery({
+                        must : [
+                            es.newRangeFilter({field: "year", lte: thisYear, gte: 1970})
+                        ],
+                        size: 0,
+                        aggs : [
+                            es.newTermsAggregation({name: "year", field: "year", size: 100, orderBy: "_term", orderDir: "asc", aggs : [
+                                es.newSumAggregation({name: "electricity_generation", field: "electricity_supplied"})
+                            ]})
+                        ]
+                    })
+                },
+                c : function() {
+                    return es.newQuery({
+                        size: mostRecentGridConnections,
+                        sort: [es.newSort({field: "reactor.first_grid_connection", order: "desc"})]
+                    })
+                },
+                d : function() {
+                    return es.newQuery({
+                        size: mostRecentConstructionStarts,
+                        sort: [es.newSort({field: "reactor.construction_start", order: "desc"})]
+                    })
+                },
+                e : function() {
+                    return es.newQuery({
+                        size: topLoadFactors,
+                        sort: [es.newSort({field: "reactor.load_factor." + thisYear, order: "desc"})]
+                    })
+                },
+                f : function() {
+                    return es.newQuery({
+                        size: topLifetimeGenerations,
+                        sort: [es.newSort({field: "reactor.electricity_supplied_cumulative." + thisYear, order: "desc"})]
+                    })
+                }
+            },
+            secondaryUrls : {
+                b : operation_search_url
+            },
+            components : [
+                edges.numbers.newImportantNumbers({
+                    id: "operable_reactors_count",
+                    category: "big-number",
+                    calculate: reactordb._operableReactorsCount(),
+                    renderer : edges.bs3.newImportantNumbersRenderer({
+                        title: "<h3>Operable Reactors</h3>",
+                        backgroundImg: numbersBackground,
+                        mainNumberFormat: edges.numFormat({
+                            decimalPlaces: 0,
+                            thousandsSeparator: ","
+                        }),
+                        secondNumberFormat: edges.numFormat({
+                            decimalPlaces: 1,
+                            thousandsSeparator: ",",
+                            suffix: " GWe"
+                        })
+                    })
+                }),
+                edges.numbers.newImportantNumbers({
+                    id: "reactors_under_construction_count",
+                    category: "big-number",
+                    calculate: reactordb._underConstructionReactorsCount(),
+                    renderer : edges.bs3.newImportantNumbersRenderer({
+                        title: "<h3>Reactors Under Construction</h3>",
+                        backgroundImg: numbersBackground,
+                        mainNumberFormat: edges.numFormat({
+                            decimalPlaces: 0,
+                            thousandsSeparator: ","
+                        }),
+                        secondNumberFormat: edges.numFormat({
+                            decimalPlaces: 1,
+                            thousandsSeparator: ",",
+                            suffix: " GWe"
+                        })
+                    })
+                }),
+                edges.newPieChart({
+                    id: "gloabl_nuclear_share",
+                    category: "big-number",
+                    dataFunction: reactordb._globalNuclearShare,
+                    display: "<h3>Share of Global Electricity Generation</h3>",
+                    renderer : edges.nvd3.newPieChartRenderer({
+                        showLegend: false,
+                        marginTop: 10,
+                        marginRight: 0,
+                        marginBottom: 0,
+                        marginLeft: 0,
+                        labelsOutside: true,
+                        color: ["#1e9dd8", "#ddddff"]
+                    })
+                }),
+                edges.newHorizontalMultibar({
+                    id: "top_operable_reactor_capacity",
+                    category: "panel",
+                    dataFunction: reactordb._topXReactorsByOperableCapacity({x: topOperableCapacities}),
+                    renderer : edges.nvd3.newHorizontalMultibarRenderer({
+                        title: "<h3>Leading Countries: Total Operable Reactor Capacity</h3>",
+                        legend: false,
+                        dynamicHeight: true,
+                        barHeight: 40,
+                        reserveAbove: 50,
+                        reserveBelow: 50,
+                        color : ["#1e9dd8"]
+                    })
+                }),
+                edges.newHorizontalMultibar({
+                    id: "top_under_construction_reactors_capacity",
+                    category: "panel",
+                    dataFunction: reactordb._topXReactorsByUnderConstructionCapacity({x: topUnderConstructionCapacities}),
+                    renderer : edges.nvd3.newHorizontalMultibarRenderer({
+                        title: "<h3>Leading Countries: Reactors Under Construction Capacity</h3>",
+                        legend: false,
+                        dynamicHeight: true,
+                        barHeight: 40,
+                        reserveAbove: 50,
+                        reserveBelow: 50,
+                        color : ["#1e9dd8"]
+                    })
+                }),
+                edges.numbers.newStory({
+                    id: "global_nuclear_generation_story",
+                    category: "panel",
+                    template: "{a} TWh: global electricity generation from nuclear energy in {b}",
+                    calculate: reactordb._globalNuclearGeneration({year: thisYear}),
+                    renderer : edges.bs3.newStoryRenderer({
+                        title: "<h3>Global Nuclear Generation</h3>"
+                    })
+                }),
+                edges.newMultibar({
+                    id: "global_nuclear_generation_histogram",
+                    category: "panel",
+                    dataFunction: reactordb._electricityGenerationByYear,
+                    renderer : edges.nvd3.newMultibarRenderer({
+                        xTickFormat: ".0f",
+                        barColor : ["#1e9dd8"],
+                        yTickFormat : ",.0f",
+                        showLegend: false,
+                        xAxisLabel: "Year",
+                        yAxisLabel: "Electricity Generated (GWh)",
+                        marginLeft: 80
+                    })
+                }),
+                edges.newResultsDisplay({
+                    id : "most_recent_grid_connections",
+                    category: "panel",
+                    secondaryResults: "c",
+                    renderer : edges.bs3.newTabularResultsRenderer({
+                        title: "<h3>Most recent grid connections</h3>",
+                        fieldDisplay : [
+                            {field: "reactor.name", display: "Reactor Name"},
+                            {field: "reactor.model", display: "Type"},
+                            {field: "reactor.process", display: "Process"},
+                            {field: "reactor.design_net_capacity", display: "Capacity"},
+                            {field: "reactor.first_grid_connection", display: "Grid Connection"},
+                            {field: "reactor.country", display: "Location"}
+                        ]
+                    })
+                }),
+                edges.newResultsDisplay({
+                    id : "most_recent_construction_starts",
+                    category: "panel",
+                    secondaryResults: "d",
+                    renderer : edges.bs3.newTabularResultsRenderer({
+                        title: "<h3>Most recent construction starts</h3>",
+                        fieldDisplay : [
+                            {field: "reactor.name", display: "Reactor Name"},
+                            {field: "reactor.model", display: "Type"},
+                            {field: "reactor.process", display: "Process"},
+                            {field: "reactor.design_net_capacity", display: "Capacity"},
+                            {field: "reactor.construction_start", display: "Construction Start"},
+                            {field: "reactor.country", display: "Location"}
+                        ]
+                    })
+                }),
+                edges.newResultsDisplay({
+                    id : "top_load_factor",
+                    category: "panel",
+                    secondaryResults: "e",
+                    renderer : edges.bs3.newTabularResultsRenderer({
+                        title: "<h3>Top Load Factor (" + thisYear + ")</h3>",
+                        fieldDisplay : [
+                            {field: "reactor.name", display: "Reactor Name"},
+                            {field: "reactor.load_factor." + thisYear, display: "Load Factor"},
+                            {field: "reactor.model", display: "Type"},
+                            {field: "reactor.process", display: "Process"},
+                            {field: "reactor.design_net_capacity", display: "Capacity"},
+                            {field: "reactor.country", display: "Location"}
+                        ]
+                    })
+                }),
+                edges.newResultsDisplay({
+                    id : "top_lifetime_generation",
+                    category: "panel",
+                    secondaryResults: "f",
+                    renderer : edges.bs3.newTabularResultsRenderer({
+                        title: "<h3>Top Lifetime Generation (" + thisYear + ")</h3>",
+                        fieldDisplay : [
+                            {field: "reactor.name", display: "Reactor Name"},
+                            {field: "reactor.electricity_supplied_cumulative." + thisYear, display: "Total Generation (to end " + thisYear + ")"},
+                            {field: "reactor.model", display: "Type"},
+                            {field: "reactor.process", display: "Process"},
+                            {field: "reactor.design_net_capacity", display: "Capacity"},
+                            {field: "reactor.country", display: "Location"}
+                        ]
+                    })
+                })
+            ]
         });
 
         reactordb.activeEdges[selector] = e;
@@ -637,7 +1049,11 @@ var reactordb = {
             if (bignums.length > 0) {
                 frag += '<div class="row">';
                 for (var i = 0; i < bignums.length; i++) {
-                    frag += '<div class="col-md-4"><div class="' + bigNumberClass + '"><div id="' + bignums[i].id + '"></div></div></div>';
+                    var offset = "col-md-offset-1";
+                    if (i == 0) {
+                        offset = "col-md-offset-2";
+                    }
+                    frag += '<div class="col-md-2 ' + offset + '"><div class="' + bigNumberClass + '"><div id="' + bignums[i].id + '"></div></div></div>';
                 }
                 frag += "</div>";
             }
