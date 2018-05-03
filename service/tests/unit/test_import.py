@@ -29,8 +29,11 @@ class TestImport(ESTestCase):
         importer.import_reactordb(master_path, pris_path, history_path)
         time.sleep(2)
 
-        res = models.Reactor.query()
-        assert res.get("hits", {}).get("total") > 0
+        res = models.Reactor.object_query()
+        assert len(res) == 10
+        assert len(res[0].load_factor.keys()) > 0
+        assert len(res[0].energy_availability.keys()) > 0
+        assert len(res[0].electricity_supplied_cumulative.keys()) > 0
 
-        res = models.Operation.query()
-        assert res.get("hits", {}).get("total") > 0
+        res = models.Operation.object_query()
+        assert len(res) == 10
