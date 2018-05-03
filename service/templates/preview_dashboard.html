@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 
+{% block extra_head %}
+
+<link rel="stylesheet" href="{{url_for('static', filename='vendor/edges/css/bs3.TabularResultsRenderer.css')}}">
+<link rel="stylesheet" href="{{url_for('static', filename='vendor/edges/css/bs3.ImportantNumbersRenderer.css')}}">
+
+{% endblock %}
+
 {% block content %}
 
 {% include '_preview-status.html' %}
@@ -11,23 +18,28 @@
 
 {% block extra_js_bottom %}
 
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/vendor/d3-3.5.17/d3.min.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/vendor/nvd3-1.8.1/nv.d3.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/vendor/PapaParse-4.1.2/papaparse.min.js')}}"></script>
+
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/es.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/edges.jquery.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/edges.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/edges.csv.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/templates/bs3.Facetview.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/components/selectors.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/components/ranges.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/components/charts.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/components/search.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/components/numbers.js')}}"></script>
 
-<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.ORTermSelectorRenderer.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.NumericRangeEntryRenderer.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.FullSearchControllerRenderer.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.PagerRenderer.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.SelectedFiltersRenderer.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.SearchingNotificationRenderer.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/nvd3.edges.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.TabularResultsRenderer.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.ImportantNumbersRenderer.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.StoryRenderer.js')}}"></script>
 
 <script type="text/javascript" src="{{url_for('static', filename='js/reactordb.edges.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='js/reactordbadmin.js')}}"></script>
+
+
 
 <script type="text/javascript">
 jQuery(document).ready(function($) {
@@ -35,8 +47,13 @@ jQuery(document).ready(function($) {
     var current_scheme = window.location.protocol;
     var BASE_URL = current_scheme + "//" + current_domain;
 
+    var urlParams = edges.getUrlParams();
+    var theYear = edges.getParam(urlParams.year, (new Date()).getUTCFullYear());
+
     reactordb.makeDashboard({
-        index: "preview_reactor"
+        reactor_index: "preview_reactor",
+        operation_index: "preview_operation",
+        year: theYear
     });
 
     reactordbadmin.base_url = BASE_URL;
