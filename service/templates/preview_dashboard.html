@@ -11,6 +11,13 @@
 
 {% include '_preview-status.html' %}
 
+<div style="border-bottom: 1px dashed #cccccc; padding-bottom: 10px">
+    <form method="get">
+        Enter the desired reference year: <input type="text" name="year">
+    </form>
+</div>
+
+
 <div id="dashboard"></div>
 
 {% endblock %}
@@ -49,11 +56,15 @@ jQuery(document).ready(function($) {
 
     var urlParams = edges.getUrlParams();
     var theYear = edges.getParam(urlParams.year, (new Date()).getUTCFullYear());
+    $("input[name=year]").val(theYear);
 
     reactordb.makeDashboard({
         reactor_index: "preview_reactor",
         operation_index: "preview_operation",
-        year: theYear
+        year: theYear,
+        reactorPageURLTemplate: "/preview_reactor/{reactor_name}",
+        countryPageURLTemplate: "/preview_country/{country_name}",
+        searchPageURL : "/preview_search"
     });
 
     reactordbadmin.base_url = BASE_URL;

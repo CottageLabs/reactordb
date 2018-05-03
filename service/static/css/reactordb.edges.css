@@ -248,3 +248,16 @@
 #global_nuclear_generation_histogram {
     height: 300px;
 }
+
+#gloabl_nuclear_share {
+    text-align: center;
+}
+
+.reactordb-dashboard-search {
+    position: absolute;
+    margin-top: 20px;
+    border: 1px solid #cccccc;
+    padding: 5px;
+    background: #eeeeee;
+    border-radius: 5px;
+}

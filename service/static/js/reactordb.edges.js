@@ -1,6 +1,35 @@
 var reactordb = {
     activeEdges : {},
 
+    _gwh2twh : function(gwh) {
+        var twh = gwh / 1000.0;
+        var formatter = edges.numFormat({
+            decimalPlaces: 1,
+            thousandsSeparator: ","
+        });
+        return formatter(twh);
+    },
+
+    _reactorPageLink : function(params) {
+        var template = params.url_template;
+
+        return function(reactor_name) {
+            var url = template.replace("{reactor_name}", reactor_name);
+            var frag = '<a href="' + url + '">' + reactor_name + '</a>';
+            return frag;
+        }
+    },
+
+    _countryPageLink : function(params) {
+        var template = params.url_template;
+
+        return function(country_name) {
+            var url = template.replace("{country_name}", country_name);
+            var frag = '<a href="' + url + '">' + country_name + '</a>';
+            return frag;
+        }
+    },
+
     _electricityGenerationByYear : function(component) {
         var seriesName = "Global Electricity Generation by Year";
 
@@ -10,6 +39,7 @@ var reactordb = {
         for (var i = 0; i < buckets.length; i++) {
             var bucket = buckets[i];
             var gen = bucket.electricity_generation.value;
+            gen = gen / 1000.0;
             values.push({label: bucket.key, value: gen});
         }
 
@@ -30,7 +60,14 @@ var reactordb = {
                 }
             }
 
-            return {"a" : gen, "b" : year}
+            var gentwh = gen / 1000.0;
+
+            var formatter = edges.numFormat({
+                decimalPlaces: 0,
+                thousandsSeparator: ","
+            });
+
+            return {"a" : formatter(gentwh), "b" : year}
         }
     },
 
@@ -164,6 +201,9 @@ var reactordb = {
         var operation_search_url = params.operation_search_url || current_scheme + "//" + current_domain + "/query/" + operation_index + "/_search";
 
         var nuclearShareURL = edges.getParam(params.nuclearShareURL, "/static/data/share-of-electricity-generation.csv");
+        var reactorPageURLTemplate = edges.getParam(params.reactorPageURLTemplate, "/reactor/{reactor_name}");
+        var countryPageURLTemplate = edges.getParam(params.countryPageURLTemplate, "/country/{country_name}");
+        var searchPageURL = edges.getParam(params.searchPageURL, "/search");
 
         var topOperableCapacities = edges.getParam(params.topOperableCapacities, 10);
         var topUnderConstructionCapacities = edges.getParam(params.topUnderConstructionCapacities, 10);
@@ -179,7 +219,7 @@ var reactordb = {
         var e = edges.newEdge({
             selector: selector,
             search_url: reactor_search_url,
-            template: reactordb.newDashboardTemplate(),
+            template: reactordb.newDashboardTemplate({searchPageURL: searchPageURL}),
             manageUrl: false,
             staticFiles : [
                 {
@@ -264,7 +304,7 @@ var reactordb = {
                     category: "big-number",
                     calculate: reactordb._operableReactorsCount(),
                     renderer : edges.bs3.newImportantNumbersRenderer({
-                        title: "<h3>Operable Reactors</h3>",
+                        title: "<h4>Operable Reactors</h4>",
                         backgroundImg: numbersBackground,
                         mainNumberFormat: edges.numFormat({
                             decimalPlaces: 0,
@@ -282,7 +322,7 @@ var reactordb = {
                     category: "big-number",
                     calculate: reactordb._underConstructionReactorsCount(),
                     renderer : edges.bs3.newImportantNumbersRenderer({
-                        title: "<h3>Reactors Under Construction</h3>",
+                        title: "<h4>Reactors&nbsp;Under Construction</h4>",
                         backgroundImg: numbersBackground,
                         mainNumberFormat: edges.numFormat({
                             decimalPlaces: 0,
@@ -299,7 +339,7 @@ var reactordb = {
                     id: "gloabl_nuclear_share",
                     category: "big-number",
                     dataFunction: reactordb._globalNuclearShare,
-                    display: "<h3>Share of Global Electricity Generation</h3>",
+                    display: "<h4>Share&nbsp;of&nbsp;Global Electricity&nbsp;Generation</h4>",
                     renderer : edges.nvd3.newPieChartRenderer({
                         showLegend: false,
                         marginTop: 10,
@@ -307,7 +347,11 @@ var reactordb = {
                         marginBottom: 0,
                         marginLeft: 0,
                         labelsOutside: true,
-                        color: ["#1e9dd8", "#ddddff"]
+                        color: ["#1e9dd8", "#ddddff"],
+                        valueFormat : edges.numFormat({
+                            decimalPlaces: 2,
+                            suffix: "%"
+                        })
                     })
                 }),
                 edges.newHorizontalMultibar({
@@ -321,7 +365,12 @@ var reactordb = {
                         barHeight: 40,
                         reserveAbove: 50,
                         reserveBelow: 50,
-                        color : ["#1e9dd8"]
+                        color : ["#1e9dd8"],
+                        yAxisLabel: "Total Operable Reactor Capacity",
+                        valueFormat: edges.numFormat({
+                            decimalPlaces: 0,
+                            thousandsSeparator: ","
+                        })
                     })
                 }),
                 edges.newHorizontalMultibar({
@@ -335,7 +384,12 @@ var reactordb = {
                         barHeight: 40,
                         reserveAbove: 50,
                         reserveBelow: 50,
-                        color : ["#1e9dd8"]
+                        color : ["#1e9dd8"],
+                        yAxisLabel: "Total Under Construction Reactor Capacity",
+                        valueFormat: edges.numFormat({
+                            decimalPlaces: 0,
+                            thousandsSeparator: ","
+                        })
                     })
                 }),
                 edges.numbers.newStory({
@@ -357,7 +411,7 @@ var reactordb = {
                         yTickFormat : ",.0f",
                         showLegend: false,
                         xAxisLabel: "Year",
-                        yAxisLabel: "Electricity Generated (GWh)",
+                        yAxisLabel: "Electricity Generated (TWh)",
                         marginLeft: 80
                     })
                 }),
@@ -368,12 +422,12 @@ var reactordb = {
                     renderer : edges.bs3.newTabularResultsRenderer({
                         title: "<h3>Most recent grid connections</h3>",
                         fieldDisplay : [
-                            {field: "reactor.name", display: "Reactor Name"},
+                            {field: "id", display: "Reactor Name", valueFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate})},
                             {field: "reactor.model", display: "Type"},
                             {field: "reactor.process", display: "Process"},
-                            {field: "reactor.design_net_capacity", display: "Capacity"},
+                            {field: "reactor.design_net_capacity", display: "Capacity (MWe)"},
                             {field: "reactor.first_grid_connection", display: "Grid Connection"},
-                            {field: "reactor.country", display: "Location"}
+                            {field: "reactor.country", display: "Location", valueFunction: reactordb._countryPageLink({url_template: countryPageURLTemplate})}
                         ]
                     })
                 }),
@@ -384,12 +438,12 @@ var reactordb = {
                     renderer : edges.bs3.newTabularResultsRenderer({
                         title: "<h3>Most recent construction starts</h3>",
                         fieldDisplay : [
-                            {field: "reactor.name", display: "Reactor Name"},
+                            {field: "id", display: "Reactor Name", valueFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate})},
                             {field: "reactor.model", display: "Type"},
                             {field: "reactor.process", display: "Process"},
-                            {field: "reactor.design_net_capacity", display: "Capacity"},
+                            {field: "reactor.design_net_capacity", display: "Capacity (MWe)"},
                             {field: "reactor.construction_start", display: "Construction Start"},
-                            {field: "reactor.country", display: "Location"}
+                            {field: "reactor.country", display: "Location", valueFunction: reactordb._countryPageLink({url_template: countryPageURLTemplate})}
                         ]
                     })
                 }),
@@ -400,12 +454,12 @@ var reactordb = {
                     renderer : edges.bs3.newTabularResultsRenderer({
                         title: "<h3>Top Load Factor (" + thisYear + ")</h3>",
                         fieldDisplay : [
-                            {field: "reactor.name", display: "Reactor Name"},
+                            {field: "id", display: "Reactor Name", valueFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate})},
                             {field: "reactor.load_factor." + thisYear, display: "Load Factor"},
                             {field: "reactor.model", display: "Type"},
                             {field: "reactor.process", display: "Process"},
-                            {field: "reactor.design_net_capacity", display: "Capacity"},
-                            {field: "reactor.country", display: "Location"}
+                            {field: "reactor.design_net_capacity", display: "Capacity (MWe)"},
+                            {field: "reactor.country", display: "Location", valueFunction: reactordb._countryPageLink({url_template: countryPageURLTemplate})}
                         ]
                     })
                 }),
@@ -416,12 +470,16 @@ var reactordb = {
                     renderer : edges.bs3.newTabularResultsRenderer({
                         title: "<h3>Top Lifetime Generation (" + thisYear + ")</h3>",
                         fieldDisplay : [
-                            {field: "reactor.name", display: "Reactor Name"},
-                            {field: "reactor.electricity_supplied_cumulative." + thisYear, display: "Total Generation (to end " + thisYear + ")"},
+                            {field: "id", display: "Reactor Name", valueFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate})},
+                            {
+                                field: "reactor.electricity_supplied_cumulative." + thisYear,
+                                display: "Total Generation (to end " + thisYear + ") (TWh)",
+                                valueFunction: reactordb._gwh2twh
+                            },
                             {field: "reactor.model", display: "Type"},
                             {field: "reactor.process", display: "Process"},
-                            {field: "reactor.design_net_capacity", display: "Capacity"},
-                            {field: "reactor.country", display: "Location"}
+                            {field: "reactor.design_net_capacity", display: "Capacity (MWe)"},
+                            {field: "reactor.country", display: "Location", valueFunction: reactordb._countryPageLink({url_template: countryPageURLTemplate})}
                         ]
                     })
                 })
@@ -1020,6 +1078,8 @@ var reactordb = {
     },
     DashboardTemplate : function(params) {
 
+        this.searchPageURL = edges.getParam(params.searchPageURL, "/search");
+
         this.namespace = "reactordb-dashboard";
 
         this.draw = function(edge) {
@@ -1030,6 +1090,7 @@ var reactordb = {
             var bigNumberClass = edges.css_classes(this.namespace, "bignumber");
             var panelClass = edges.css_classes(this.namespace, "panel");
             var mapClass = edges.css_classes(this.namespace, "map");
+            var searchButtonClass = edges.css_classes(this.namespace, "search");
 
             // start building the page template
             var frag = '<div class="' + containerClass + '"><div class="row">';
@@ -1041,6 +1102,9 @@ var reactordb = {
                     <h1>Reactor Database</h1>\
                     <p>World Nuclear Association reactor database contains technical and performance information of nuclear power reactors worldwide</p>\
                     <p>Data Sources: World Nuclear Association and IAEA Power Reactor Information System</p>\
+                </div>\
+                <div class="col-md-2">\
+                    <a class="' + searchButtonClass + '" href="' + this.searchPageURL + '">Search the Database</a>\
                 </div>\
             </div>';
 
