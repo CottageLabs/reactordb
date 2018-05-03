@@ -61,6 +61,38 @@ def import_reactordb(master_path, pris_path, history_path):
         # translate the status to the internally preferred value if necessary
         obj["status"] = STATUS_MAP.get(obj.get("status"), obj.get("status"))
 
+        # for all the operation histories for this reactor, also extract the information we want
+        # to store against it
+        load_factor = {}
+        energy_availability = {}
+        electricity_supplied = {}
+        for h in histories:
+            lf = h.load_factor_annual
+            ea = h.energy_availability_factor_annual
+            es = h.electricity_supplied
+            year = h.year
+            if lf is None:
+                lf = 0.0
+            if ea is None:
+                ea = 0.0
+            if es is None:
+                es = 0.0
+            load_factor[str(year)] = float(lf)
+            energy_availability[str(year)] = float(ea)
+            electricity_supplied[year] = float(es)
+
+        obj["load_factor"] = load_factor
+        obj["energy_availability"] = energy_availability
+
+        electricity_supplied_cumulative = {}
+        es_years = electricity_supplied.keys()
+        es_years.sort()
+        total = 0.0
+        for year in es_years:
+            total += electricity_supplied[year]
+            electricity_supplied_cumulative[str(year)] = total
+        obj["electricity_supplied_cumulative"] = electricity_supplied_cumulative
+
         # make and populate a reactor object, then save it
         r = Reactor()
         r.populate(obj)

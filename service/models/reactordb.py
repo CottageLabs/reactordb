@@ -175,7 +175,10 @@ class Reactor(dataobj.DataObj, ReactorDAO):
                     },
                     "objects" : [
                         "location",
-                        "site_location"
+                        "site_location",
+                        "load_factor",
+                        "energy_availability",
+                        "electricity_supplied_cumulative"
                     ],
                     "lists" : {
                         "owner" : {"contains" : "object"},
@@ -258,7 +261,10 @@ class Reactor(dataobj.DataObj, ReactorDAO):
             "thermal_capacity" : ("reactor.thermal_capacity", None),
             "url" : ("reactor.url", None),
             "vendor" : ("reactor.vendor", None),
-            "website" : ("reactor.url", None)
+            "website" : ("reactor.url", None),
+            "load_factor" : ("reactor.load_factor", None),
+            "energy_availability" : ("reactor.energy_availability", None),
+            "electricity_supplied_cumulative" : ("reactor.electricity_supplied_cumulative", None)
         }
 
         self._add_struct(struct)
