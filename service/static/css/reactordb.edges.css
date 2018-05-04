@@ -261,3 +261,22 @@
     background: #eeeeee;
     border-radius: 5px;
 }
+
+/*
+ * Styles for the country page
+ */
+#country_nuclear_share {
+    text-align: center;
+}
+
+#country_nuclear_generation_histogram {
+    height: 300px;
+}
+
+#operable_nuclear_capacity {
+    height: 300px;
+}
+
+#country_operable_reactors td {
+    white-space: nowrap;
+}
