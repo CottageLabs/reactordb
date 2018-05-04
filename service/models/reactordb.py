@@ -219,7 +219,8 @@ class Reactor(dataobj.DataObj, ReactorDAO):
                         "sort_name" : {"coerce" : "unicode"},
                         "first_grid_connection_year" : {"coerce" : "integer", "allowed_range" : (1000, 9999)},
                         "permanent_shutdown_year" : {"coerce" : "integer", "allowed_range" : (1000, 9999)},
-                        "construction_start_year" : {"coerce" : "integer", "allowed_range" : (1000, 9999)}
+                        "construction_start_year" : {"coerce" : "integer", "allowed_range" : (1000, 9999)},
+                        "country" : {"coerce" : "unicode"}
                     }
                 }
             }
@@ -311,7 +312,7 @@ class Reactor(dataobj.DataObj, ReactorDAO):
             self._add_to_list("reactor.links", v)
 
     def prep(self):
-        # we need to set 4 internal index properties
+        # we need to set 5 internal index properties
 
         # 1. index.sort_name - normalised version of the reactor name for sorting on
         sn = strings.normalise(self.reactor_name)
@@ -332,6 +333,11 @@ class Reactor(dataobj.DataObj, ReactorDAO):
             csy = dates.reformat(self.construction_start, out_format="%Y")
             self._set_single("index.construction_start_year", csy, dataobj.to_int())
 
+        # 5. A normalised version of the country name
+        if self.country is not None:
+            norm_country = self.country.lower()
+            self._set_with_struct("index.country", norm_country)
+
 class Operation(dataobj.DataObj, OperationDAO):
     def __init__(self, raw=None):
         struct = {
@@ -340,6 +346,7 @@ class Operation(dataobj.DataObj, OperationDAO):
                 "created_date" : {"coerce" : "utcdatetime"},
                 "last_updated" : {"coerce" : "utcdatetime"},
 
+                "country" : {"coerce" : "unicode"},
                 "reactor" : {"coerce" : "unicode", "allow_none" : False},
                 "year" : {"coerce" : "integer", "allow_none" : False},
 
@@ -353,8 +360,22 @@ class Operation(dataobj.DataObj, OperationDAO):
                 "load_factor_cumulative" : {"coerce" : "float", "ignore_none" : True},
 
                 "comment" : {"coerce" : "unicode", "ignore_none" : True}
+            },
+            "objects" : ["index"],
+            "structs" : {
+                "index" : {
+                    "fields" : {
+                        "country" : {"coerce" : "unicode"}
+                    }
+                }
             }
         }
 
         self._add_struct(struct)
         super(Operation, self).__init__(raw=raw, expose_data=True)
+
+    def prep(self):
+        # Store a normalised version of the country name
+        if self.country is not None:
+            norm_country = self.country.lower()
+            self._set_with_struct("index.country", norm_country)

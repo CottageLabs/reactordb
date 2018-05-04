@@ -100,6 +100,7 @@ def import_reactordb(master_path, pris_path, history_path):
 
         # save the operational history
         for h in histories:
+            h.country = r.country
             h.save()
 
 
