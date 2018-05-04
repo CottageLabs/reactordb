@@ -1,12 +1,22 @@
 {% extends "base.html" %}
 
+{% block extra_head %}
+
+<link rel="stylesheet" href="{{url_for('static', filename='vendor/edges/css/bs3.TabularResultsRenderer.css')}}">
+<link rel="stylesheet" href="{{url_for('static', filename='vendor/edges/css/bs3.ImportantNumbersRenderer.css')}}">
+
+{% endblock %}
+
 {% block content %}
 
 {% include '_preview-status.html' %}
 
-{% if not reactor_id %}
-    Insert the country name in the URL bar above to see the country report
-{% endif %}
+<div style="border-bottom: 1px dashed #cccccc; padding-bottom: 10px">
+    <form method="get">
+        Enter the desired country: <input type="text" name="country"> and year <input type="text" name="year">
+        <button type="submit">go</button>
+    </form>
+</div>
 
 <div id="country-report"></div>
 
@@ -15,41 +25,57 @@
 
 {% block extra_js_bottom %}
 
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/vendor/d3-3.5.17/d3.min.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/vendor/nvd3-1.8.1/nv.d3.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/vendor/PapaParse-4.1.2/papaparse.min.js')}}"></script>
+
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/es.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/edges.jquery.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/edges.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/templates/bs3.Facetview.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/components/selectors.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/components/ranges.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/edges.csv.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/components/charts.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/components/search.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/components/numbers.js')}}"></script>
 
-<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.ORTermSelectorRenderer.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.NumericRangeEntryRenderer.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.FullSearchControllerRenderer.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.PagerRenderer.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.SelectedFiltersRenderer.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.SearchingNotificationRenderer.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/nvd3.edges.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.TabularResultsRenderer.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.ImportantNumbersRenderer.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.StoryRenderer.js')}}"></script>
 
 <script type="text/javascript" src="{{url_for('static', filename='js/reactordb.edges.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='js/reactordbadmin.js')}}"></script>
 
 <script type="text/javascript">
 jQuery(document).ready(function($) {
-    {% if country_id %}
     var current_domain = document.location.host;
     var current_scheme = window.location.protocol;
     var BASE_URL = current_scheme + "//" + current_domain;
 
-    reactordb.makeCountryReport({
-        index: "preview_reactor"
-    });
+    var country_regex = new RegExp("preview_country\/(.+)");
+    var regex_result = country_regex.exec(window.location.pathname);
+    var country_name = false;
+    if (regex_result != null) {
+        country_name = regex_result[1];
+        $("input[name=country]").val(country_name);
+    }
 
-    reactordbadmin.base_url = BASE_URL;
-    reactordbadmin.selector = "#country-report";
-    reactordbadmin.requestStatus();
-    {% else %}
-    $("#current-rollout-status").html("Select a country to see the rollout status");
-    {% endif %}
+    var urlParams = edges.getUrlParams();
+    var theYear = edges.getParam(urlParams.year, (new Date()).getUTCFullYear());
+    $("input[name=year]").val(theYear);
+
+    if (country_name) {
+        reactordb.makeCountryReport({
+            reactor_index: "preview_reactor",
+            operation_index: "preview_operation",
+            year: theYear,
+            reactorPageURLTemplate: "/preview_reactor/{reactor_name}",
+            country_regex: country_regex
+        });
+
+        reactordbadmin.base_url = BASE_URL;
+        reactordbadmin.selector = "#country-report";
+        reactordbadmin.requestStatus();
+    }
 });
 </script>
 

@@ -170,6 +170,13 @@ def preview_reactor(reactor_id=None):
 @app.route("/preview_country")
 @app.route("/preview_country/<country_id>")
 def preview_country(country_id=None):
+    country = request.values.get("country")
+    year = request.values.get("year")
+    if country is not None:
+        year_ex = ""
+        if year is not None:
+            year_ex = "?year=" + year
+        return redirect(url_for('preview_country', country_id=country) + year_ex)
     return render_template("preview_country.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"), country_id=country_id)
 
 
