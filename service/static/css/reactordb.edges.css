@@ -254,12 +254,34 @@
 }
 
 .reactordb-dashboard-search {
-    position: absolute;
     margin-top: 20px;
     border: 1px solid #cccccc;
     padding: 5px;
     background: #eeeeee;
     border-radius: 5px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.edges-bs3-important-numbers-title {
+    height: 60px;
+}
+
+.edges-nvd3-pie-display-global_nuclear_share {
+    height: 60px;
+    text-align: center;
+}
+
+#edges-nvd3-pie-svg-global_nuclear_share {
+    margin-top: -60px;
+}
+
+.edges-nvd3-pie-container-global_nuclear_share {
+    height: 100%;
+}
+
+.edges-nvd3-pie-svg-container-global_nuclear_share {
+    height: 100%;
 }
 
 /*

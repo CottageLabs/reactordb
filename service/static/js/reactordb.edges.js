@@ -920,7 +920,7 @@ var reactordb = {
                     category: "big-number",
                     calculate: reactordb._underConstructionReactorsCount(),
                     renderer : edges.bs3.newImportantNumbersRenderer({
-                        title: "<h4>Reactors&nbsp;Under Construction</h4>",
+                        title: "<h4>Reactors Under Construction</h4>",
                         backgroundImg: numbersBackground,
                         mainNumberFormat: edges.numFormat({
                             decimalPlaces: 0,
@@ -934,13 +934,13 @@ var reactordb = {
                     })
                 }),
                 edges.newPieChart({
-                    id: "gloabl_nuclear_share",
+                    id: "global_nuclear_share",
                     category: "big-number",
                     dataFunction: reactordb._globalNuclearShare,
-                    display: "<h4>Share&nbsp;of&nbsp;Global Electricity&nbsp;Generation</h4>",
+                    display: "<h4>Share of Global Electricity Generation</h4>",
                     renderer : edges.nvd3.newPieChartRenderer({
                         showLegend: false,
-                        marginTop: 10,
+                        marginTop: 60,
                         marginRight: 0,
                         marginBottom: 0,
                         marginLeft: 0,
@@ -949,7 +949,12 @@ var reactordb = {
                         valueFormat : edges.numFormat({
                             decimalPlaces: 2,
                             suffix: "%"
-                        })
+                        }),
+                        onResize : function() {
+                            var height = $("#reactors_under_construction_count").height();
+                            $("#global_nuclear_share").css("height", height + "px");
+                        },
+                        resizeOnInit: true
                     })
                 }),
                 edges.newHorizontalMultibar({
@@ -1112,30 +1117,42 @@ var reactordb = {
 
             // the header for the page
             frag += '<div class="row">\
-                <div class="col-md-10">\
+                <div class="col-sm-9 col-xs-12">\
                     <h1>Reactor Database</h1>\
                     <p>World Nuclear Association reactor database contains technical and performance information of nuclear power reactors worldwide</p>\
                     <p>Data Sources: World Nuclear Association and IAEA Power Reactor Information System</p>\
                 </div>\
-                <div class="col-md-2">\
-                    <a class="' + searchButtonClass + '" href="' + this.searchPageURL + '">Search the Database</a>\
+                <div class="col-sm-3 col-xs-4">\
+                    <div class="' + searchButtonClass + '"><a href="' + this.searchPageURL + '">Search the Database</a></div>\
                 </div>\
             </div>';
 
             // the big numbers along the top
-            var bignums = edge.category("big-number");
-            if (bignums.length > 0) {
-                frag += '<div class="row">';
-                for (var i = 0; i < bignums.length; i++) {
-                    var offset = "col-md-offset-1";
-                    if (i == 0) {
-                        offset = "col-md-offset-2";
-                    }
-                    frag += '<div class="col-md-2 ' + offset + '"><div class="' + bigNumberClass + '"><div id="' + bignums[i].id + '"></div></div></div>';
-                }
-                frag += "</div>";
-            }
 
+            frag += '<div class="row">\
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">\
+                    <div class="row">\
+                        <div class="col-lg-8 col-lg-offset-4 col-md-8 col-md-offset-4 col-sm-8 col-sm-offset-4 col-xs-9 col-xs-offset-2">\
+                            <div id="operable_reactors_count"></div>\
+                        </div>\
+                    </div>\
+                </div>\
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">\
+                    <div class="row">\
+                        <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-9 col-xs-offset-1">\
+                            <div id="reactors_under_construction_count"></div>\
+                        </div>\
+                    </div>\
+                </div>\
+                <div class="col-lg-4 col-lg-offset-0 col-md-4 col-md-offset-0 col-sm-4 col-sm-offset-0 col-xs-6 col-xs-offset-3">\
+                    <div class="row">\
+                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">\
+                            <div id="global_nuclear_share"></div>\
+                        </div>\
+                    </div>\
+                </div>\
+            </div>';
+            
             // the full width panels beneath
             var panel = edge.category("panel");
             if (panel.length > 0) {
@@ -1151,6 +1168,10 @@ var reactordb = {
         };
     },
 
+    /* ===================================================
+     * Functions related to Search
+     * ===================================================
+     */
 
     makeSearch : function(params) {
 
