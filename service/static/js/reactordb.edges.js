@@ -1,6 +1,10 @@
 var reactordb = {
     activeEdges : {},
 
+    _htmlPassThrough : function(val) {
+        return val;
+    },
+
     /* =====================================================
      * Functions for the Country Page
      * =====================================================
@@ -365,9 +369,9 @@ var reactordb = {
                             thousandsSeparator: ","
                         }),
                         secondNumberFormat: edges.numFormat({
-                            decimalPlaces: 1,
+                            decimalPlaces: 0,
                             thousandsSeparator: ",",
-                            suffix: " GWe"
+                            suffix: " MWe"
                         })
                     })
                 }),
@@ -383,9 +387,9 @@ var reactordb = {
                             thousandsSeparator: ","
                         }),
                         secondNumberFormat: edges.numFormat({
-                            decimalPlaces: 1,
+                            decimalPlaces: 0,
                             thousandsSeparator: ",",
-                            suffix: " GWe"
+                            suffix: " MWe"
                         })
                     })
                 }),
@@ -459,7 +463,7 @@ var reactordb = {
                         sortable: true,
                         hideOnNoResults: true,
                         fieldDisplay : [
-                            {field: "id", display: "Reactor Name", valueFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate})},
+                            {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
                             {field: "reactor.model", display: "Model"},
                             {field: "reactor.process", display: "Process"},
                             {field: "reactor.design_net_capacity", display: "Capacity (MWe)"},
@@ -487,7 +491,7 @@ var reactordb = {
                         sortable: true,
                         hideOnNoResults: true,
                         fieldDisplay : [
-                            {field: "id", display: "Reactor Name", valueFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate})},
+                            {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
                             {field: "reactor.model", display: "Model"},
                             {field: "reactor.process", display: "Process"},
                             {field: "reactor.design_net_capacity", display: "Capacity (MWe)"},
@@ -504,7 +508,7 @@ var reactordb = {
                         sortable: true,
                         hideOnNoResults: true,
                         fieldDisplay : [
-                            {field: "id", display: "Reactor Name", valueFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate})},
+                            {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
                             {field: "reactor.model", display: "Model"},
                             {field: "reactor.process", display: "Process"},
                             {field: "reactor.design_net_capacity", display: "Capacity (MWe)"},
@@ -521,7 +525,7 @@ var reactordb = {
                         sortable: true,
                         hideOnNoResults: true,
                         fieldDisplay : [
-                            {field: "id", display: "Reactor Name", valueFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate})},
+                            {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
                             {field: "reactor.model", display: "Model"},
                             {field: "reactor.process", display: "Process"},
                             {field: "reactor.design_net_capacity", display: "Net Capacity (MWe)"},
@@ -604,6 +608,9 @@ var reactordb = {
                 }
             }
 
+            // final note about the data sources
+            frag += '<div class="row"><div class="col-xs-12"><p>Data Sources: World Nuclear Association and <a href="https://www.iaea.org/PRIS/home.aspx">IAEA Power Reactor Information System</a></p></div></div>';
+
             // close off all the big containers and return
             frag += '</div></div></div>';
 
@@ -627,9 +634,14 @@ var reactordb = {
     _reactorPageLink : function(params) {
         var template = params.url_template;
 
-        return function(reactor_name) {
-            var url = template.replace("{reactor_name}", reactor_name);
-            var frag = '<a href="' + url + '">' + reactor_name + '</a>';
+        return function(params) {
+            var reactor = params.result;
+
+            var id = reactor.id;
+            var name = reactor.reactor.name;
+
+            var url = template.replace("{reactor_name}", id);
+            var frag = '<a href="' + url + '">' + name + '</a>';
             return frag;
         }
     },
@@ -925,9 +937,9 @@ var reactordb = {
                             thousandsSeparator: ","
                         }),
                         secondNumberFormat: edges.numFormat({
-                            decimalPlaces: 1,
+                            decimalPlaces: 0,
                             thousandsSeparator: ",",
-                            suffix: " GWe"
+                            suffix: " MWe"
                         })
                     })
                 }),
@@ -943,9 +955,9 @@ var reactordb = {
                             thousandsSeparator: ","
                         }),
                         secondNumberFormat: edges.numFormat({
-                            decimalPlaces: 1,
+                            decimalPlaces: 0,
                             thousandsSeparator: ",",
-                            suffix: " GWe"
+                            suffix: " MWe"
                         })
                     })
                 }),
@@ -978,17 +990,18 @@ var reactordb = {
                     category: "panel",
                     dataFunction: reactordb._topXReactorsByOperableCapacity({x: topOperableCapacities}),
                     renderer : edges.nvd3.newHorizontalMultibarRenderer({
-                        title: "<h3>Leading Countries: Total Operable Reactor Capacity</h3>",
+                        title: "<h3>Total Operable Reactor Capacity (Top " + topOperableCapacities + ")</h3>",
                         legend: false,
                         dynamicHeight: true,
                         barHeight: 40,
                         reserveAbove: 50,
                         reserveBelow: 50,
                         color : ["#1e9dd8"],
-                        yAxisLabel: "Total Operable Reactor Capacity",
+                        yAxisLabel: "Total Operable Reactor Capacity (MWe)",
                         valueFormat: edges.numFormat({
                             decimalPlaces: 0,
-                            thousandsSeparator: ","
+                            thousandsSeparator: ",",
+                            suffix: " MWe"
                         })
                     })
                 }),
@@ -997,17 +1010,18 @@ var reactordb = {
                     category: "panel",
                     dataFunction: reactordb._topXReactorsByUnderConstructionCapacity({x: topUnderConstructionCapacities}),
                     renderer : edges.nvd3.newHorizontalMultibarRenderer({
-                        title: "<h3>Leading Countries: Reactors Under Construction Capacity</h3>",
+                        title: "<h3>Reactors Under Construction Capacity (Top " + topUnderConstructionCapacities + ")</h3>",
                         legend: false,
                         dynamicHeight: true,
                         barHeight: 40,
                         reserveAbove: 50,
                         reserveBelow: 50,
                         color : ["#1e9dd8"],
-                        yAxisLabel: "Total Under Construction Reactor Capacity",
+                        yAxisLabel: "Total Under Construction Reactor Capacity (MWe)",
                         valueFormat: edges.numFormat({
                             decimalPlaces: 0,
-                            thousandsSeparator: ","
+                            thousandsSeparator: ",",
+                            suffix: " MWe"
                         })
                     })
                 }),
@@ -1041,7 +1055,7 @@ var reactordb = {
                     renderer : edges.bs3.newTabularResultsRenderer({
                         title: "<h3>Most recent grid connections</h3>",
                         fieldDisplay : [
-                            {field: "id", display: "Reactor Name", valueFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate})},
+                            {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
                             {field: "reactor.model", display: "Type"},
                             {field: "reactor.process", display: "Process"},
                             {field: "reactor.design_net_capacity", display: "Capacity (MWe)"},
@@ -1057,7 +1071,7 @@ var reactordb = {
                     renderer : edges.bs3.newTabularResultsRenderer({
                         title: "<h3>Most recent construction starts</h3>",
                         fieldDisplay : [
-                            {field: "id", display: "Reactor Name", valueFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate})},
+                            {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
                             {field: "reactor.model", display: "Type"},
                             {field: "reactor.process", display: "Process"},
                             {field: "reactor.design_net_capacity", display: "Capacity (MWe)"},
@@ -1073,7 +1087,7 @@ var reactordb = {
                     renderer : edges.bs3.newTabularResultsRenderer({
                         title: "<h3>Top Load Factor (" + thisYear + ")</h3>",
                         fieldDisplay : [
-                            {field: "id", display: "Reactor Name", valueFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate})},
+                            {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
                             {field: "reactor.load_factor." + thisYear, display: "Load Factor"},
                             {field: "reactor.model", display: "Type"},
                             {field: "reactor.process", display: "Process"},
@@ -1089,7 +1103,7 @@ var reactordb = {
                     renderer : edges.bs3.newTabularResultsRenderer({
                         title: "<h3>Top Lifetime Generation (" + thisYear + ")</h3>",
                         fieldDisplay : [
-                            {field: "id", display: "Reactor Name", valueFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate})},
+                            {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
                             {
                                 field: "reactor.electricity_supplied_cumulative." + thisYear,
                                 display: "Total Generation (to end " + thisYear + ") (TWh)",
@@ -1136,7 +1150,6 @@ var reactordb = {
                 <div class="col-sm-9 col-xs-12">\
                     <h1>Reactor Database</h1>\
                     <p>World Nuclear Association reactor database contains technical and performance information of nuclear power reactors worldwide</p>\
-                    <p>Data Sources: World Nuclear Association and IAEA Power Reactor Information System</p>\
                 </div>\
                 <div class="col-sm-3 col-xs-4">\
                     <div class="' + searchButtonClass + '"><a href="' + this.searchPageURL + '">Search the Database</a></div>\
@@ -1175,6 +1188,9 @@ var reactordb = {
                     frag += '<div class="row"><div class="col-md-12"><div class="' + panelClass + '" dir="auto"><div id="' + panel[i].id + '"></div></div></div></div>';
                 }
             }
+
+            // final note about the data sources
+            frag += '<div class="row"><div class="col-xs-12"><p>Data Sources: World Nuclear Association and <a href="https://www.iaea.org/PRIS/home.aspx">IAEA Power Reactor Information System</a></p></div></div>';
 
             // close off all the big containers and return
             frag += '</div></div></div>';
