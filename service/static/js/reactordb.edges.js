@@ -396,7 +396,7 @@ var reactordb = {
                     display: "<h4>Nuclear Share of Generation</h4>",
                     renderer : edges.nvd3.newPieChartRenderer({
                         showLegend: false,
-                        marginTop: 10,
+                        marginTop: 60,
                         marginRight: 0,
                         marginBottom: 0,
                         marginLeft: 0,
@@ -405,7 +405,12 @@ var reactordb = {
                         valueFormat : edges.numFormat({
                             decimalPlaces: 2,
                             suffix: "%"
-                        })
+                        }),
+                        onResize : function() {
+                            var height = $("#reactors_under_construction_count").height();
+                            $("#country_nuclear_share").css("height", height + "px");
+                        },
+                        resizeOnInit: true
                     })
                 }),
                 edges.newMultibar({
@@ -567,18 +572,29 @@ var reactordb = {
             </div>';
 
             // the big numbers along the top
-            var bignums = edge.category("big-number");
-            if (bignums.length > 0) {
-                frag += '<div class="row">';
-                for (var i = 0; i < bignums.length; i++) {
-                    var offset = "col-md-offset-1";
-                    if (i == 0) {
-                        offset = "col-md-offset-2";
-                    }
-                    frag += '<div class="col-md-2 ' + offset + '"><div class="' + bigNumberClass + '"><div id="' + bignums[i].id + '"></div></div></div>';
-                }
-                frag += "</div>";
-            }
+            frag += '<div class="row">\
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">\
+                    <div class="row">\
+                        <div class="col-lg-8 col-lg-offset-4 col-md-8 col-md-offset-4 col-sm-8 col-sm-offset-4 col-xs-9 col-xs-offset-2">\
+                            <div id="operable_reactors_count"></div>\
+                        </div>\
+                    </div>\
+                </div>\
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">\
+                    <div class="row">\
+                        <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-9 col-xs-offset-1">\
+                            <div id="reactors_under_construction_count"></div>\
+                        </div>\
+                    </div>\
+                </div>\
+                <div class="col-lg-4 col-lg-offset-0 col-md-4 col-md-offset-0 col-sm-4 col-sm-offset-0 col-xs-6 col-xs-offset-3">\
+                    <div class="row">\
+                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">\
+                            <div id="country_nuclear_share"></div>\
+                        </div>\
+                    </div>\
+                </div>\
+            </div>';
 
             // the full width panels beneath
             var panel = edge.category("panel");
@@ -1128,7 +1144,6 @@ var reactordb = {
             </div>';
 
             // the big numbers along the top
-
             frag += '<div class="row">\
                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">\
                     <div class="row">\
@@ -1152,7 +1167,7 @@ var reactordb = {
                     </div>\
                 </div>\
             </div>';
-            
+
             // the full width panels beneath
             var panel = edge.category("panel");
             if (panel.length > 0) {
