@@ -58,6 +58,12 @@ jQuery(document).ready(function($) {
     var theYear = edges.getParam(urlParams.year, (new Date()).getUTCFullYear());
     $("input[name=year]").val(theYear);
 
+    $("#dasboard").on("edges:post-init", function() {
+        reactordbadmin.base_url = BASE_URL;
+        reactordbadmin.selector = "#dashboard";
+        reactordbadmin.requestStatus();
+    });
+
     reactordb.makeDashboard({
         reactor_index: "preview_reactor",
         operation_index: "preview_operation",
@@ -66,10 +72,6 @@ jQuery(document).ready(function($) {
         countryPageURLTemplate: "/preview_country/{country_name}",
         searchPageURL : "/preview_search"
     });
-
-    reactordbadmin.base_url = BASE_URL;
-    reactordbadmin.selector = "#dashboard";
-    reactordbadmin.requestStatus();
 
 });
 </script>

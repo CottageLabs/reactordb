@@ -63,6 +63,12 @@ jQuery(document).ready(function($) {
     var theYear = edges.getParam(urlParams.year, (new Date()).getUTCFullYear());
     $("input[name=year]").val(theYear);
 
+    $("#country-report").on("edges:post-init", function() {
+        reactordbadmin.base_url = BASE_URL;
+        reactordbadmin.selector = "#country-report";
+        reactordbadmin.requestStatus();
+    });
+
     if (country_name) {
         reactordb.makeCountryReport({
             reactor_index: "preview_reactor",
@@ -71,10 +77,6 @@ jQuery(document).ready(function($) {
             reactorPageURLTemplate: "/preview_reactor/{reactor_name}",
             country_regex: country_regex
         });
-
-        reactordbadmin.base_url = BASE_URL;
-        reactordbadmin.selector = "#country-report";
-        reactordbadmin.requestStatus();
     }
 });
 </script>

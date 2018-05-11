@@ -35,15 +35,17 @@ jQuery(document).ready(function($) {
     var current_scheme = window.location.protocol;
     var BASE_URL = current_scheme + "//" + current_domain;
 
+    $("#reactor-search").on("edges:post-init", function() {
+        reactordbadmin.base_url = BASE_URL;
+        reactordbadmin.selector = "#reactor-search";
+        reactordbadmin.requestStatus();
+    });
+
     reactordb.makeSearch({
         index: "preview_reactor",
         reactor_base_url: BASE_URL + "/preview_reactor/"
     });
-
-    reactordbadmin.base_url = BASE_URL;
-    reactordbadmin.selector = "#reactor-search";
-    reactordbadmin.requestStatus();
-
+    
 });
 </script>
 

@@ -1610,6 +1610,10 @@ var reactordb = {
             <div id="reactor-links"><div id="reactor_links"></div></div>'
         );
 
+        if (params.postInit) {
+            $("#reactor-record").on("edges:post-init", params.postInit);
+        }
+
         // create the 3 edges ...
 
         // first for the main body of reactor information
