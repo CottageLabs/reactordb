@@ -2218,7 +2218,7 @@ var reactordb = {
                 numbersRows += '<tr><td class="' + tableKeyClasses + '">Capacity Thermal</td><td class="' + tableValClasses + '">' + thermal_capacity + ' MWt</td></tr>';
             }
             if (design_capacity) {
-                numbersRows += '<tr><td class="' + tableKeyClasses + '">Design Capacity</td><td class="' + tableValClasses + '">' + design_capacity + ' MWe</td></tr>';
+                numbersRows += '<tr><td class="' + tableKeyClasses + '">Design Net Capacity</td><td class="' + tableValClasses + '">' + design_capacity + ' MWe</td></tr>';
             }
             numbers = numbers.replace(/_ROWS_/g, numbersRows);
 
