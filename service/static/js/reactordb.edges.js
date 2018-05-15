@@ -49,11 +49,16 @@ var reactordb = {
         var psy = false;
         if (reactor.index.hasOwnProperty("permanent_shutdown_year")) {
             psy = reactor.index.permanent_shutdown_year;
-            nextLimit = psy;
+            if (psy < upper) {
+                nextLimit = psy;
+            }
         }
         if (reactor.reactor.hasOwnProperty("longterm_shutdown")) {
             var lts = reactor.reactor.longterm_shutdown;
-            nextLimit = parseInt(lts.split("-")[0]);
+            var ltsy = parseInt(lts.split("-")[0]);
+            if (ltsy < upper) {
+                nextLimit = ltsy;
+            }
         }
 
         // record the years
@@ -74,7 +79,7 @@ var reactordb = {
 
         // now determine the year to go to next
         nextLimit = upper;
-        if (psy !== false) {
+        if (psy !== false && psy < upper) {
             nextLimit = psy;
         }
 
@@ -94,20 +99,38 @@ var reactordb = {
             for (var i = 0; i < results.length; i++) {
                 var res = results[i];
                 var years = reactordb._yearsOperable({reactor: res, upper: upper});
-                var rup = res.reactor.reference_unit_power_capacity_net;
+                // var rup = res.reactor.reference_unit_power_capacity_net;
                 for (var j = 0; j < years.length; j++) {
                     var year = years[j];
                     if (!buckets.hasOwnProperty(year)) {
                         buckets[year] = 0;
                     }
+                    var rupDict = res.reactor.reference_unit_power;
+                    var rup = 0;
+                    if (rupDict.hasOwnProperty(year)) {
+                        rup = rupDict[year];
+                    }
                     buckets[year] += rup;
                 }
             }
 
-            var seriesName = "Operable Nuclear Capacity";
-            var values = [];
+            // strip the leading zeros
             var years = Object.keys(buckets);
             years.sort();
+            for (var i = 0; i < years.length; i++) {
+                var onc = buckets[years[i]];
+                if (onc === 0) {
+                    delete buckets[years[i]];
+                } else {
+                    break;
+                }
+            }
+
+            // now convert what remains to a data series
+            years = Object.keys(buckets);
+            years.sort();
+            var seriesName = "Operable Nuclear Capacity";
+            var values = [];
             var lastYear = false;
             for (var i = 0; i < years.length; i++) {
                 var year = parseInt(years[i]);
@@ -466,7 +489,7 @@ var reactordb = {
                             {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
                             {field: "reactor.model", display: "Model"},
                             {field: "reactor.process", display: "Process"},
-                            {field: "reactor.design_net_capacity", display: "Capacity (MWe)"},
+                            {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
                             {field: "reactor.first_grid_connection", display: "Grid Connection"},
                             {field: "reactor.load_factor." + thisYear, display: "Load Factor (" + thisYear + ") (%)"},
                             {
@@ -494,7 +517,7 @@ var reactordb = {
                             {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
                             {field: "reactor.model", display: "Model"},
                             {field: "reactor.process", display: "Process"},
-                            {field: "reactor.design_net_capacity", display: "Capacity (MWe)"},
+                            {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
                             {field: "reactor.construction_start", display: "Construction Start"}
                         ]
                     })
@@ -511,7 +534,7 @@ var reactordb = {
                             {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
                             {field: "reactor.model", display: "Model"},
                             {field: "reactor.process", display: "Process"},
-                            {field: "reactor.design_net_capacity", display: "Capacity (MWe)"},
+                            {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
                             {field: "reactor.longterm_shutdown", display: "Longterm Shutdown"}
                         ]
                     })
@@ -528,7 +551,7 @@ var reactordb = {
                             {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
                             {field: "reactor.model", display: "Model"},
                             {field: "reactor.process", display: "Process"},
-                            {field: "reactor.design_net_capacity", display: "Net Capacity (MWe)"},
+                            {field: "reactor.reference_unit_power_capacity_net", display: "Net Capacity (MWe)"},
                             {
                                 field: "lifetime_generation",
                                 fieldFunction: reactordb._lifetimeGeneration,
@@ -1058,7 +1081,7 @@ var reactordb = {
                             {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
                             {field: "reactor.model", display: "Model"},
                             {field: "reactor.process", display: "Process"},
-                            {field: "reactor.design_net_capacity", display: "Capacity (MWe)"},
+                            {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
                             {field: "reactor.first_grid_connection", display: "Grid Connection"},
                             {field: "reactor.country", display: "Location", valueFunction: reactordb._countryPageLink({url_template: countryPageURLTemplate})}
                         ]
@@ -1074,7 +1097,7 @@ var reactordb = {
                             {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
                             {field: "reactor.model", display: "Model"},
                             {field: "reactor.process", display: "Process"},
-                            {field: "reactor.design_net_capacity", display: "Capacity (MWe)"},
+                            {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
                             {field: "reactor.construction_start", display: "Construction Start"},
                             {field: "reactor.country", display: "Location", valueFunction: reactordb._countryPageLink({url_template: countryPageURLTemplate})}
                         ]
@@ -1091,7 +1114,7 @@ var reactordb = {
                             {field: "reactor.load_factor." + thisYear, display: "Load Factor"},
                             {field: "reactor.model", display: "Model"},
                             {field: "reactor.process", display: "Process"},
-                            {field: "reactor.design_net_capacity", display: "Capacity (MWe)"},
+                            {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
                             {field: "reactor.country", display: "Location", valueFunction: reactordb._countryPageLink({url_template: countryPageURLTemplate})}
                         ]
                     })
@@ -1111,7 +1134,7 @@ var reactordb = {
                             },
                             {field: "reactor.model", display: "Model"},
                             {field: "reactor.process", display: "Process"},
-                            {field: "reactor.design_net_capacity", display: "Capacity (MWe)"},
+                            {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
                             {field: "reactor.country", display: "Location", valueFunction: reactordb._countryPageLink({url_template: countryPageURLTemplate})}
                         ]
                     })
