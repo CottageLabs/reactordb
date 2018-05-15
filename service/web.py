@@ -10,6 +10,7 @@ from wtforms import Form, IntegerField, HiddenField, validators
 from service.lib.pageScraper import scrape_all_pages, scrape_page
 from service.lib.importer import import_reactordb
 from service import models
+import urllib2
 
 if __name__ == "__main__":
     import argparse
@@ -176,7 +177,9 @@ def preview_country(country_id=None):
         year_ex = ""
         if year is not None:
             year_ex = "?year=" + year
-        return redirect(url_for('preview_country', country_id=country) + year_ex)
+        url = url_for('preview_country', country_id=country) + year_ex
+        url = urllib2.unquote(url)  # stupid hack because url_for and redirect /both/ encode the URL, so if you use both it encodes them twice
+        return redirect(url)
     return render_template("preview_country.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"), country_id=country_id)
 
 

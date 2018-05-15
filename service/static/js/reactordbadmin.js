@@ -96,5 +96,21 @@ var reactordbadmin = {
         } else {
             $("#rollback").unbind("click").attr("disabled", "disabled");
         }
+    },
+
+    handleCountryPageParameters : function(params) {
+        var country_regex = params.regex;
+        var regex_result = country_regex.exec(window.location.pathname);
+        var country_name = false;
+        if (regex_result != null) {
+            country_name = decodeURIComponent(regex_result[1]);
+            $("input[name=country]").val(country_name);
+        }
+
+        var urlParams = edges.getUrlParams();
+        var theYear = edges.getParam(urlParams.year, (new Date()).getUTCFullYear());
+        $("input[name=year]").val(theYear);
+
+        return {"country_name" : country_name, "year" : theYear};
     }
 };
