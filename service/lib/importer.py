@@ -66,10 +66,12 @@ def import_reactordb(master_path, pris_path, history_path):
         load_factor = {}
         energy_availability = {}
         electricity_supplied = {}
+        rups = {}
         for h in histories:
             lf = h.load_factor_annual
             ea = h.energy_availability_factor_annual
             es = h.electricity_supplied
+            rup = h.reference_unit_power
             year = h.year
             if lf is None:
                 lf = 0.0
@@ -77,12 +79,16 @@ def import_reactordb(master_path, pris_path, history_path):
                 ea = 0.0
             if es is None:
                 es = 0.0
+            if rup is None:
+                rup = 0.0
             load_factor[str(year)] = float(lf)
             energy_availability[str(year)] = float(ea)
             electricity_supplied[year] = float(es)
+            rups[year] = float(rup)
 
         obj["load_factor"] = load_factor
         obj["energy_availability"] = energy_availability
+        obj["reference_unit_power"] = rups
 
         electricity_supplied_cumulative = {}
         es_years = electricity_supplied.keys()

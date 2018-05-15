@@ -178,7 +178,8 @@ class Reactor(dataobj.DataObj, ReactorDAO):
                         "site_location",
                         "load_factor",
                         "energy_availability",
-                        "electricity_supplied_cumulative"
+                        "electricity_supplied_cumulative",
+                        "reference_unit_power"
                     ],
                     "lists" : {
                         "owner" : {"contains" : "object"},
@@ -252,6 +253,7 @@ class Reactor(dataobj.DataObj, ReactorDAO):
             "project_start" : ("reactor.project_start", None),
             "reactor_name" : ("reactor.name", None),
             "reactor_type" : ("reactor.type", None),
+            "reference_unit_power" : ("reactor.reference_unit_power", None),
             "reference_unit_power_capacity_net" : ("reactor.reference_unit_power_capacity_net", None),
             "region" : ("reactor.region", None),
             "restart" : ("reactor.restart", None),

@@ -34,6 +34,7 @@ class TestImport(ESTestCase):
         assert len(res[0].load_factor.keys()) > 0
         assert len(res[0].energy_availability.keys()) > 0
         assert len(res[0].electricity_supplied_cumulative.keys()) > 0
+        assert len(res[0].reference_unit_power.keys()) > 0
         assert res[0].country is not None
         assert res[0].data["index"]["country"] == res[0].country.lower()
 
