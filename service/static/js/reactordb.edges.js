@@ -294,8 +294,8 @@ var reactordb = {
             var resource = params.resource;
             var edge = params.edge;
 
-            resource.add_filter({filter: {field: "Country", value: country.toUpperCase(), type: "exact"}});
-            resource.add_filter({filter: {field: "Year", value: String(year), type: "exact"}});
+            resource.add_filter({filter: {field: "Country", value: country, type: "case_insensitive"}});
+            resource.add_filter({filter: {field: "Year", value: String(year), type: "case_insensitive"}});
         }
     },
 
@@ -312,6 +312,7 @@ var reactordb = {
 
         var country_regex = params.country_regex || new RegExp("country\/(.+)");
         var country_name = params.country_name || country_regex.exec(window.location.pathname)[1];
+        country_name = decodeURIComponent(country_name);
         country_name = country_name.toLowerCase();
 
         var nuclearShareURL = edges.getParam(params.nuclearShareURL, "/static/data/share-of-electricity-generation.csv");
