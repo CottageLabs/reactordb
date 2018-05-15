@@ -525,9 +525,9 @@ var reactordb = {
                 edges.newResultsDisplay({
                     id : "country_longterm_shutdown_reactors",
                     category: "panel",
-                    filter: reactordb._filterCountryResults({status: "Longterm Shutdown"}),
+                    filter: reactordb._filterCountryResults({status: "Long-term Shutdown"}),
                     renderer : edges.bs3.newTabularResultsRenderer({
-                        title: "<h3>All Longterm Shutdown Reactors</h3>",
+                        title: "<h3>All Long-term Shutdown Reactors</h3>",
                         sortable: true,
                         hideOnNoResults: true,
                         fieldDisplay : [
@@ -535,7 +535,7 @@ var reactordb = {
                             {field: "reactor.model", display: "Model"},
                             {field: "reactor.process", display: "Process"},
                             {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
-                            {field: "reactor.longterm_shutdown", display: "Longterm Shutdown"}
+                            {field: "reactor.longterm_shutdown", display: "Long-term Shutdown"}
                         ]
                     })
                 }),
