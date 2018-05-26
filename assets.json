@@ -1,0 +1,163 @@
+{
+	"parameters" : {
+		"uglify" : "/home/richard/node_modules/uglify-js/bin/uglifyjs",
+		"r_file" : "magnificent-octopus/octopus/static/vendor/edges/build/r.js",
+		"tmp_dir" : "tmp",
+		"node" : "/home/richard/.nvm/versions/node/v5.0.0/bin/node",
+		"cleanup" : true
+	},
+	"import" : {
+		"edges" : "magnificent-octopus/octopus/static/vendor/edges/assets.json"
+	},
+	"base_paths" : {
+		"css" : "service/static/css",
+		"js" : "service/static/js",
+		"includes" : "service/templates/includes",
+		"octopus_vendor" : "magnificent-octopus/octopus/static/vendor"
+	},
+	"assets" : {
+		"reactordb.edges.css" : ["css", "reactordb.edges.css"],
+		"service.css" : ["css", "service.css"],
+		"reactordb.edges" : ["js", "reactordb.edges.js"],
+		"reactordb.admin" : ["js", "reactordbadmin.js"],
+		"showdown" : ["octopus_vendor", "showdown-1.2.3/showdown.min.js"]
+	},
+	"dependencies" : {
+		"reactordb.edges.css" : [
+			"edges.bs3.FullSearchControllerRenderer.css",
+			"edges.bs3.ORTermSelectorRenderer.css",
+			"edges.bs3.NumericRangeEntryRenderer.css",
+			"nvd3.css",
+			"edges.bs3.TabularResultsRenderer.css",
+			"edges.bs3.ImportantNumbersRenderer.css"
+		],
+		"reactordb.edges" : [
+			"edges.core",
+			"edges.csv",
+			"es1x",
+			"edges.components.numbers",
+			"edges.components.charts",
+			"edges.renderers.nvd3",
+			"edges.renderers.bs3.StoryRenderer",
+			"edges.renderers.bs3.TabularResultsRenderer",
+			"edges.components.search",
+			"edges.renderers.bs3.ImportantNumbersRenderer",
+			"edges.templates.bs3.Facetview",
+			"edges.components.selectors",
+			"edges.renderers.bs3.ORTermSelectorRenderer",
+			"edges.components.ranges",
+			"edges.renderers.bs3.NumericRangeEntryRenderer",
+			"edges.renderers.bs3.FullSearchControllerRenderer",
+			"edges.renderers.bs3.PagerRenderer",
+			"edges.components.maps",
+			"google.maps",
+			"showdown",
+			"edges.renderers.google",
+			"edges.renderers.bs3.SearchingNotificationRenderer",
+			"edges.renderers.bs3.SelectedFiltersRenderer"
+		]
+	},
+	"outputs" : {
+		"reactordb.nodeps.full.js" : {
+			"pipelines" : {
+				"js-src": {
+					"out": ["js", "reactordb.nodeps.full.js"]
+				},
+				"js-includes": {
+					"out": ["includes", "reactordb.nodeps.full.js.html"],
+					"path_prefix_substitutions" : {
+						"magnificent-octopus/octopus/static/vendor/edges/" : "/static/vendor/edges/",
+						"service/static/" : "/static/"
+					}
+				}
+			},
+			"assets" : [
+				"reactordb.edges"
+			],
+			"exclude" : [
+				"d3",
+				"jquery",
+				"papaparse",
+				"nvd3",
+				"google.maps",
+				"tablesorter",
+				"showdown"
+			]
+		},
+		"reactordb.onlydeps.full.js" : {
+			"pipelines" : {
+				"cat": {
+					"out": ["js", "reactordb.onlydeps.full.js"]
+				},
+				"js-includes": {
+					"out": ["includes", "reactordb.onlydeps.full.js.html"],
+					"path_prefix_substitutions" : {
+						"magnificent-octopus/octopus/static/vendor/edges/" : "/static/vendor/edges/",
+						"service/static/" : "/static/"
+					}
+				}
+			},
+			"assets" : [
+				"reactordb.edges"
+			],
+			"include" : [
+				"d3",
+				"jquery",
+				"papaparse",
+				"nvd3",
+				"google.maps",
+				"tablesorter",
+				"showdown"
+			]
+		},
+		"reactordb.nodeps.full.css" : {
+			"pipelines" : {
+				"css-src": {
+					"out": ["css", "reactordb.nodeps.full.css"]
+				},
+				"css-includes": {
+					"out": ["includes", "reactordb.nodeps.full.css.html"],
+					"path_prefix_substitutions" : {
+						"magnificent-octopus/octopus/static/vendor/edges/" : "/static/vendor/edges/",
+						"service/static/" : "/static/"
+					}
+				}
+			},
+			"assets" : [
+				"reactordb.edges.css",
+				"edges.bs3.Facetview.css",
+				"edges.bs3.ResultsDisplayRenderer.css",
+				"edges.bs3.RefiningANDTermSelectorRenderer.css",
+				"edges.bs3.ORTermSelectorRenderer.css",
+				"edges.bs3.BasicRangeSelectorRenderer.css",
+				"edges.bs3.NumericRangeEntryRenderer.css",
+				"edges.bs3.SearchingNotificationRenderer.css",
+				"edges.bs3.PagerRenderer.css",
+				"edges.google.css",
+				"edges.bs3.SelectedFiltersRenderer.css"
+			],
+			"exclude" : [
+				"nvd3.css",
+				"tablesorter.blue.css"
+			]
+		},
+		"reactordb.onlydeps.full.css" : {
+			"pipelines" : {
+				"css-src": {
+					"out": ["css", "reactordb.onlydeps.full.css"]
+				},
+				"css-includes": {
+					"out": ["includes", "reactordb.onlydeps.full.css.html"],
+					"path_prefix_substitutions" : {
+						"magnificent-octopus/octopus/static/vendor/edges/" : "/static/vendor/edges/",
+						"service/static/" : "/static/"
+					}
+				}
+			},
+			"assets" : [
+				"nvd3.css",
+				"tablesorter.blue.css"
+			]
+		}
+	}
+}

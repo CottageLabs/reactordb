@@ -1,0 +1,619 @@
+
+.edges-bs3-selected-filters-container {
+    border: 1px dotted #cccccc;
+    padding: 10px 10px 10px 10px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    background-color: #f4f4f4;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.edges-bs3-selected-filters-field {
+    margin-right: 15px;
+}
+.edges-bs3-selected-filters-fieldname {
+    font-weight: bold;
+    padding-right: 3px;
+}
+.edges-bs3-selected-filters-value {
+}
+.edges-bs3-selected-filters-remove {
+    color: #000000;
+    padding-left: 3px;
+}
+.edges-bs3-selected-filters-remove:hover {
+    color: #000000;
+}
+.edges-bs3-selected-filters-rel {
+    font-weight: bold;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.edges-google-map-view-canvas {
+    width: 100%;
+    height: 600px;
+    max-width: none !important;
+}
+
+.edges-bs-results-display-container {
+}
+.edges-bs-results-display-record {
+    padding-bottom: 15px;
+    padding-top: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-bottom: 1px dashed #cccccc;
+}
+.edges-bs-results-display-record:hover {
+    background-color: #eeeeee;
+}
+.edges-bs-results-display-row {
+}
+.edges-bs-results-display-field {
+    font-weight: bold;
+    padding-right: 10px;
+}
+.edges-bs-results-display-value {
+}
+
+.edges-bs3-facetview-container {
+}
+.edges-bs3-facetview-facets {
+}
+.edges-bs3-facetview-facet {
+    margin-bottom: 15px;
+}
+.edges-bs3-facetview-panel {
+}
+.edges-bs3-facetview-search-controller {
+}
+.edges-bs3-facetview-selected-filters {
+}
+.edges-bs3-facetview-pager {
+}
+.edges-bs3-facetview-searching {
+}
+.edges-bs3-facetview-results {
+}
+
+.edges-bs3-tabular-results-table {
+    border-collapse: collapse;
+}
+.edges-bs3-tabular-results-header {
+    padding: 5px;
+    white-space: nowrap;
+}
+.edges-bs3-tabular-results-cell {
+    padding: 5px;
+}
+.edges-bs3-tabular-results-download {
+    text-align: right;
+}
+.tablesorter-header {
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: 1% 50%;
+    padding-left: 22px;
+    padding-right: 20px;
+    white-space: normal;
+}
+.tablesorter-headerAsc {
+    background-image: url(/static/images/white-asc.gif);
+}
+.tablesorter-headerDesc {
+    background-image: url(/static/images/white-desc.gif);
+}
+.tablesorter-headerUnSorted {
+    background-image: url(/static/images/white-unsorted.gif);
+}
+
+.edges-bs3-numeric-range-entry-facet {
+    border-top: 1px solid #cccccc;
+    border-bottom: 1px solid #cccccc;
+}
+.edges-bs3-numeric-range-entry-facet form {
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.edges-bs3-numeric-range-entry-header {
+    font-weight: bold;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: #eeeeee;
+}
+.edges-bs3-numeric-range-entry-header a {
+    color: #000000;
+}
+.edges-bs3-numeric-range-entry-header a:hover {
+    font-weight: bold;
+    text-decoration: none;
+}
+.edges-bs3-numeric-range-entry-label {
+    font-weight: bold;
+}
+.edges-bs3-numeric-range-entry-select {
+    margin-bottom: 10px;
+}
+
+.edges-bs3-or-term-selector-facet {
+    border-top: 1px solid #cccccc;
+    border-bottom: 1px solid #cccccc;
+}
+.edges-bs3-or-term-selector-header {
+    font-weight: bold;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: #eeeeee;
+}
+.edges-bs3-or-term-selector-header a {
+    color: #000000;
+}
+.edges-bs3-or-term-selector-header a:hover {
+    font-weight: bold;
+    text-decoration: none;
+}
+.edges-bs3-or-term-selector-result {
+    padding-left: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.edges-bs3-or-term-selector-result:nth-of-type(odd) {
+    background-color: #ffffff;
+}
+.edges-bs3-or-term-selector-result:nth-of-type(even) {
+    background-color: #f4f4f4;
+}
+.edges-bs3-or-term-selector-result:hover {
+    background-color: #eeeeee;
+}
+.edges-bs3-or-term-selector-value {}
+.edges-bs3-or-term-selector-filter-remove {
+    color: #000000;
+}
+.edges-bs3-or-term-selector-filter-remove:hover {
+    color: #000000;
+}
+.edges-bs3-or-term-selector-selections {
+    max-height: 250px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+.edges-bs3-or-term-selector-selections::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+.edges-bs3-or-term-selector-selections::-webkit-scrollbar:vertical {
+    width: 8px;
+}
+.edges-bs3-or-term-selector-selections::-webkit-scrollbar:horizontal {
+    height: 8px;
+}
+.edges-bs3-or-term-selector-selections::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 1px solid #c4d0d7;
+    background-color: rgba(0, 0, 0, .4);
+}
+.edges-bs3-or-term-selector-selections::-webkit-scrollbar-track {
+    background-color: #c4d0d7;
+    border-radius: 8px;
+}
+.edges-bs3-important-numbers-title {
+    text-align: center;
+}
+.edges-bs3-important-numbers-graphic {
+    position: relative;
+}
+.edges-bs3-important-numbers-img img {
+    width: 100%;
+}
+.edges-bs3-important-numbers-main {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    font-size: 3em;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 0 3px #ccc;
+}
+.edges-bs3-important-numbers-second {
+    font-size: 1.3em;
+    text-align: center;
+}
+
+
+.edges-bs3-basic-range-selector-facet {
+    border-top: 1px solid #cccccc;
+    border-bottom: 1px solid #cccccc;
+}
+.edges-bs3-basic-range-selector-header {
+    font-weight: bold;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: #eeeeee;
+}
+.edges-bs3-basic-range-selector-header a {
+    color: #000000;
+}
+.edges-bs3-basic-range-selector-header a:hover {
+    font-weight: bold;
+    text-decoration: none;
+}
+.edges-bs3-basic-range-selector-result {
+    padding-left: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.edges-bs3-basic-range-selector-result:nth-of-type(odd) {
+    background-color: #ffffff;
+}
+.edges-bs3-basic-range-selector-result:nth-of-type(even) {
+    background-color: #f4f4f4;
+}
+.edges-bs3-basic-range-selector-result:hover {
+    background-color: #eeeeee;
+}
+.edges-bs3-basic-range-selector-value {}
+.edges-bs3-basic-range-selector-filter-remove {
+    color: #000000;
+}
+.edges-bs3-basic-range-selector-filter-remove:hover {
+    color: #000000;
+}
+
+.edges-bs3-searching-notification-bar {
+    width: 100%;
+    text-align: center;
+    color: #ffffff;
+}
+
+.edges-bs3-refiningand-term-selector-facet {
+    border-top: 1px solid #cccccc;
+    border-bottom: 1px solid #cccccc;
+}
+.edges-bs3-refiningand-term-selector-header {
+    font-weight: bold;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: #eeeeee;
+}
+.edges-bs3-refiningand-term-selector-header a {
+    color: #000000;
+}
+.edges-bs3-refiningand-term-selector-header a:hover {
+    font-weight: bold;
+    text-decoration: none;
+}
+.edges-bs3-refiningand-term-selector-controls {
+    padding-bottom: 5px;
+    padding-left: 5px;
+    border-bottom: 1px solid #cccccc;
+    background-color: #eeeeee;
+}
+.edges-bs3-refiningand-term-selector-result {
+    padding-left: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.edges-bs3-refiningand-term-selector-result:nth-of-type(odd) {
+    background-color: #ffffff;
+}
+.edges-bs3-refiningand-term-selector-result:nth-of-type(even) {
+    background-color: #f4f4f4;
+}
+.edges-bs3-refiningand-term-selector-result:hover {
+    background-color: #eeeeee;
+}
+.edges-bs3-refiningand-term-selector-value {}
+.edges-bs3-refiningand-term-selector-filter-remove {
+    color: #000000;
+}
+.edges-bs3-refiningand-term-selector-filter-remove:hover {
+    color: #000000;
+}
+.edges-bs3-refiningand-term-selector-results-list::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+.edges-bs3-refiningand-term-selector-results-list::-webkit-scrollbar:vertical {
+    width: 8px;
+}
+.edges-bs3-refiningand-term-selector-results-list::-webkit-scrollbar:horizontal {
+    height: 8px;
+}
+.edges-bs3-refiningand-term-selector-results-list::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 1px solid #c4d0d7;
+    background-color: rgba(0, 0, 0, .4);
+}
+.edges-bs3-refiningand-term-selector-results-list::-webkit-scrollbar-track {
+    background-color: #c4d0d7;
+    border-radius: 8px;
+}
+
+
+.edges-bs3-pager-container {
+    padding: 5px;
+    background: #eeeeee;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.edges-bs3-pager-total {
+    font-weight: bold;
+}
+.edges-bs3-pager-size {
+    margin-left: 10px;
+}
+.edges-bs3-pager-nav {
+    float: right;
+}
+.edges-bs3-pager-first {
+    margin-right: 5px;
+    font-weight: bold;
+}
+.edges-bs3-pager-first.disabled {
+    margin-right: 5px;
+    font-weight: bold;
+    color: #cccccc;
+}
+.edges-bs3-pager-prev {
+    margin-right: 5px;
+    font-weight: bold;
+}
+.edges-bs3-pager-prev.disabled {
+    margin-right: 5px;
+    font-weight: bold;
+    color: #cccccc;
+}
+.edges-bs3-pager-page {
+    margin-right: 5px;
+    font-weight: bold;
+}
+.edges-bs3-pager-next {
+    margin-right: 5px;
+    font-weight: bold;
+}
+.edges-bs3-pager-next.disabled {
+    margin-right: 5px;
+    font-weight: bold;
+    color: #cccccc;
+}
+
+.edges-bs3-search-controller-text {
+    width: 200px !important;
+}
+.edges-bs3-or-term-selector-selections-process {
+    max-height: none !important;
+    overflow-y: visible !important;
+}
+.edges-bs3-or-term-selector-selections-status {
+    max-height: none !important;
+    overflow-y: visible !important;
+}
+.edges-bs3-or-term-selector-value {
+    color: #1A9DD8;
+}
+.edges-bs3-or-term-selector-header a {
+    color: #1A9DD8 !important;
+    text-decoration: none !important;
+}
+.edges-bs3-numeric-range-entry-header a {
+    color: #1A9DD8 !important;
+    text-decoration: none !important;
+}
+.reactordb-reactor-records-record  {
+    padding-bottom: 15px;
+    padding-top: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-bottom: 1px dashed #cccccc;
+}
+.reactordb-reactor-records-record:hover  {
+    background-color: #eeeeee;
+}
+.reactordb-reactor-records-first-row {
+    margin-bottom: 10px;
+}
+.reactordb-reactor-records-second-row {
+}
+.reactordb-reactor-records-type-container {
+    width: 100%;
+    text-align: right;
+}
+.reactordb-reactor-records-expanded-type {
+}
+.reactordb-reactor-records-type {
+    font-style: italic;
+}
+.reactordb-reactor-records-grid {
+}
+.reactordb-reactor-records-name {
+    font-weight: bold;
+    font-size: 150%;
+}
+.reactordb-reactor-records-url {
+    color: #1A9DD8 !important;
+    text-decoration: none !important;
+}
+.reactordb-reactor-records-location {
+    font-weight: bold;
+    font-size: 150%;
+}
+.reactordb-reactor-records-status {
+    font-weight: bold;
+}
+.reactordb-reactor-records-capacity {
+    font-weight: bold;
+    font-size: 150%;
+    width: 100%;
+    text-align: right;
+}
+.reactordb-reactor-records-owners {
+}
+.reactordb-reactor-records-operator {
+}
+.reactordb-reactor-metadata-name {
+    
+    
+}
+.reactordb-reactor-metadata-location {
+    
+    
+}
+.reactordb-reactor-links-links {
+}
+.reactordb-reactor-links-link_header {
+}
+.reactordb-reactor-metadata-img_container {
+    text-align: center;
+}
+.reactordb-reactor-metadata-img {
+    width: 100%;
+}
+.reactordb-reactor-metadata-table {
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #1e9dd8;
+}
+.reactordb-reactor-metadata-table tr {
+    border-bottom: 1px solid #1e9dd8;
+}
+.reactordb-reactor-metadata-table td {
+    padding: 5px;
+}
+.reactordb-reactor-metadata-table_head {
+    background: #1e9dd8 none repeat scroll 0 0;
+    color: #ffffff;
+}
+.reactordb-reactor-metadata-table_key {
+    font-weight: bold;
+}
+.reactordb-reactor-page-map {
+    text-align: center;
+}
+.reactordb-reactor-operation-title {
+    
+    
+}
+#edges-nvd3-multibar-svg-electricity_supplied {
+    height: 300px;
+}
+#edges-nvd3-simple-line-chart-svg-energy_availability_annual {
+    height: 300px;
+}
+#edges-nvd3-simple-line-chart-svg-total_electricity {
+    height: 300px;
+}
+.edges-bs3-tabular-results-table {
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #1e9dd8;
+}
+.edges-bs3-tabular-results-table tr {
+    border-bottom: 1px solid #1e9dd8;
+}
+.edges-bs3-tabular-results-table td {
+    padding: 5px;
+}
+.edges-bs3-tabular-results-header {
+    background: #1e9dd8 none repeat scroll 0 0;
+    color: #ffffff;
+    font-weight: normal;
+    padding: 5px;
+}
+.edges-bs3-tabular-results-cell-year {
+    background: #1e9dd8 none repeat scroll 0 0;
+    color: #ffffff;
+    border-bottom: 1px solid #ffffff;
+}
+.reactordb-reactor-metadata-status {
+    font-size: 130%;
+}
+.reactordb-reactor-metadata-status.permanent {
+    color: #d6763b;
+}
+.reactordb-reactor-metadata-status.longterm {
+    color: #9487b6;
+}
+.reactordb-reactor-metadata-status.construction {
+    color: #00b7cb;
+}
+.reactordb-reactor-metadata-status.operational {
+    color: #006f7a;
+}
+.reactordb-reactor-operation-container h2 {
+    font-weight: normal;
+}
+.reactordb-reactor-operation-container h3 {
+    font-weight: normal;
+}
+#reactor-links h2 {
+    font-weight: normal;
+}
+#reactor-links h3 {
+    font-weight: normal;
+}
+#global_nuclear_generation_histogram {
+    height: 300px;
+}
+#gloabl_nuclear_share {
+    text-align: center;
+}
+.reactordb-dashboard-search {
+    margin-top: 20px;
+    border: 1px solid #cccccc;
+    padding: 5px;
+    background: #eeeeee;
+    border-radius: 5px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.edges-bs3-important-numbers-title {
+    height: 60px;
+}
+.edges-nvd3-pie-display-global_nuclear_share {
+    height: 60px;
+    text-align: center;
+}
+#edges-nvd3-pie-svg-global_nuclear_share {
+    margin-top: -60px;
+}
+.edges-nvd3-pie-container-global_nuclear_share {
+    height: 100%;
+}
+.edges-nvd3-pie-svg-container-global_nuclear_share {
+    height: 100%;
+}
+#country_nuclear_share {
+    text-align: center;
+}
+#country_nuclear_generation_histogram {
+    height: 300px;
+}
+#operable_nuclear_capacity {
+    height: 300px;
+}
+#country_operable_reactors td {
+    white-space: nowrap;
+}
+.edges-nvd3-pie-display-country_nuclear_share {
+    height: 60px;
+    text-align: center;
+}
+#edges-nvd3-pie-svg-country_nuclear_share {
+    margin-top: -60px;
+}
+.edges-nvd3-pie-container-country_nuclear_share {
+    height: 100%;
+}
+.edges-nvd3-pie-svg-container-country_nuclear_share {
+    height: 100%;
+}
