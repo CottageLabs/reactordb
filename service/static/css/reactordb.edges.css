@@ -197,6 +197,7 @@
     color: #ffffff;
     font-weight: normal;
     padding: 5px;
+    white-space: normal;
 }
 
 .edges-bs3-tabular-results-cell-year {

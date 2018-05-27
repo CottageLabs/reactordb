@@ -2,8 +2,8 @@
 
 {% block extra_head %}
 
-<link rel="stylesheet" href="{{url_for('static', filename='vendor/edges/css/bs3.TabularResultsRenderer.css')}}">
-<link rel="stylesheet" href="{{url_for('static', filename='vendor/edges/css/bs3.ImportantNumbersRenderer.css')}}">
+<!-- <link rel="stylesheet" href="{{url_for('static', filename='vendor/edges/css/bs3.TabularResultsRenderer.css')}}"> -->
+<!-- <link rel="stylesheet" href="{{url_for('static', filename='vendor/edges/css/bs3.ImportantNumbersRenderer.css')}}"> -->
 
 {% endblock %}
 
@@ -24,7 +24,9 @@
 
 
 {% block extra_js_bottom %}
+{% include 'includes/reactordb.nodeps.full.js.html' %}
 
+    <!--
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/vendor/d3-3.5.17/d3.min.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/vendor/nvd3-1.8.1/nv.d3.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/vendor/PapaParse-4.1.2/papaparse.min.js')}}"></script>
@@ -42,7 +44,9 @@
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.ImportantNumbersRenderer.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.StoryRenderer.js')}}"></script>
 
-<script type="text/javascript" src="{{url_for('static', filename='js/reactordb.edges.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='js/reactordb.edges.js')}}"></script> -->
+
+
 <script type="text/javascript" src="{{url_for('static', filename='js/reactordbadmin.js')}}"></script>
 
 <script type="text/javascript">

@@ -18,23 +18,24 @@
 
     <!-- this is where we can incorporate any css files -->
 
-    <link rel="stylesheet" href="{{url_for('static', filename='vendor/bootstrap-3.3.1/css/bootstrap.min.css')}}">
-    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='vendor/tablesorter-2.17.7/css/theme.blue.css')}}">
+    <!-- <link rel="stylesheet" href="{{url_for('static', filename='vendor/bootstrap-3.3.1/css/bootstrap.min.css')}}"> -->
+    <!-- <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='vendor/tablesorter-2.17.7/css/theme.blue.css')}}"> -->
 
     <!-- get octopus css -->
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/octopus.css')}}">
 
     <!-- get the application's css -->
     <link rel="stylesheet" href="{{url_for('static', filename='css/service.css')}}">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/glyphtofa.css')}}">
-
-    <!-- Google Fonts -->
-    <!-- <link href='http://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'> -->
+    <!-- <link rel="stylesheet" href="{{url_for('static', filename='css/glyphtofa.css')}}"> -->
 
     <!-- Stylesheets required by Reactor Preview via Edges -->
-    <link rel="stylesheet" href="{{url_for('static', filename='css/reactordb.edges.css')}}">
-    <link rel="stylesheet" href="{{url_for('static', filename='vendor/edges/vendor/nvd3-1.8.1/nv.d3.css')}}">
-    <link rel="stylesheet" href="{{url_for('static', filename='vendor/edges/css/bs3.edges.css')}}">
-    <link rel="stylesheet" href="{{url_for('static', filename='vendor/edges/css/google.edges.css')}}">
+    <!-- <link rel="stylesheet" href="{{url_for('static', filename='css/reactordb.edges.css')}}"> -->
+    <!-- <link rel="stylesheet" href="{{url_for('static', filename='vendor/edges/vendor/nvd3-1.8.1/nv.d3.css')}}"> -->
+    <!-- <link rel="stylesheet" href="{{url_for('static', filename='vendor/edges/css/bs3.edges.css')}}"> -->
+    <!-- <link rel="stylesheet" href="{{url_for('static', filename='vendor/edges/css/google.edges.css')}}"> -->
+
+    {% include "includes/reactordb.onlydeps.framework.css.html" %}
+    {% include "includes/reactordb.onlydeps.implementation.css.html" %}
+    {% include "includes/reactordb.nodeps.full.css.html" %}
 
 </head>

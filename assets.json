@@ -20,7 +20,9 @@
 		"service.css" : ["css", "service.css"],
 		"reactordb.edges" : ["js", "reactordb.edges.js"],
 		"reactordb.admin" : ["js", "reactordbadmin.js"],
-		"showdown" : ["octopus_vendor", "showdown-1.2.3/showdown.min.js"]
+		"showdown" : ["octopus_vendor", "showdown-1.2.3/showdown.min.js"],
+		"bootstrap3" : ["edges_vendor", "bootstrap-3.3.1/js/bootstrap.min.js"],
+		"glyphtofa.css" : ["css", "glyphtofa.css"]
 	},
 	"dependencies" : {
 		"reactordb.edges.css" : [
@@ -55,7 +57,17 @@
 			"edges.renderers.google",
 			"edges.renderers.bs3.SearchingNotificationRenderer",
 			"edges.renderers.bs3.SelectedFiltersRenderer"
-		]
+		],
+
+
+		"service.css" : [],
+		"reactordb.admin" : ["reactordb.edges"],
+		"showdown" : [],
+		"bootstrap3" : [],
+		"glyphtofa.css" : ["bootstrap3.css"]
+	},
+	"references" : {
+		"font-awesome.css" : "https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"
 	},
 	"outputs" : {
 		"reactordb.nodeps.full.js" : {
@@ -81,16 +93,39 @@
 				"nvd3",
 				"google.maps",
 				"tablesorter",
+				"showdown",
+				"bootstrap3"
+			]
+		},
+		"reactordb.onlydeps.implementation.no-gm.js" : {
+			"pipelines" : {
+				"cat": {
+					"out": ["js", "reactordb.onlydeps.implementation.no-gm.js"]
+				},
+				"js-includes": {
+					"out": ["includes", "reactordb.onlydeps.implementation.no-gm.js.html"],
+					"path_prefix_substitutions" : {
+						"magnificent-octopus/octopus/static/vendor/edges/" : "/static/vendor/edges/",
+						"service/static/" : "/static/",
+						"magnificent-octopus/octopus/static/vendor/showdown-1.2.3" : "/static/vendor/showdown-1.2.3"
+					}
+				}
+			},
+			"assets" : [
+				"reactordb.edges"
+			],
+			"include" : [
+				"d3",
+				"papaparse",
+				"nvd3",
+				"tablesorter",
 				"showdown"
 			]
 		},
-		"reactordb.onlydeps.full.js" : {
+		"reactordb.onlydeps.implementation.gm.js" : {
 			"pipelines" : {
-				"cat": {
-					"out": ["js", "reactordb.onlydeps.full.js"]
-				},
 				"js-includes": {
-					"out": ["includes", "reactordb.onlydeps.full.js.html"],
+					"out": ["includes", "reactordb.onlydeps.implementation.gm.js.html"],
 					"path_prefix_substitutions" : {
 						"magnificent-octopus/octopus/static/vendor/edges/" : "/static/vendor/edges/",
 						"service/static/" : "/static/"
@@ -101,13 +136,29 @@
 				"reactordb.edges"
 			],
 			"include" : [
-				"d3",
+				"google.maps"
+			]
+		},
+		"reactordb.onlydeps.framework.js" : {
+			"pipelines" : {
+				"cat": {
+					"out": ["js", "reactordb.onlydeps.framework.js"]
+				},
+				"js-includes": {
+					"out": ["includes", "reactordb.onlydeps.framework.js.html"],
+					"path_prefix_substitutions" : {
+						"magnificent-octopus/octopus/static/vendor/edges/" : "/static/vendor/edges/",
+						"service/static/" : "/static/"
+					}
+				}
+			},
+			"assets" : [
+				"reactordb.edges",
+				"bootstrap3"
+			],
+			"include" : [
 				"jquery",
-				"papaparse",
-				"nvd3",
-				"google.maps",
-				"tablesorter",
-				"showdown"
+				"bootstrap3"
 			]
 		},
 		"reactordb.nodeps.full.css" : {
@@ -134,20 +185,48 @@
 				"edges.bs3.SearchingNotificationRenderer.css",
 				"edges.bs3.PagerRenderer.css",
 				"edges.google.css",
-				"edges.bs3.SelectedFiltersRenderer.css"
+				"edges.bs3.SelectedFiltersRenderer.css",
+				"glyphtofa.css"
 			],
 			"exclude" : [
 				"nvd3.css",
-				"tablesorter.blue.css"
+				"tablesorter.blue.css",
+				"font-awesome.css",
+				"bootstrap3.css"
 			]
 		},
-		"reactordb.onlydeps.full.css" : {
-			"pipelines" : {
+		"reactordb.onlydeps.implementation.css" : {
+			"pipelines": {
 				"css-src": {
-					"out": ["css", "reactordb.onlydeps.full.css"]
+					"out": [
+						"css",
+						"reactordb.onlydeps.implementation.css"
+					]
 				},
 				"css-includes": {
-					"out": ["includes", "reactordb.onlydeps.full.css.html"],
+					"out": [
+						"includes",
+						"reactordb.onlydeps.implementation.css.html"
+					],
+					"path_prefix_substitutions": {
+						"magnificent-octopus/octopus/static/vendor/edges/": "/static/vendor/edges/",
+						"service/static/": "/static/"
+					}
+				}
+			},
+			"assets": [
+				"nvd3.css",
+				"tablesorter.blue.css",
+				"font-awesome.css"
+			]
+		},
+		"reactordb.onlydeps.framework.css" : {
+			"pipelines" : {
+				"css-src": {
+					"out": ["css", "reactordb.onlydeps.framework.css"]
+				},
+				"css-includes": {
+					"out": ["includes", "reactordb.onlydeps.framework.css.html"],
 					"path_prefix_substitutions" : {
 						"magnificent-octopus/octopus/static/vendor/edges/" : "/static/vendor/edges/",
 						"service/static/" : "/static/"
@@ -155,8 +234,7 @@
 				}
 			},
 			"assets" : [
-				"nvd3.css",
-				"tablesorter.blue.css"
+				"bootstrap3.css"
 			]
 		}
 	}
