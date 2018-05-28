@@ -108,9 +108,21 @@ var reactordbadmin = {
         }
 
         var urlParams = edges.getUrlParams();
-        var theYear = edges.getParam(urlParams.year, (new Date()).getUTCFullYear());
+        var theYear = edges.getParam(urlParams.year, (new Date()).getUTCFullYear() - 2);
         $("input[name=year]").val(theYear);
 
         return {"country_name" : country_name, "year" : theYear};
+    },
+
+    handleReactorPageParameters : function(params) {
+        var reactor_regex = params.regex;
+        var regex_result = reactor_regex.exec(window.location.pathname);
+        var reactor_name = false;
+        if (regex_result != null) {
+            reactor_name = decodeURIComponent(regex_result[1]);
+            $("input[name=reactor]").val(reactor_name);
+        }
+
+        return {"reactor_name" : reactor_name};
     }
 };

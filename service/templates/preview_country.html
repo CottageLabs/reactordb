@@ -31,6 +31,7 @@
 
 <script type="text/javascript">
 jQuery(document).ready(function($) {
+    {% if reactor_id %}
     var current_domain = document.location.host;
     var current_scheme = window.location.protocol;
     var BASE_URL = current_scheme + "//" + current_domain;
@@ -53,6 +54,9 @@ jQuery(document).ready(function($) {
             country_regex: country_regex
         });
     }
+    {% else %}
+    $("#current-rollout-status").html("Select a country and year to see the rollout status");
+    {% endif %}
 });
 </script>
 

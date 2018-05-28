@@ -4,9 +4,12 @@
 
 {% include '_preview-status.html' %}
 
-{% if not reactor_id %}
-    Insert the reactor ID in the URL bar above to see the reactor page
-{% endif %}
+<div style="border-bottom: 1px dashed #cccccc; padding-bottom: 10px">
+    <form method="get">
+        Enter the desired reactor id: <input type="text" name="reactor">
+        <button type="submit">go</button>
+    </form>
+</div>
 
 <div id="reactor-page"></div>
 
@@ -28,9 +31,13 @@ jQuery(document).ready(function($) {
     var current_scheme = window.location.protocol;
     var BASE_URL = current_scheme + "//" + current_domain;
 
+    var reactor_regex = new RegExp("preview_reactor\/(.+)");
+    var params = reactordbadmin.handleReactorPageParameters({regex: reactor_regex});
+
     reactordb.makeReactorPage({
         reactor_index: "preview_reactor",
         operation_index: "preview_operation",
+        id_regex: reactor_regex,
         postInit: function() {
             reactordbadmin.base_url = BASE_URL;
             reactordbadmin.selector = "#reactor-record";

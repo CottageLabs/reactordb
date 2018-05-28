@@ -4,9 +4,12 @@
 
 {% include '_live-status.html' %}
 
-{% if not reactor_id %}
-    Insert the country name in the URL bar above to see the country report
-{% endif %}
+<div style="border-bottom: 1px dashed #cccccc; padding-bottom: 10px">
+    <form method="get">
+        Enter the desired country: <input type="text" name="country"> and year <input type="text" name="year">
+        <button type="submit">go</button>
+    </form>
+</div>
 
 <div id="country-report"></div>
 
@@ -17,17 +20,24 @@
 
 <script type="text/javascript" src="{{url_for('static', filename='js/reactordb.nodeps.full.js')}}"></script>
 
+<script type="text/javascript" src="{{url_for('static', filename='js/reactordbadmin.js')}}"></script>
+
+{% if country_id %}
 <script type="text/javascript">
 jQuery(document).ready(function($) {
+
     var country_regex = new RegExp("live_country\/(.+)");
+    var params = reactordbadmin.handleCountryPageParameters({regex: country_regex});
+
     reactordb.makeCountryReport({
         reactor_index: "reactor",
         operation_index: "operation",
-        year: 2016,
+        year: params.year,
         reactorPageURLTemplate: "/live_reactor/{reactor_name}",
         country_regex: country_regex
     });
 });
 </script>
+{% endif %}
 
 {% endblock%}

@@ -166,6 +166,11 @@ def preview_search():
 @app.route("/preview_reactor")
 @app.route("/preview_reactor/<reactor_id>")
 def preview_reactor(reactor_id=None):
+    reactor = request.values.get("reactor")
+    if reactor is not None:
+        url = url_for('preview_reactor', reactor_id=reactor)
+        url = urllib2.unquote(url)
+        return redirect(url)
     return render_template("preview_reactor.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"), reactor_id=reactor_id)
 
 @app.route("/preview_country")
@@ -200,11 +205,25 @@ def live_search():
 @app.route("/live_reactor")
 @app.route("/live_reactor/<reactor_id>")
 def live_reactor(reactor_id=None):
+    reactor = request.values.get("reactor")
+    if reactor is not None:
+        url = url_for('live_reactor', reactor_id=reactor)
+        url = urllib2.unquote(url)
+        return redirect(url)
     return render_template("live_reactor.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"), reactor_id=reactor_id)
 
 @app.route("/live_country")
 @app.route("/live_country/<country_id>")
 def live_country(country_id=None):
+    country = request.values.get("country")
+    year = request.values.get("year")
+    if country is not None:
+        year_ex = ""
+        if year is not None:
+            year_ex = "?year=" + year
+        url = url_for('live_country', country_id=country) + year_ex
+        url = urllib2.unquote(url)  # stupid hack because url_for and redirect /both/ encode the URL, so if you use both it encodes them twice
+        return redirect(url)
     return render_template("live_country.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"), country_id=country_id)
 
 

@@ -1,19 +1,12 @@
 {% extends "base.html" %}
 
-{% block extra_head %}
-
-<!-- <link rel="stylesheet" href="{{url_for('static', filename='vendor/edges/css/bs3.TabularResultsRenderer.css')}}"> -->
-<!-- <link rel="stylesheet" href="{{url_for('static', filename='vendor/edges/css/bs3.ImportantNumbersRenderer.css')}}"> -->
-
-{% endblock %}
-
 {% block content %}
 
 {% include '_preview-status.html' %}
 
 <div style="border-bottom: 1px dashed #cccccc; padding-bottom: 10px">
     <form method="get">
-        Enter the desired reference year: <input type="text" name="year">
+        Enter the desired reference year: <input type="text" name="year"> <button type="submit">go</button>
     </form>
 </div>
 
@@ -36,7 +29,7 @@ jQuery(document).ready(function($) {
     var BASE_URL = current_scheme + "//" + current_domain;
 
     var urlParams = edges.getUrlParams();
-    var theYear = edges.getParam(urlParams.year, (new Date()).getUTCFullYear());
+    var theYear = edges.getParam(urlParams.year, (new Date()).getUTCFullYear() - 2);
     $("input[name=year]").val(theYear);
 
     $("#dashboard").on("edges:post-init", function() {
@@ -50,7 +43,7 @@ jQuery(document).ready(function($) {
         operation_index: "preview_operation",
         year: theYear,
         reactorPageURLTemplate: "/preview_reactor/{reactor_name}",
-        countryPageURLTemplate: "/preview_country/{country_name}",
+        countryPageURLTemplate: "/preview_country/{country_name}?year=" + theYear,
         searchPageURL : "/preview_search"
     });
 

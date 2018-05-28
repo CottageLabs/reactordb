@@ -4,6 +4,12 @@
 
 {% include '_live-status.html' %}
 
+<div style="border-bottom: 1px dashed #cccccc; padding-bottom: 10px">
+    <form method="get">
+        Enter the desired reference year: <input type="text" name="year"> <button type="submit">go</button>
+    </form>
+</div>
+
 <div id="dashboard"></div>
 
 {% endblock %}
@@ -13,11 +19,13 @@
 
 <script type="text/javascript" src="{{url_for('static', filename='js/reactordb.nodeps.full.js')}}"></script>
 
+<script type="text/javascript" src="{{url_for('static', filename='js/reactordbadmin.js')}}"></script>
+
 <script type="text/javascript">
 jQuery(document).ready(function($) {
-    var current_domain = document.location.host;
-    var current_scheme = window.location.protocol;
-    var BASE_URL = current_scheme + "//" + current_domain;
+    var urlParams = edges.getUrlParams();
+    var theYear = edges.getParam(urlParams.year, (new Date()).getUTCFullYear() - 2);
+    $("input[name=year]").val(theYear);
 
     reactordb.makeDashboard({
         reactor_index: "reactor",

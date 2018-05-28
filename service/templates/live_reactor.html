@@ -4,9 +4,12 @@
 
 {% include '_live-status.html' %}
 
-{% if not reactor_id %}
-    Insert the reactor ID in the URL bar above to see the reactor page
-{% endif %}
+<div style="border-bottom: 1px dashed #cccccc; padding-bottom: 10px">
+    <form method="get">
+        Enter the desired reactor id: <input type="text" name="reactor">
+        <button type="submit">go</button>
+    </form>
+</div>
 
 <div id="reactor-page"></div>
 
@@ -17,10 +20,19 @@
 
 <script type="text/javascript" src="{{url_for('static', filename='js/reactordb.nodeps.full.js')}}"></script>
 
+<script type="text/javascript" src="{{url_for('static', filename='js/reactordbadmin.js')}}"></script>
+
 {% if reactor_id %}
 <script type="text/javascript">
+
 jQuery(document).ready(function($) {
-    reactordb.makeReactorPage();
+
+    var reactor_regex = new RegExp("live_reactor\/(.+)");
+    var params = reactordbadmin.handleReactorPageParameters({regex: reactor_regex});
+
+    reactordb.makeReactorPage({
+        id_regex: reactor_regex
+    });
 });
 </script>
 {% endif %}
