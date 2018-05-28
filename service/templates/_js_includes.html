@@ -5,35 +5,19 @@
 {% if request.path.startswith("/preview") %}
     {% include 'includes/reactordb.onlydeps.framework.js.html' %}
     {% include 'includes/reactordb.onlydeps.implementation.no-gm.js.html' %}
-{% endif %}
 
-{% if request.path.startswith("/live") %}
+{% elif request.path.startswith("/live") %}
     <script type="text/javascript" src="{{url_for('static', filename='js/reactordb.onlydeps.framework.js')}}"></script>
     <script type="text/javascript" src="{{url_for('static', filename='js/reactordb.onlydeps.implementation.no-gm.js')}}"></script>
+
+{% else %}
+    <script type="text/javascript" src="{{url_for('static', filename='js/reactordb.onlydeps.framework.js')}}"></script>
+
 {% endif %}
 
 {% if map_key %}
 {% include 'includes/reactordb.onlydeps.implementation.gm.js.html' %}
 {% endif %}
-
-<!-- get jquery js -->
-<!-- <script type="text/javascript" src="{{url_for('static', filename='vendor/jquery-1.11.1/jquery-1.11.1.min.js')}}"></script> -->
-
-
-<!-- get bootstrap js -->
-<!-- <script type="text/javascript" src="{{url_for('static', filename='vendor/bootstrap-3.3.1/js/bootstrap.min.js')}}"></script> -->
-
-
-<!-- get tablesorter -->
-<!-- <script type="text/javascript" src="{{url_for('static', filename='vendor/tablesorter-2.17.7/js/jquery.tablesorter.min.js')}}"></script> -->
-
-
-<!-- google map integration -->
-{#
-{% if map_key %}
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{map_key}}"></script>
-{% endif %}
-#}
 
 <!--------------------------------------------------------------------------------->
 <!-- APPLICATION JAVASCRIPT LIBRARIES  -------------------------------------------->
