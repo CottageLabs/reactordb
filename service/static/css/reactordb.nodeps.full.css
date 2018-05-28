@@ -625,6 +625,7 @@
     color: #ffffff;
     font-weight: normal;
     padding: 5px;
+    white-space: normal;
 }
 .edges-bs3-tabular-results-cell-year {
     background: #1e9dd8 none repeat scroll 0 0;

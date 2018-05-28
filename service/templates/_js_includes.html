@@ -2,8 +2,15 @@
 <!-- STANDARD JAVASCRIPT LIBRARIES  ----------------------------------------------->
 <!--------------------------------------------------------------------------------->
 
-{% include 'includes/reactordb.onlydeps.framework.js.html' %}
-{% include 'includes/reactordb.onlydeps.implementation.no-gm.js.html' %}
+{% if request.path.startswith("/preview") %}
+    {% include 'includes/reactordb.onlydeps.framework.js.html' %}
+    {% include 'includes/reactordb.onlydeps.implementation.no-gm.js.html' %}
+{% endif %}
+
+{% if request.path.startswith("/live") %}
+    <script type="text/javascript" src="{{url_for('static', filename='js/reactordb.onlydeps.framework.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/reactordb.onlydeps.implementation.no-gm.js')}}"></script>
+{% endif %}
 
 {% if map_key %}
 {% include 'includes/reactordb.onlydeps.implementation.gm.js.html' %}

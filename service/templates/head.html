@@ -34,8 +34,17 @@
     <!-- <link rel="stylesheet" href="{{url_for('static', filename='vendor/edges/css/bs3.edges.css')}}"> -->
     <!-- <link rel="stylesheet" href="{{url_for('static', filename='vendor/edges/css/google.edges.css')}}"> -->
 
+{% if request.path.startswith("/preview") %}
     {% include "includes/reactordb.onlydeps.framework.css.html" %}
     {% include "includes/reactordb.onlydeps.implementation.css.html" %}
     {% include "includes/reactordb.nodeps.full.css.html" %}
+{% endif %}
+
+{% if request.path.startswith("/live") %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/reactordb.onlydeps.framework.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/reactordb.onlydeps.implementation.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/reactordb.nodeps.full.css') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+{% endif %}
 
 </head>

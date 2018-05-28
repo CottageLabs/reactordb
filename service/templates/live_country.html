@@ -15,6 +15,9 @@
 
 {% block extra_js_bottom %}
 
+    <script type="text/javascript" src="{{url_for('static', filename='js/reactordb.nodeps.full.js')}}"></script>
+
+    <!--
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/es.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/edges.jquery.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/edges.js')}}"></script>
@@ -30,12 +33,17 @@
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.SelectedFiltersRenderer.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='vendor/edges/src/renderers/bs3.SearchingNotificationRenderer.js')}}"></script>
 
-<script type="text/javascript" src="{{url_for('static', filename='js/reactordb.edges.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='js/reactordb.edges.js')}}"></script> -->
 
 <script type="text/javascript">
 jQuery(document).ready(function($) {
+    var country_regex = new RegExp("live_country\/(.+)");
     reactordb.makeCountryReport({
-        index: "preview_reactor"
+        reactor_index: "reactor",
+        operation_index: "operation",
+        year: 2016,
+        reactorPageURLTemplate: "/live_reactor/{reactor_name}",
+        country_regex: country_regex
     });
 });
 </script>
