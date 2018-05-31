@@ -224,6 +224,12 @@ var reactordb = {
         var iter = component.edge.resources.nuclear_share.iterator();
         var row = iter.next();
 
+        var format = edges.numFormat({
+            decimalPlaces: 2,
+            suffix: "%)",
+            prefix: "("
+        });
+
         var seriesName = "Nuclear Share of Generation";
 
         if (row) {
@@ -318,7 +324,9 @@ var reactordb = {
         var nuclearShareURL = edges.getParam(params.nuclearShareURL, "/static/data/share-of-electricity-generation.csv");
         var reactorPageURLTemplate = edges.getParam(params.reactorPageURLTemplate, "/reactor/{reactor_name}");
 
-        var numbersBackground = edges.getParam(params.numbersBackground, "/static/images/reactor-web.svg");
+        var reactorsBackground = edges.getParam(params.reactorsBackground, '/static/images/iconReactor.svg');
+        var underConstructionBackground = edges.getParam(params.numbersBackground, "/static/images/iconConstruction.svg");
+
         var thisYear = edges.getParam(params.year, (new Date()).getUTCFullYear());
 
         var e = edges.newEdge({
@@ -387,7 +395,7 @@ var reactordb = {
                     calculate: reactordb._countryOperableReactorsCount(),
                     renderer : edges.bs3.newImportantNumbersRenderer({
                         title: "<h4>Operable Reactors</h4>",
-                        backgroundImg: numbersBackground,
+                        backgroundImg: reactorsBackground,
                         mainNumberFormat: edges.numFormat({
                             decimalPlaces: 0,
                             thousandsSeparator: ","
@@ -405,7 +413,7 @@ var reactordb = {
                     calculate: reactordb._countryUnderConstructionReactorsCount(),
                     renderer : edges.bs3.newImportantNumbersRenderer({
                         title: "<h4>Reactors&nbsp;Under Construction</h4>",
-                        backgroundImg: numbersBackground,
+                        backgroundImg: underConstructionBackground,
                         mainNumberFormat: edges.numFormat({
                             decimalPlaces: 0,
                             thousandsSeparator: ","
@@ -428,7 +436,7 @@ var reactordb = {
                         marginRight: 0,
                         marginBottom: 0,
                         marginLeft: 0,
-                        labelsOutside: true,
+                        labelsOutside: false,
                         color: ["#1e9dd8", "#ddddff"],
                         valueFormat : edges.numFormat({
                             decimalPlaces: 2,
@@ -553,16 +561,6 @@ var reactordb = {
                             {field: "reactor.model", display: "Model"},
                             {field: "reactor.process", display: "Process"},
                             {field: "reactor.reference_unit_power_capacity_net", display: "Net Capacity (MWe)"},
-                            {
-                                field: "lifetime_generation",
-                                fieldFunction: reactordb._lifetimeGeneration,
-                                display: "Lifetime Generation (GWh)",
-                                valueFunction: edges.numFormat({
-                                    reflectNonNumbers: true,
-                                    decimalPlaces: 0,
-                                    thousandsSeparator: ","
-                                })
-                            },
                             {field: "reactor.permanent_shutdown", display: "Permanent Shutdown"}
                         ]
                     })
@@ -737,6 +735,12 @@ var reactordb = {
         var iter = component.edge.resources.nuclear_share.iterator();
         var row = iter.next();
 
+        var format = edges.numFormat({
+            decimalPlaces: 2,
+            suffix: "%)",
+            prefix: "("
+        });
+
         var seriesName = "Share of Global Electricity Generation";
 
         if (row) {
@@ -744,15 +748,15 @@ var reactordb = {
             var other = 100.0 - share;
 
             var values = [
-                {label: "Nuclear", value: share},
-                {label: "Other", value: other}
+                {label: "Nuclear " + format(share), value: share},
+                {label: "Other " + format(other), value: other}
             ];
 
             return [{key: seriesName, values: values}]
         } else {
             var values = [
-                {label: "Nuclear", value: 0.0},
-                {label: "Other", value: 100.0}
+                {label: "Nuclear (0%)", value: 0.0},
+                {label: "Other (100%)", value: 100.0}
             ];
 
             return [{key: seriesName, values: values}]
@@ -862,7 +866,8 @@ var reactordb = {
         var topLoadFactors = edges.getParam(params.topLoadFactors, 10);
         var topLifetimeGenerations = edges.getParam(params.topLifetimeGenerations, 10);
 
-        var numbersBackground = edges.getParam(params.numbersBackground, "/static/images/reactor-web.svg");
+        var reactorsBackground = edges.getParam(params.reactorsBackground, '/static/images/iconReactor.svg');
+        var underConstructionBackground = edges.getParam(params.numbersBackground, "/static/images/iconConstruction.svg");
 
         var thisYear = edges.getParam(params.year, (new Date()).getUTCFullYear());
 
@@ -955,7 +960,7 @@ var reactordb = {
                     calculate: reactordb._operableReactorsCount(),
                     renderer : edges.bs3.newImportantNumbersRenderer({
                         title: "<h4>Operable Reactors</h4>",
-                        backgroundImg: numbersBackground,
+                        backgroundImg: reactorsBackground,
                         mainNumberFormat: edges.numFormat({
                             decimalPlaces: 0,
                             thousandsSeparator: ","
@@ -973,7 +978,7 @@ var reactordb = {
                     calculate: reactordb._underConstructionReactorsCount(),
                     renderer : edges.bs3.newImportantNumbersRenderer({
                         title: "<h4>Reactors Under Construction</h4>",
-                        backgroundImg: numbersBackground,
+                        backgroundImg: underConstructionBackground,
                         mainNumberFormat: edges.numFormat({
                             decimalPlaces: 0,
                             thousandsSeparator: ","
@@ -996,12 +1001,13 @@ var reactordb = {
                         marginRight: 0,
                         marginBottom: 0,
                         marginLeft: 0,
-                        labelsOutside: true,
+                        labelsOutside: false,
                         color: ["#1e9dd8", "#ddddff"],
-                        valueFormat : edges.numFormat({
-                            decimalPlaces: 2,
-                            suffix: "%"
-                        }),
+                        //valueFormat : edges.numFormat({
+                        //    decimalPlaces: 2,
+                        //    suffix: "%"
+                        //}),
+                        valueFormat: function() {return "" },
                         onResize : function() {
                             var height = $("#reactors_under_construction_count").height();
                             $("#global_nuclear_share").css("height", height + "px");
@@ -1014,14 +1020,14 @@ var reactordb = {
                     category: "panel",
                     dataFunction: reactordb._topXReactorsByOperableCapacity({x: topOperableCapacities}),
                     renderer : edges.nvd3.newHorizontalMultibarRenderer({
-                        title: "<h3>Total Operable Reactor Capacity (Top " + topOperableCapacities + ")</h3>",
+                        title: "<h3>Total Operable Reactor Net Capacity (Top " + topOperableCapacities + ")</h3>",
                         legend: false,
                         dynamicHeight: true,
                         barHeight: 40,
                         reserveAbove: 50,
                         reserveBelow: 50,
                         color : ["#1e9dd8"],
-                        yAxisLabel: "Total Operable Reactor Capacity (MWe)",
+                        yAxisLabel: "Total Operable Reactor Net Capacity (MWe)",
                         valueFormat: edges.numFormat({
                             decimalPlaces: 0,
                             thousandsSeparator: ",",
@@ -1034,14 +1040,14 @@ var reactordb = {
                     category: "panel",
                     dataFunction: reactordb._topXReactorsByUnderConstructionCapacity({x: topUnderConstructionCapacities}),
                     renderer : edges.nvd3.newHorizontalMultibarRenderer({
-                        title: "<h3>Reactors Under Construction Capacity (Top " + topUnderConstructionCapacities + ")</h3>",
+                        title: "<h3>Reactors Under Construction Net Capacity (Top " + topUnderConstructionCapacities + ")</h3>",
                         legend: false,
                         dynamicHeight: true,
                         barHeight: 40,
                         reserveAbove: 50,
                         reserveBelow: 50,
                         color : ["#1e9dd8"],
-                        yAxisLabel: "Total Under Construction Reactor Capacity (MWe)",
+                        yAxisLabel: "Total Under Construction Reactor Net Capacity (MWe)",
                         valueFormat: edges.numFormat({
                             decimalPlaces: 0,
                             thousandsSeparator: ",",
@@ -1082,7 +1088,7 @@ var reactordb = {
                             {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
                             {field: "reactor.model", display: "Model"},
                             {field: "reactor.process", display: "Process"},
-                            {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
+                            {field: "reactor.reference_unit_power_capacity_net", display: "Net Capacity (MWe)"},
                             {field: "reactor.first_grid_connection", display: "Grid Connection"},
                             {field: "reactor.country", display: "Location", valueFunction: reactordb._countryPageLink({url_template: countryPageURLTemplate})}
                         ]
@@ -1098,7 +1104,7 @@ var reactordb = {
                             {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
                             {field: "reactor.model", display: "Model"},
                             {field: "reactor.process", display: "Process"},
-                            {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
+                            {field: "reactor.reference_unit_power_capacity_net", display: "Net Capacity (MWe)"},
                             {field: "reactor.construction_start", display: "Construction Start"},
                             {field: "reactor.country", display: "Location", valueFunction: reactordb._countryPageLink({url_template: countryPageURLTemplate})}
                         ]
@@ -1112,10 +1118,10 @@ var reactordb = {
                         title: "<h3>Top Load Factor (" + thisYear + ")</h3>",
                         fieldDisplay : [
                             {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
-                            {field: "reactor.load_factor." + thisYear, display: "Load Factor"},
                             {field: "reactor.model", display: "Model"},
                             {field: "reactor.process", display: "Process"},
-                            {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
+                            {field: "reactor.reference_unit_power_capacity_net", display: "Net Capacity (MWe)"},
+                            {field: "reactor.load_factor." + thisYear, display: "Load Factor"},
                             {field: "reactor.country", display: "Location", valueFunction: reactordb._countryPageLink({url_template: countryPageURLTemplate})}
                         ]
                     })
@@ -1125,17 +1131,17 @@ var reactordb = {
                     category: "panel",
                     secondaryResults: "f",
                     renderer : edges.bs3.newTabularResultsRenderer({
-                        title: "<h3>Top Lifetime Generation (" + thisYear + ")</h3>",
+                        title: "<h3>Top Lifetime Generation (up to " + thisYear + ")</h3>",
                         fieldDisplay : [
                             {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
+                            {field: "reactor.model", display: "Model"},
+                            {field: "reactor.process", display: "Process"},
+                            {field: "reactor.reference_unit_power_capacity_net", display: "Net Capacity (MWe)"},
                             {
                                 field: "reactor.electricity_supplied_cumulative." + thisYear,
                                 display: "Total Generation (to end " + thisYear + ") (TWh)",
                                 valueFunction: reactordb._gwh2twh
                             },
-                            {field: "reactor.model", display: "Model"},
-                            {field: "reactor.process", display: "Process"},
-                            {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
                             {field: "reactor.country", display: "Location", valueFunction: reactordb._countryPageLink({url_template: countryPageURLTemplate})}
                         ]
                     })
