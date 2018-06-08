@@ -735,12 +735,6 @@ var reactordb = {
         var iter = component.edge.resources.nuclear_share.iterator();
         var row = iter.next();
 
-        var format = edges.numFormat({
-            decimalPlaces: 2,
-            suffix: "%)",
-            prefix: "("
-        });
-
         var seriesName = "Share of Global Electricity Generation";
 
         if (row) {
@@ -748,19 +742,33 @@ var reactordb = {
             var other = 100.0 - share;
 
             var values = [
-                {label: "Nuclear " + format(share), value: share},
-                {label: "Other " + format(other), value: other}
+                {label: "Nuclear", value: share},
+                {label: "Other", value: other}
             ];
 
             return [{key: seriesName, values: values}]
         } else {
             var values = [
-                {label: "Nuclear (0%)", value: 0.0},
-                {label: "Other (100%)", value: 100.0}
+                {label: "Nuclear", value: 0.0},
+                {label: "Other", value: 100.0}
             ];
 
             return [{key: seriesName, values: values}]
         }
+    },
+
+    _nuclearPercentGlobalForPieRenderer : function(renderer) {
+        var ds = renderer.component.dataSeries;
+        if (!ds) {
+            return "-- %";
+        }
+        for (var i = 0; i < ds[0].values.length; i++) {
+            var entry = ds[0].values[i];
+            if (entry.label === "Nuclear") {
+                return entry.value + " %";
+            }
+        }
+        return "-- %";
     },
 
     _operableReactorsCount : function(params) {
@@ -972,6 +980,33 @@ var reactordb = {
                         })
                     })
                 }),
+                edges.newPieChart({
+                    id: "global_nuclear_share",
+                    category: "big-number",
+                    dataFunction: reactordb._globalNuclearShare,
+                    display: "<h4>Share of Global Electricity Generation</h4>",
+                    renderer : edges.nvd3.newPieChartRenderer({
+                        showLegend: false,
+                        marginTop: -23,
+                        marginRight: -23,
+                        marginBottom: -23,
+                        marginLeft: -23,
+                        // labelsOutside: false,
+                        color: ["#1e9dd8", "#ddddff"],
+                        footer: reactordb._nuclearPercentGlobalForPieRenderer,
+                        showLabels: false,
+                        valueFormat : edges.numFormat({
+                            decimalPlaces: 2,
+                            suffix: "%"
+                        }),
+                        //valueFormat: function() {return "" },
+                        //onResize : function() {
+                        //    var height = $("#reactors_under_construction_count").height();
+                        //    $("#global_nuclear_share").css("height", height + "px");
+                        //},
+                        resizeOnInit: true
+                    })
+                }),
                 edges.numbers.newImportantNumbers({
                     id: "reactors_under_construction_count",
                     category: "big-number",
@@ -988,31 +1023,6 @@ var reactordb = {
                             thousandsSeparator: ",",
                             suffix: " MWe"
                         })
-                    })
-                }),
-                edges.newPieChart({
-                    id: "global_nuclear_share",
-                    category: "big-number",
-                    dataFunction: reactordb._globalNuclearShare,
-                    display: "<h4>Share of Global Electricity Generation</h4>",
-                    renderer : edges.nvd3.newPieChartRenderer({
-                        showLegend: false,
-                        marginTop: 60,
-                        marginRight: 0,
-                        marginBottom: 0,
-                        marginLeft: 0,
-                        labelsOutside: false,
-                        color: ["#1e9dd8", "#ddddff"],
-                        //valueFormat : edges.numFormat({
-                        //    decimalPlaces: 2,
-                        //    suffix: "%"
-                        //}),
-                        valueFormat: function() {return "" },
-                        onResize : function() {
-                            var height = $("#reactors_under_construction_count").height();
-                            $("#global_nuclear_share").css("height", height + "px");
-                        },
-                        resizeOnInit: true
                     })
                 }),
                 edges.newHorizontalMultibar({
@@ -1188,24 +1198,24 @@ var reactordb = {
 
             // the big numbers along the top
             frag += '<div class="row">\
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">\
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">\
                     <div class="row">\
                         <div class="col-lg-8 col-lg-offset-4 col-md-8 col-md-offset-4 col-sm-8 col-sm-offset-4 col-xs-9 col-xs-offset-2">\
                             <div id="operable_reactors_count"></div>\
                         </div>\
                     </div>\
                 </div>\
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">\
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">\
                     <div class="row">\
                         <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-9 col-xs-offset-1">\
-                            <div id="reactors_under_construction_count"></div>\
+                            <div id="global_nuclear_share"></div>\
                         </div>\
                     </div>\
                 </div>\
                 <div class="col-lg-4 col-lg-offset-0 col-md-4 col-md-offset-0 col-sm-4 col-sm-offset-0 col-xs-6 col-xs-offset-3">\
                     <div class="row">\
                         <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">\
-                            <div id="global_nuclear_share"></div>\
+                            <div id="reactors_under_construction_count"></div>\
                         </div>\
                     </div>\
                 </div>\
