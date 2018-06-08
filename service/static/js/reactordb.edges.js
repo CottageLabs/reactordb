@@ -936,7 +936,10 @@ var reactordb = {
                 c : function() {
                     return es.newQuery({
                         size: mostRecentGridConnections,
-                        sort: [es.newSort({field: "reactor.first_grid_connection", order: "desc"})]
+                        sort: [es.newSort({field: "reactor.first_grid_connection", order: "desc"})],
+                        aggs : [
+                            es.newTermsAggregation({name: "countries", field: "reactor.country.exact", size: 250, orderBy: "_term", orderDir: "asc"})
+                        ]
                     })
                 },
                 d : function() {
@@ -962,6 +965,10 @@ var reactordb = {
                 b : operation_search_url
             },
             components : [
+                reactordb.newCountrySelector({
+                    id: "country-selector",
+                    urlTemplate: countryPageURLTemplate
+                }),
                 edges.numbers.newImportantNumbers({
                     id: "operable_reactors_count",
                     category: "big-number",
@@ -1193,6 +1200,7 @@ var reactordb = {
                 </div>\
                 <div class="col-sm-3 col-xs-4">\
                     <div class="' + searchButtonClass + '"><a href="' + this.searchPageURL + '">Search the Database</a></div>\
+                    <div id="country-selector"></div>\
                 </div>\
             </div>';
 
@@ -1237,6 +1245,77 @@ var reactordb = {
 
             edge.context.html(frag);
         };
+    },
+
+    newCountrySelector : function(params) {
+        return edges.instantiate(reactordb.CountrySelector, params, edges.newComponent);
+    },
+    CountrySelector : function(params) {
+        this.urlTemplate = params.urlTemplate;
+        this.placeholder = edges.getParam(params.placeholder, "{country_name}");
+
+        this.renderer = reactordb.newCountrySelectorRenderer();
+
+        this.countries = [];
+
+        this.synchronise = function() {
+            this.countries = [];
+            if (!this.edge.secondaryResults.hasOwnProperty("c")) {
+                return;
+            }
+
+            var cagg = this.edge.secondaryResults.c.aggregation("countries");
+            for (var i = 0; i < cagg.buckets.length; i++) {
+                var bucket = cagg.buckets[i];
+                this.countries.push(bucket.key);
+            }
+        };
+
+        this.navigateToCountry = function(params) {
+            var country = params.country;
+            var url = this.urlTemplate.replace(this.placeholder, country);
+            window.location.href = url;
+        }
+    },
+
+    newCountrySelectorRenderer : function(params) {
+        return edges.instantiate(reactordb.CountrySelectorRenderer, params, edges.newRenderer);
+    },
+    CountrySelectorRenderer : function(params) {
+        this.namespace = "reactordb-country-selector";
+
+        this.draw = function() {
+            var containerClasses = edges.css_classes(this.namespace, "container", this);
+            var buttonClass = edges.css_classes(this.namespace, "go", this);
+            var buttonId = edges.css_id(this.namespace, "button", this);
+            var selectId = edges.css_id(this.namespace, "country", this);
+
+            var options = "";
+            for (var i = 0; i < this.component.countries.length; i++) {
+                var country = this.component.countries[i];
+                options += '<option value="' + country + '">' + country + '</option>';
+            }
+
+            var frag = '<div class=' + containerClasses + '>\
+                <select id="' + selectId + '" name="' + selectId + '"><option value="">select a country</option>{OPTIONS}</select>\
+                <button id="' + buttonId + '" type="button" class="' + buttonClass + '">go</button>\
+            </div>';
+            frag = frag.replace("{OPTIONS}", options);
+
+            this.component.context.html(frag);
+
+            var buttonSelector = edges.css_id_selector(this.namespace, "button", this);
+            edges.on(buttonSelector, "click", this, "buttonClicked");
+        };
+
+        this.buttonClicked = function() {
+            var selector = edges.css_id_selector(this.namespace, "country", this);
+            var sel = this.component.jq(selector);
+            var val = sel.val();
+            if (val !== "") {
+                this.component.navigateToCountry({country: val});
+            }
+        }
     },
 
     /* ===================================================
