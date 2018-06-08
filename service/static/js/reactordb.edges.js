@@ -1200,7 +1200,9 @@ var reactordb = {
                 </div>\
                 <div class="col-sm-3 col-xs-4">\
                     <div class="' + searchButtonClass + '"><a href="' + this.searchPageURL + '">Search the Database</a></div>\
-                    <div id="country-selector"></div>\
+                    <div class="row">\
+                        <div class="col-xs-12"><div id="country-selector"></div>\
+                    </div>\
                 </div>\
             </div>';
 
@@ -1297,8 +1299,16 @@ var reactordb = {
             }
 
             var frag = '<div class=' + containerClasses + '>\
-                <select id="' + selectId + '" name="' + selectId + '"><option value="">select a country</option>{OPTIONS}</select>\
-                <button id="' + buttonId + '" type="button" class="' + buttonClass + '">go</button>\
+                <div class="form-inline">\
+                    <div class="form-group">\
+                        <div class="input-group">\
+                            <select class="form-control input-sm" id="' + selectId + '" name="' + selectId + '"><option value="">or select a country</option>{OPTIONS}</select>\
+                            <span class="input-group-btn">\
+                                <button id="' + buttonId + '" type="button" class="btn btn-info btn-sm ' + buttonClass + '">go</button>\
+                            </span>\
+                        </div>\
+                    </div>\
+                </div>\
             </div>';
             frag = frag.replace("{OPTIONS}", options);
 
