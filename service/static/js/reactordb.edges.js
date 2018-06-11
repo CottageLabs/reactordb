@@ -224,12 +224,6 @@ var reactordb = {
         var iter = component.edge.resources.nuclear_share.iterator();
         var row = iter.next();
 
-        var format = edges.numFormat({
-            decimalPlaces: 2,
-            suffix: "%)",
-            prefix: "("
-        });
-
         var seriesName = "Nuclear Share of Generation";
 
         if (row) {
@@ -407,6 +401,35 @@ var reactordb = {
                         })
                     })
                 }),
+                edges.newPieChart({
+                    id: "country_nuclear_share",
+                    category: "big-number",
+                    dataFunction: reactordb._countryNuclearShare,
+                    display: "<h4>Nuclear Share of Generation</h4>",
+                    renderer : edges.nvd3.newPieChartRenderer({
+                        showLegend: false,
+                        color: ["#1e9dd8", "#ddddff"],
+                        footer: reactordb._nuclearPercentForPieRenderer,
+                        showLabels: false,
+                        valueFormat : edges.numFormat({
+                            decimalPlaces: 2,
+                            suffix: "%"
+                        }),
+                        growOnHover: false,
+                        onResize : function(chart) {
+                            var container = $(".edges-nvd3-pie-svg-container", "#country_nuclear_share");
+                            var height = container.height();
+                            var margin_map = {
+                                180: -23,
+                                145: -19,
+                                118: -15
+                            };
+                            var margin = margin_map[height] || -23;
+                            chart.margin({"left":margin, "right":margin, "top":margin, "bottom":margin});
+                        },
+                        resizeOnInit: true
+                    })
+                }),
                 edges.numbers.newImportantNumbers({
                     id: "reactors_under_construction_count",
                     category: "big-number",
@@ -423,30 +446,6 @@ var reactordb = {
                             thousandsSeparator: ",",
                             suffix: " MWe"
                         })
-                    })
-                }),
-                edges.newPieChart({
-                    id: "country_nuclear_share",
-                    category: "big-number",
-                    dataFunction: reactordb._countryNuclearShare,
-                    display: "<h4>Nuclear Share of Generation</h4>",
-                    renderer : edges.nvd3.newPieChartRenderer({
-                        showLegend: false,
-                        marginTop: 60,
-                        marginRight: 0,
-                        marginBottom: 0,
-                        marginLeft: 0,
-                        labelsOutside: false,
-                        color: ["#1e9dd8", "#ddddff"],
-                        valueFormat : edges.numFormat({
-                            decimalPlaces: 2,
-                            suffix: "%"
-                        }),
-                        onResize : function() {
-                            var height = $("#reactors_under_construction_count").height();
-                            $("#country_nuclear_share").css("height", height + "px");
-                        },
-                        resizeOnInit: true
                     })
                 }),
                 edges.newMultibar({
@@ -599,24 +598,24 @@ var reactordb = {
 
             // the big numbers along the top
             frag += '<div class="row">\
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">\
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">\
                     <div class="row">\
-                        <div class="col-lg-8 col-lg-offset-4 col-md-8 col-md-offset-4 col-sm-8 col-sm-offset-4 col-xs-9 col-xs-offset-2">\
+                        <div class="col-lg-8 col-lg-offset-4 col-md-8 col-md-offset-4 col-sm-8 col-sm-offset-4 col-xs-10 col-xs-offset-1">\
                             <div id="operable_reactors_count"></div>\
                         </div>\
                     </div>\
                 </div>\
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">\
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">\
                     <div class="row">\
-                        <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-9 col-xs-offset-1">\
-                            <div id="reactors_under_construction_count"></div>\
+                        <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-10 col-xs-offset-1">\
+                            <div id="country_nuclear_share"></div>\
                         </div>\
                     </div>\
                 </div>\
-                <div class="col-lg-4 col-lg-offset-0 col-md-4 col-md-offset-0 col-sm-4 col-sm-offset-0 col-xs-6 col-xs-offset-3">\
+                <div class="col-lg-4 col-lg-offset-0 col-md-4 col-md-offset-0 col-sm-4 col-sm-offset-0 col-xs-10 col-xs-offset-1">\
                     <div class="row">\
                         <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">\
-                            <div id="country_nuclear_share"></div>\
+                            <div id="reactors_under_construction_count"></div>\
                         </div>\
                     </div>\
                 </div>\
@@ -757,7 +756,7 @@ var reactordb = {
         }
     },
 
-    _nuclearPercentGlobalForPieRenderer : function(renderer) {
+    _nuclearPercentForPieRenderer : function(renderer) {
         var ds = renderer.component.dataSeries;
         if (!ds) {
             return "-- %";
@@ -1007,23 +1006,25 @@ var reactordb = {
                     display: "<h4>Share of Global Electricity Generation</h4>",
                     renderer : edges.nvd3.newPieChartRenderer({
                         showLegend: false,
-                        marginTop: -23,
-                        marginRight: -23,
-                        marginBottom: -23,
-                        marginLeft: -23,
-                        // labelsOutside: false,
                         color: ["#1e9dd8", "#ddddff"],
-                        footer: reactordb._nuclearPercentGlobalForPieRenderer,
+                        footer: reactordb._nuclearPercentForPieRenderer,
                         showLabels: false,
                         valueFormat : edges.numFormat({
                             decimalPlaces: 2,
                             suffix: "%"
                         }),
-                        //valueFormat: function() {return "" },
-                        //onResize : function() {
-                        //    var height = $("#reactors_under_construction_count").height();
-                        //    $("#global_nuclear_share").css("height", height + "px");
-                        //},
+                        growOnHover: false,
+                        onResize : function(chart) {
+                            var container = $(".edges-nvd3-pie-svg-container", "#global_nuclear_share");
+                            var height = container.height();
+                            var margin_map = {
+                                180: -23,
+                                145: -19,
+                                118: -15
+                            };
+                            var margin = margin_map[height] || -23;
+                            chart.margin({"left":margin, "right":margin, "top":margin, "bottom":margin});
+                        },
                         resizeOnInit: true
                     })
                 }),
@@ -1242,19 +1243,19 @@ var reactordb = {
             frag += '<div class="row">\
                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">\
                     <div class="row">\
-                        <div class="col-lg-8 col-lg-offset-4 col-md-8 col-md-offset-4 col-sm-8 col-sm-offset-4 col-xs-9 col-xs-offset-2">\
+                        <div class="col-lg-8 col-lg-offset-4 col-md-8 col-md-offset-4 col-sm-8 col-sm-offset-4 col-xs-10 col-xs-offset-1">\
                             <div id="operable_reactors_count"></div>\
                         </div>\
                     </div>\
                 </div>\
                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">\
                     <div class="row">\
-                        <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-9 col-xs-offset-1">\
+                        <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-10 col-xs-offset-1">\
                             <div id="global_nuclear_share"></div>\
                         </div>\
                     </div>\
                 </div>\
-                <div class="col-lg-4 col-lg-offset-0 col-md-4 col-md-offset-0 col-sm-4 col-sm-offset-0 col-xs-6 col-xs-offset-3">\
+                <div class="col-lg-4 col-lg-offset-0 col-md-4 col-md-offset-0 col-sm-4 col-sm-offset-0 col-xs-10 col-xs-offset-1">\
                     <div class="row">\
                         <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">\
                             <div id="reactors_under_construction_count"></div>\
