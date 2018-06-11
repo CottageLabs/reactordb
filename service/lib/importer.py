@@ -89,6 +89,7 @@ def import_reactordb(master_path, pris_path, history_path):
         obj["load_factor"] = load_factor
         obj["energy_availability"] = energy_availability
         obj["reference_unit_power"] = rups
+        obj["electricity_supplied"] = electricity_supplied
 
         electricity_supplied_cumulative = {}
         es_years = electricity_supplied.keys()
