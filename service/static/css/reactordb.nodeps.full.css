@@ -99,8 +99,12 @@
 .edges-bs3-important-numbers-graphic {
     position: relative;
 }
+.edges-bs3-important-numbers-img {
+    height: 100%;
+    text-align: center;
+}
 .edges-bs3-important-numbers-img img {
-    width: 100%;
+    height: 100%
 }
 .edges-bs3-important-numbers-main {
     position: absolute;
@@ -660,16 +664,13 @@
     font-weight: normal;
 }
 .edges-bs3-important-numbers-img {
-    padding: 20px;
+    
 }
 #global_nuclear_generation_histogram {
     height: 300px;
 }
 #global_nuclear_share {
     text-align: center;
-}
-#global_nuclear_share .nv-pieLabels text {
-    font-weight: bold;
 }
 .reactordb-dashboard-search {
     margin-top: 20px;
@@ -683,18 +684,32 @@
 .edges-bs3-important-numbers-title {
     height: 60px;
 }
+.edges-bs3-important-numbers-graphic {
+    height: 180px;
+}
+.edges-bs3-important-numbers-second {
+    margin-top: 10px;
+    height: 30px;
+    font-weight: bold;
+}
 .edges-nvd3-pie-display-global_nuclear_share {
     height: 60px;
     text-align: center;
 }
+.edges-nvd3-pie-footer {
+    margin-top: 10px;
+    height: 30px;
+    font-size: 1.3em;
+    font-weight: bold;
+}
 #edges-nvd3-pie-svg-global_nuclear_share {
-    margin-top: -75px;
 }
 .edges-nvd3-pie-container-global_nuclear_share {
-    height: 100%;
 }
 .edges-nvd3-pie-svg-container-global_nuclear_share {
-    height: 100%;
+}
+.edges-nvd3-pie-svg-container {
+    height: 180px;
 }
 #country_nuclear_share {
     text-align: center;
