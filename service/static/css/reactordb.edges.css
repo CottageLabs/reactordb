@@ -265,6 +265,7 @@
 }
 */
 
+/*
 .reactordb-dashboard-search {
     margin-top: 20px;
     border: 1px solid #cccccc;
@@ -273,6 +274,15 @@
     border-radius: 5px;
     text-align: center;
     margin-bottom: 20px;
+}*/
+
+.reactordb-dashboard-search {
+    margin-top: 20px;
+    float: right;
+}
+
+#country-selector {
+    margin-top: 20px;
 }
 
 .edges-bs3-important-numbers-title {
