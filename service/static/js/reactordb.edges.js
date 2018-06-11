@@ -873,6 +873,7 @@ var reactordb = {
         var mostRecentConstructionStarts = edges.getParam(params.mostRecentConstructionStarts, 10);
         var topLoadFactors = edges.getParam(params.topLoadFactors, 10);
         var topLifetimeGenerations = edges.getParam(params.topLifetimeGenerations, 10);
+        var topAnnualGenerations = edges.getParam(params.topAnnualGenerations, 10);
 
         var reactorsBackground = edges.getParam(params.reactorsBackground, '/static/images/iconReactor.svg');
         var underConstructionBackground = edges.getParam(params.numbersBackground, "/static/images/iconConstruction.svg");
@@ -959,15 +960,27 @@ var reactordb = {
                         size: topLifetimeGenerations,
                         sort: [es.newSort({field: "reactor.electricity_supplied_cumulative." + thisYear, order: "desc"})]
                     })
+                },
+                g : function() {
+                    return es.newQuery({
+                        size: topAnnualGenerations,
+                        sort: [es.newSort({field: "reactor.electricity_supplied." + thisYear, order: "desc"})]
+                    })
                 }
             },
             secondaryUrls : {
                 b : operation_search_url
             },
             components : [
-                reactordb.newCountrySelector({
+                edges.newNavigationTermList({
                     id: "country-selector",
-                    urlTemplate: countryPageURLTemplate
+                    urlTemplate: countryPageURLTemplate,
+                    placeholder: "{country_name}",
+                    sourceResults: "c",
+                    sourceAggregation: "countries",
+                    renderer: edges.bs3.newNavigationTermListRenderer({
+                        firstOption: "or select a country"
+                    })
                 }),
                 edges.numbers.newImportantNumbers({
                     id: "operable_reactors_count",
@@ -1144,6 +1157,26 @@ var reactordb = {
                     })
                 }),
                 edges.newResultsDisplay({
+                    id : "top_annual_generation",
+                    category: "panel",
+                    secondaryResults: "g",
+                    renderer : edges.bs3.newTabularResultsRenderer({
+                        title: "<h3>Top Generation (" + thisYear + ")</h3>",
+                        fieldDisplay : [
+                            {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
+                            {field: "reactor.model", display: "Model"},
+                            {field: "reactor.process", display: "Process"},
+                            {field: "reactor.reference_unit_power_capacity_net", display: "Net Capacity (MWe)"},
+                            {
+                                field: "reactor.electricity_supplied." + thisYear,
+                                display: "Total Generation (" + thisYear + ") (TWh)",
+                                valueFunction: reactordb._gwh2twh
+                            },
+                            {field: "reactor.country", display: "Location", valueFunction: reactordb._countryPageLink({url_template: countryPageURLTemplate})}
+                        ]
+                    })
+                }),
+                edges.newResultsDisplay({
                     id : "top_lifetime_generation",
                     category: "panel",
                     secondaryResults: "f",
@@ -1247,85 +1280,6 @@ var reactordb = {
 
             edge.context.html(frag);
         };
-    },
-
-    newCountrySelector : function(params) {
-        return edges.instantiate(reactordb.CountrySelector, params, edges.newComponent);
-    },
-    CountrySelector : function(params) {
-        this.urlTemplate = params.urlTemplate;
-        this.placeholder = edges.getParam(params.placeholder, "{country_name}");
-
-        this.renderer = reactordb.newCountrySelectorRenderer();
-
-        this.countries = [];
-
-        this.synchronise = function() {
-            this.countries = [];
-            if (!this.edge.secondaryResults.hasOwnProperty("c")) {
-                return;
-            }
-
-            var cagg = this.edge.secondaryResults.c.aggregation("countries");
-            for (var i = 0; i < cagg.buckets.length; i++) {
-                var bucket = cagg.buckets[i];
-                this.countries.push(bucket.key);
-            }
-        };
-
-        this.navigateToCountry = function(params) {
-            var country = params.country;
-            var url = this.urlTemplate.replace(this.placeholder, country);
-            window.location.href = url;
-        }
-    },
-
-    newCountrySelectorRenderer : function(params) {
-        return edges.instantiate(reactordb.CountrySelectorRenderer, params, edges.newRenderer);
-    },
-    CountrySelectorRenderer : function(params) {
-        this.namespace = "reactordb-country-selector";
-
-        this.draw = function() {
-            var containerClasses = edges.css_classes(this.namespace, "container", this);
-            var buttonClass = edges.css_classes(this.namespace, "go", this);
-            var buttonId = edges.css_id(this.namespace, "button", this);
-            var selectId = edges.css_id(this.namespace, "country", this);
-
-            var options = "";
-            for (var i = 0; i < this.component.countries.length; i++) {
-                var country = this.component.countries[i];
-                options += '<option value="' + country + '">' + country + '</option>';
-            }
-
-            var frag = '<div class=' + containerClasses + '>\
-                <div class="form-inline">\
-                    <div class="form-group">\
-                        <div class="input-group">\
-                            <select class="form-control input-sm" id="' + selectId + '" name="' + selectId + '"><option value="">or select a country</option>{OPTIONS}</select>\
-                            <span class="input-group-btn">\
-                                <button id="' + buttonId + '" type="button" class="btn btn-info btn-sm ' + buttonClass + '">go</button>\
-                            </span>\
-                        </div>\
-                    </div>\
-                </div>\
-            </div>';
-            frag = frag.replace("{OPTIONS}", options);
-
-            this.component.context.html(frag);
-
-            var buttonSelector = edges.css_id_selector(this.namespace, "button", this);
-            edges.on(buttonSelector, "click", this, "buttonClicked");
-        };
-
-        this.buttonClicked = function() {
-            var selector = edges.css_id_selector(this.namespace, "country", this);
-            var sel = this.component.jq(selector);
-            var val = sel.val();
-            if (val !== "") {
-                this.component.navigateToCountry({country: val});
-            }
-        }
     },
 
     /* ===================================================
