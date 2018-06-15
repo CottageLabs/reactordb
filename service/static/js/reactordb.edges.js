@@ -187,7 +187,6 @@ var reactordb = {
         for (var i = 0; i < buckets.length; i++) {
             var bucket = buckets[i];
             var gen = bucket.electricity_generation.value;
-            gen = gen / 1000.0;
             values.push({label: bucket.key, value: gen});
         }
 
@@ -209,14 +208,12 @@ var reactordb = {
                 }
             }
 
-            var gentwh = gen / 1000.0;
-
             var formatter = edges.numFormat({
                 decimalPlaces: 0,
                 thousandsSeparator: ","
             });
 
-            return {"a" : formatter(gentwh), "b" : year}
+            return {"a" : formatter(gen), "b" : year}
         }
     },
 
@@ -465,7 +462,7 @@ var reactordb = {
                 edges.numbers.newStory({
                     id: "country_nuclear_generation_story",
                     category: "panel",
-                    template: "{a} TWh: electricity generation from nuclear energy in {b}",
+                    template: "{a} GWh: electricity generation from nuclear energy in {b}",
                     calculate: reactordb._countryNuclearGeneration({year: thisYear, country: country_name}),
                     renderer : edges.bs3.newStoryRenderer({
                         title: "<h3>Electricity Generated</h3>"
@@ -481,7 +478,7 @@ var reactordb = {
                         yTickFormat : ",.0f",
                         showLegend: false,
                         xAxisLabel: "Year",
-                        yAxisLabel: "Electricity Generated (TWh)",
+                        yAxisLabel: "Electricity Generated (GWh)",
                         marginLeft: 80
                     })
                 }),
