@@ -1,73 +1,141 @@
 # Deployment in CMS
 
-This document describes the CSS and JS dependencies of the reactor database, and the way that the reactor search
-and reactor pages can be deployed.
+This document describes the CSS, JS and other dependencies of the reactor database, and the way that the various reactor pages can be deployed:
+
+* Global Dashboard
+* Reactor Search
+* Reactor Pages
+* Country Pages
+
 
 ## Required CSS files
 
-The following CSS are required by both the reactor search and the reactor page:
+The following CSS is required by all pages (in this order):
 
-* Font Awesome 4.5.0 - https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css
-* Bootstrap 3.3.1 - magnificent-octopus/octopus/static/vendor/bootstrap-3.3.1/css/bootstrap.min.css
-* Glyphtofa CSS - service/static/css/glyphtofa.css
-* Reactor DB CSS - service/static/css/reactordb.edges.css
-* Edges Bootstrap 3 layout additional CSS - magnificent-octopus/octopus/static/vendor/edges/css/bs3.edges.css
+* CSS for the Framework: service/static/css/reactordb.onlydeps.framework.css
+    * This includes only bootstrap 3's css, and therefore may not be required if this is already present in the CMS
+* CSS for bundled 3rd party dependencies: service/static/css/reactordb.onlydeps.implementation.css
+    * This includes the css for the following libraries:
+        * nvd3
+        * tablesorter
+* CSS for externally hosted 3rd party dependencies: https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css
+    * This just provides a reference to Font Awesome 4.5.0
+* CSS for the application: service/static/css/reactordb.nodeps.full.css
+    * This contains css for the following components:
+        * The reactor database itself
+        * glyphtofa
+        * Edges
 
 For example:
 
 ```html
+    <link rel="stylesheet" href="/static/css/reactordb.onlydeps.framework.css">
+    <link rel="stylesheet" href="/static/css/reactordb.onlydeps.implementation.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/static/vendor/bootstrap-3.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/css/glyphtofa.css">
-    <link rel="stylesheet" href="/static/css/reactordb.edges.css">
-    <link rel="stylesheet" href="/static/vendor/edges/css/bs3.edges.css">
+    <link rel="stylesheet" href="/static/css/reactordb.nodeps.full.css">
 ```
 
-### Reactor Search Page
-
-There are no additional CSS files requires specifically for the reactor search page
-
-### Reactor Page
-
-The following additional CSS is required for the reactor page
-
-* NVD3 1.8.1 - magnificent-octopus/octopus/static/vendor/edges/vendor/nvd3-1.8.1/nv.d3.css
-* Edges Google Maps layout additional CSS - magnificent-octopus/octopus/static/vendor/edges/css/google.edges.css
-
-For example:
-
-```html
-    <link rel="stylesheet" href="/static/vendor/edges/vendor/nvd3-1.8.1/nv.d3.css">
-    <link rel="stylesheet" href="/static/vendor/edges/css/google.edges.css">
-```
 
 ## Required JavaScript Files
 
-The following JS is required by both the reactor search page and the reactor page
+The following JS is required by all pages:
 
-* JQuery 1.11.1 - magnificent-octopus/octopus/static/vendor/jquery-1.11.1/jquery-1.11.1.min.js
-* Bootstrap 3.3.1 - magnificent-octopus/octopus/static/vendor/bootstrap-3.3.1/js/bootstrap.min.js
-* Edges ElasticSearch layer - magnificent-octopus/octopus/static/vendor/edges/es.js
-* Edges Core - magnificent-octopus/octopus/static/vendor/edges/edges.js
-* Edges Bootstrap 3 Layout - magnificent-octopus/octopus/static/vendor/edges/bs3.edges.js
-* ReactorDB custom layout - service/static/js/reactordb.edges.js
+* JS for the framework: service/static/js/reactordb.onlydeps.framework.js
+    * This consists of the following libraries, which may already be present in your CMS and therefore may not be required
+        * jquery
+        * bootstrap
+* JS for the bundled 3rd party dependencies: service/static/js/reactordb.onlydeps.implementation.no-gm.js
+    * This consists of the following 3rd party libraries:
+        * d3
+		* papaparse
+		* nvd3
+		* tablesorter
+		* showdown
+* JS for the application: service/static/js/reactordb.nodeps.full.js
+    * This contains the JS for the following components:
+        * The reactor database itself
+        * Edges
 
 For example:
 
 ```html
-    <script type="text/javascript" src="/static/vendor/jquery-1.11.1/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="/static/vendor/bootstrap-3.3.1/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/static/vendor/edges/es.js"></script>
-    <script type="text/javascript" src="/static/vendor/edges/edges.js"></script>
-    <script type="text/javascript" src="/static/vendor/edges/bs3.edges.js"></script>
-    <script type="text/javascript" src="/static/js/reactordb.edges.js"></script>
+    <script type="text/javascript" src="/static/js/reactordb.onlydeps.framework.js"></script>
+    <script type="text/javascript" src="/static/js/reactordb.onlydeps.implementation.no-gm.js"></script>
+    <script type="text/javascript" src="/static/js/reactordb.nodeps.full.js"></script>
 ```
+
+
+### Additional Assets
+
+In order to function, the reactor database needs a number of other assets to be present in the CMS to provide the data
+and other resources for the visualisation.  These are:
+
+* The Nuclear Share Data.  This is a CSV which provides a list of countries, and their nuclear share by year, as well as a line
+with the GLOBAL nuclear share.  See static/data/share-of-electricity-generation.csv for an example.  This file should be available
+at a URL within the CMS, and is provided to the pages when they are created, as documented in the relevant sections below.
+
+* The background image for the "Operable Reactors" count.  This is an image (ideally an SVG) that is displayed behind the count
+of operable reactors which appears on the dashboard and country pages.  This file should be available
+at a URL within the CMS, and is provided to the pages when they are created, as documented in the relevant sections below.
+
+* The background image for the "Under Construction Reactors" count.  This is an image (ideally an SVG) that is displayed behind the count
+of under construction reactors which appears on the dashboard and country pages.  This file should be available
+at a URL within the CMS, and is provided to the pages when they are created, as documented in the relevant sections below.
+
+
+### Global Dashboard
+
+To deploy, include a div with id "dashboard" and then call reactordb.makeDashboard() with suitable arguments.
+
+```html
+<div id="dashboard"></div>
+
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    reactordb.makeDashboard({
+        year: 2016,
+        nuclearShareUrl: "/static/data/nuclear-share.csv",
+        reactorsBackground: "/static/images/operableReactors.svg",
+        underConstructionBackground: "/static/images/underConstruction.svg",
+        reactorPageURLTemplate: "/reactor/{reactor_name}",
+        countryPageURLTemplate: "/country/{country_name}",
+        searchPageURL : "/search"
+    });
+});
+</script>
+```
+
+makeDashboard takes a number of arguments you can supply:
+
+**Arguments you need to supply**
+
+* year - year for which to present data.
+* nuclearShareURL - the URL to the CSV containing the nuclear share data
+* reactorsBackground - image to use as background for count of operable reactors
+* underConstructionBackground - image to use as background for count of under construction reactors
+* reactorPageURLTemplate - the URL template for the reactor page, with "{reactor_name}" being replaced by the actual reactor name
+* countryPageURLTemplate - the URL template for the country page, with "{country_name}" being replaced by the actual country name
+* searchPageURL - the URL to the reactor search page
+
+**Additional arguments that you can probably leave as default**
+
+* selector - the jQuery selector for the div into which the dashobard will be rendered.  Defaults to "#dashboard"
+* operation_index - the index name for operation data.  Defaults to "operation"
+* reactor_index - the index name for reactor data.  Defaults to "reactor"
+* reactor_search_url - the URL for the ES reactor search.  Defaults to the reactor_index query endpoint on the current domain
+* operation_search_url - the URL for the ES reactor search.  Defaults to the reactor_index query endpoint on the current domain
+* topOperableCapacities - max number of top X operable capacities, defaults to 10
+* topUnderConstructionCapacities - max number of top under construction capacities, defaults 10
+* mostRecentGridConnections - max number of most recent grid connections, defaults to 10
+* mostRecentConstructionStarts - max number of most recent construction starts, defaults to 10
+* topLoadFactors - max number of top load factors, defaults to 10
+* topLifetimeGenerations - max number of top lifetime generations, defaults to 10
+* topAnnualGenerations - max number of top annual generations, defaults to 10
+
 
 ### Reactor Search Page
 
-The reactor search page does not require any additional JS libraries.
-
-To deploy, include a div with id "reactor-search" and then call reactordb.makeSearch() when the document has finished loading
+To deploy, include a div with id "reactor-search" and then call reactordb.makeSearch() with suitable arguments
 
 ```html
     <div id="reactor-search"></div>
@@ -105,22 +173,13 @@ For example:
 
 The reactor page requires the following additional javascript:
 
-* Google Maps (you will require a Google Maps API key) - https://maps.googleapis.com/maps/api/js?key={{map_key}}
-* Showdown 1.2.3 - magnificent-octopus/octopus/static/vendor/showdown-1.2.3/showdown.min.js
-* D3 v3 - magnificent-octopus/octopus/static/vendor/edges/vendor/d3-v3/d3.min.js
-* NVD3 1.8.1 - magnificent-octopus/octopus/static/vendor/edges/vendor/nvd3-1.8.1/nv.d3.min.js
-* Edges NVD3 layout - magnificent-octopus/octopus/static/vendor/edges/nvd3.edges.js
-* Edges Google layout - magnificent-octopus/octopus/static/vendor/edges/google.edges.js
+* JS for the externally hosted 3rd party dependencies: https://maps.googleapis.com/maps/api/js?key={{map_key}}
+    * This just provides a reference to the Google Maps javascript
 
 For example:
 
 ```html
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{map_key}}"></script>
-    <script type="text/javascript" src="/static/vendor/showdown-1.2.3/showdown.min.js"></script>
-    <script type="text/javascript" src="/static/vendor/edges/vendor/d3-v3/d3.min.js"></script>
-    <script type="text/javascript" src="/static/vendor/edges/vendor/nvd3-1.8.1/nv.d3.js"></script>
-    <script type="text/javascript" src="/static/vendor/edges/nvd3.edges.js"></script>
-    <script type="text/javascript" src="/static/vendor/edges/google.edges.js"></script>
 ```
 
 To deploy, include a div with id "reactor-page" then call reactordb.makeReactorPage() when the document has loaded
@@ -154,11 +213,54 @@ For example:
             selector: "#my-reactor"
             reactor_search_url: "http://wna.com/reactordb/query/reactor/_search",
             operation_search_url: "http://wna.com/reactordb/query/operation/_search",
-            id_regex: new RegExp("reactor\/(.+)");
-            reactor_name: "ARMENIAN-1"
+            id_regex: new RegExp("reactor\/(.+)")
         });
     });
     </script>
 ```
 
-(note that in reality you would only include either "id_regex" OR "reactor_name" and not both.
+
+### Country Page
+
+To deploy, include a div with id "country-report" and then call reactordb.makeCountryReport() with suitable arguments.
+
+```html
+<div id="country-report"></div>
+
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    reactordb.makeCountryReport({
+        year: 2016,
+        nuclearShareUrl: "/static/data/nuclear-share.csv",
+        reactorsBackground: "/static/images/operableReactors.svg",
+        underConstructionBackground: "/static/images/underConstruction.svg",
+        reactorPageURLTemplate: "/reactor/{reactor_name}",
+        country_regex: new RegExp("country\/(.+)");
+    });
+});
+</script>
+```
+
+makeCountryReport takes a number of arguments you can supply:
+
+**Arguments you need to supply**
+
+* year - year for which to present data.
+* nuclearShareURL - the URL to the CSV containing the nuclear share data
+* reactorsBackground - image to use as background for count of operable reactors
+* underConstructionBackground - image to use as background for count of under construction reactors
+* reactorPageURLTemplate - the URL template for the reactor page, with "{reactor_name}" being replaced by the actual reactor name
+* country_regex - regular expression to extract country name from the url.  Defaults to `new RegExp("country\/(.+)")`
+
+**Additional arguments that you can probably leave as default**
+
+* selector - the jQuery selector for the div into which the dashobard will be rendered.  Defaults to "#country-report"
+* operation_index - the index name for operation data.  Defaults to "operation"
+* reactor_index - the index name for reactor data.  Defaults to "reactor"
+* reactor_search_url - the URL for the ES reactor search.  Defaults to the reactor_index query endpoint on the current domain
+* operation_search_url - the URL for the ES reactor search.  Defaults to the reactor_index query endpoint on the current domain
+* country_name - explicitly supply the name of the country for the report.  Most likely this should be left blank, and the country determined
+from the `country_regex`.  Defaults to extracting the country name from the country_regex.
+
+
+

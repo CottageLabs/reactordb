@@ -319,7 +319,7 @@ var reactordb = {
         var reactorPageURLTemplate = edges.getParam(params.reactorPageURLTemplate, "/reactor/{reactor_name}");
 
         var reactorsBackground = edges.getParam(params.reactorsBackground, '/static/images/iconReactor.svg');
-        var underConstructionBackground = edges.getParam(params.numbersBackground, "/static/images/iconConstruction.svg");
+        var underConstructionBackground = edges.getParam(params.underConstructionBackground, "/static/images/iconConstruction.svg");
 
         var thisYear = edges.getParam(params.year, (new Date()).getUTCFullYear());
 
@@ -875,7 +875,7 @@ var reactordb = {
         var topAnnualGenerations = edges.getParam(params.topAnnualGenerations, 10);
 
         var reactorsBackground = edges.getParam(params.reactorsBackground, '/static/images/iconReactor.svg');
-        var underConstructionBackground = edges.getParam(params.numbersBackground, "/static/images/iconConstruction.svg");
+        var underConstructionBackground = edges.getParam(params.underConstructionBackground, "/static/images/iconConstruction.svg");
 
         var thisYear = edges.getParam(params.year, (new Date()).getUTCFullYear());
 
