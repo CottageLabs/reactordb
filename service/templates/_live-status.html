@@ -1,7 +1,7 @@
 <a href="{{ url_for('live_dashboard') }}" {% if request.path == url_for('live_dashboard') %}class="current"{% endif %}>Dashboard</a> |
 <a href="{{ url_for('live_search') }}" {% if request.path == url_for('live_search') %}class="current"{% endif %}>Search</a> |
 <a href="{{ url_for('live_reactor') }}" {% if request.path.startswith(url_for('live_reactor')) %}class="current"{% endif %}>Reactor</a> |
-<a href="{{ url_for('live_country') }}" {% if request.path.startswith(url_for('live_country')) %}class="current"{% endif %}>Country</a>
+<a href="{{ url_for('live_country') }}" {% if request.path.startswith(url_for('live_country')) %}class="current"{% endif %}>Location</a>
 
 <div id="live-status">
     <h1>Live Database</h1>

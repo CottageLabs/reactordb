@@ -378,7 +378,7 @@ var reactordb = {
                         if (results.length > 0) {
                             return {"a" : results[0].reactor.country};
                         } else {
-                            return {"a" : "Unknown Country"}
+                            return {"a" : "Unknown Location"}
                         }
                     },
                     renderer : edges.bs3.newStoryRenderer()
@@ -816,7 +816,7 @@ var reactordb = {
             });
 
             var limitted = values.slice(0, params.x);
-            var seriesName = "Leading Countries: Total Operable Reactor Capacity";
+            var seriesName = "Total Operable Reactor Net Capacity";
             return [{key: seriesName, values: limitted}];
         }
     },
@@ -845,7 +845,7 @@ var reactordb = {
             });
 
             var limitted = values.slice(0, params.x);
-            var seriesName = "Leading Countries: Reactors Under Construction Capacity";
+            var seriesName = "Reactors Under Construction Net Capacity";
             return [{key: seriesName, values: limitted}];
         }
     },
@@ -978,7 +978,7 @@ var reactordb = {
                     sourceResults: "c",
                     sourceAggregation: "countries",
                     renderer: edges.bs3.newNavigationTermListRenderer({
-                        firstOption: "or select a country"
+                        firstOption: "or select a location"
                     })
                 }),
                 edges.numbers.newImportantNumbers({
@@ -1548,7 +1548,7 @@ var reactordb = {
             var grid = this._getValue("reactor.first_grid_connection", res, false);
 
             var reactor_name = this._getValue("reactor.name", res, "Unknown Reactor Name");
-            var country = this._getValue("reactor.country", res, "Unknown Country");
+            var country = this._getValue("reactor.country", res, "Unknown Location");
             var status = this._getValue("reactor.status", res, "Unknown Status");
             var operator = this._getValue("reactor.operator", res, "Unknown Operator");
 

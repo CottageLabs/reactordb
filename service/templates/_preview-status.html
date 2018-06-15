@@ -1,7 +1,7 @@
 <a href="{{ url_for('preview_dashboard') }}" {% if request.path == url_for('preview_dashboard') %}class="current"{% endif %}>Dashboard</a> |
 <a href="{{ url_for('preview_search') }}" {% if request.path == url_for('preview_search') %}class="current"{% endif %}>Search</a> |
 <a href="{{ url_for('preview_reactor') }}" {% if request.path.startswith(url_for('preview_reactor')) %}class="current"{% endif %}>Reactor</a> |
-<a href="{{ url_for('preview_country') }}" {% if request.path.startswith(url_for('preview_country')) %}class="current"{% endif %}>Country</a>
+<a href="{{ url_for('preview_country') }}" {% if request.path.startswith(url_for('preview_country')) %}class="current"{% endif %}>Location</a>
 
 <div id="preview-status">
     <div class="row">
