@@ -1,0 +1,125 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="/cmstemplates/wna/reactor.master.cs" Inherits="CMS_CMSTemplates_WNA_WNA" %>
+<%@ Register Src="~/CMSWebParts/General/AdminActions.ascx" TagName="AdminActions" TagPrefix="cms" %>
+<%@ Register Src="~/CMSWebParts/Ecommerce/ShoppingCart/ShoppingCartMiniPreviewWebPart.ascx" TagName="ShoppingCartMiniPreview" TagPrefix="cms" %>
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0"/>
+    <title>WNA</title>
+    <asp:literal runat="server" id="ltlTags" enableviewstate="false" />
+    <!-- All the CSS -->
+    <link rel="stylesheet" href="http://reactordb.world-nuclear.org/static/css/reactordb.onlydeps.framework.css">
+    <link rel="stylesheet" href="http://reactordb.world-nuclear.org/static/css/reactordb.onlydeps.implementation.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="http://reactordb.world-nuclear.org/static/css/reactordb.nodeps.full.css">
+
+    <!-- Any font inclusions-->
+    
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'/>
+    <!-- Adaptive site specific CSS -->
+    <link href="/CMSTemplates/WNA/css/owl.carousel.css" rel="stylesheet"/>
+    <link href="/CMSTemplates/WNA/css/owl.theme.css" rel="stylesheet"/>
+    <link href="/CMSTemplates/WNA/css/owl.transitions.css" rel="stylesheet"/>
+    <!--<link href="/CMSTemplates/WNA/css/adaptive.css" rel="stylesheet"/>-->
+    <link href="/CMSPages/GetResource.ashx?stylesheetname=WNAAdaptive" type="text/css" rel="stylesheet"/>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <script src="/CMSTemplates/WNA/js/modernizr.custom.71193.js"></script>
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <asp:ContentPlaceHolder id="ContentPlaceHolderHead" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body class="<%=BodyClass%>" <%=BodyParameters%>>
+    <form id="form1" runat="server">
+        <asp:PlaceHolder runat="server" ID="plcManagers">
+            <ajaxToolkit:ToolkitScriptManager ID="manScript" runat="server" EnableViewState="false" ScriptMode="Release" />
+            <cms:CMSPortalManager ID="manPortal" runat="server" EnableViewState="false" />
+        </asp:PlaceHolder>
+        
+        <noscript><div class="container"><h1>Javascript Required!</h1><p>Javascript is required for this site. </p></div></noscript>
+
+        <div class="headerpadding"></div>
+        <header class="navbar-header">
+	        <div class="container">
+    	        <a href="/"><img src="/WNA/media/WNA/Furniture/General/logo.jpg" class="img-responsive navlogo"/></a>
+            </div>
+  
+  	        <input class="searchboxbig" placeholder="search"/>
+            <button class="navbar-toggle collapsed navbutton navsearch" type="button">
+    	        <span class="fa fa-search"></span>
+            </button>
+    	        <div class="container searchbar" style="display:none">
+        	        <div class="col-xs-12">
+        		        <button class="btn searchbutton" type="button">Go</button>
+    			        <input placeholder="Search" class="form-control searchbox"/>
+                    </div>
+                </div>
+        </header>
+        <div class="MenuButton"><span class="desktopwording">MENU</span><div class="navtoggle"><span></span></div></div>
+        <asp:ContentPlaceHolder id="plcMenu" runat="server"></asp:ContentPlaceHolder>   
+        <nav class="navbarleft">
+            <ul>
+                <cms:CMSRepeater ID="repMenu1" NestedControlsID="repMenu2" MaxRelativeLevel="1"  Path="/%" TransformationName="custom.WNASectionLanding.MenuItem" ClassNames="custom.WNASectionLanding;custom.WNAGallery" WhereCondition="ShowOnMenu=1" OrderBy="NodeOrder"  runat="server"/>
+                <li><a href="http://members.world-nuclear.org/imis20/wna_bmrp/" title="Member Login" target="_blank">Member Login</a></li>
+            </ul>
+        </nav>
+          
+        <main class="bodyContent">
+            <div class="container">
+            <!-- Breadcrumb -->
+            <div class="col-xs-12 breadcrumb" id="BreadccrumbCtrl" runat="server">
+                <a class="CMSBreadCrumbsLink" href="/">Home</a> / <cms:CMSBreadCrumbs ID="CMSBreadCrumbs2"  BreadCrumbSeparator=" / " runat="server"></cms:CMSBreadCrumbs>
+            </div>
+            <asp:Literal ID="ManualBreadcrumb" runat="server"></asp:Literal>
+
+            <asp:ContentPlaceHolder id="plcMain" runat="server"></asp:ContentPlaceHolder>                        
+
+            </div>
+        </main>
+  
+
+        <footer class="footer">
+	        <div class="container">
+                <cms:CMSRepeater ID="FooterLinks" ClassNames="custom.WNAFurnitureContent1" Path="/Furniture/MasterPage-Items/Footer-Links-(1)" SelectedItemTransformationName="custom.WNAFurnitureContent1.Default" TransformationName="custom.WNAFurnitureContent1.Default" runat="server"></cms:CMSRepeater>
+	            <cms:CMSRepeater ID="FooterIcons" ClassNames="custom.WNAFurnitureContent1" Path="/Furniture/MasterPage-Items/Footer-Icons-(1)" SelectedItemTransformationName="custom.WNAFunritureContent1.Default" TransformationName="custom.WNAFurnitureContent1.Default" runat="server"></cms:CMSRepeater>
+            </div>
+        </footer>
+
+        <!-- jQuery -->
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script type="text/javascript" src="/CMSTemplates/WNA/js/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="/CMSTemplates/WNA/js/jquery-migrate-1.2.1.js"></script>
+        <script type="text/javascript" src="http://reactordb.world-nuclear.org/static/vendor/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+
+        <!--<script src="/CMSTemplates/WNA/js/bootstrap.min.js"></script>-->
+        <!-- EU Data/Cookies Directive - Consider incorporating into adaptive.js -->
+        <script src="/CMSTemplates/WNA/js/cookies.js"></script>
+        <!-- Adaptive site specific -->
+        <script src="/CMSTemplates/WNA/js/owl.carousel.min.js"></script>
+        <script src="/CMSTemplates/WNA/js/adaptive.js"></script>
+
+        <script type="text/javascript" src="http://reactordb.world-nuclear.org/static/js/reactordb.onlydeps.implementation.no-gm.js"></script>
+        <script type="text/javascript" src="http://reactordb.world-nuclear.org/static/js/reactordb.nodeps.full.js"></script>
+        
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-1599047-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+        
+        <asp:ContentPlaceHolder id="ContentPlaceHolderScriptsFooter" runat="server">
+        </asp:ContentPlaceHolder>
+    </form>
+</body>
+</html>
