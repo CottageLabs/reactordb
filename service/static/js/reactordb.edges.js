@@ -90,6 +90,32 @@ var reactordb = {
         return years;
     },
 
+    _countryOperableNuclearCapacity : function(params) {
+        var year = parseInt(params.year);
+        var country = params.country;
+
+        return function(component) {
+            var operableCapacity = 0;
+            var results = component.edge.result.results();
+            for (var i = 0; i < results.length; i++) {
+                var res = results[i];
+                var rupDict = res.reactor.reference_unit_power;
+                var rup = 0;
+                if (rupDict.hasOwnProperty(year)) {
+                    rup = rupDict[year];
+                }
+                operableCapacity += rup;
+            }
+
+            var formatter = edges.numFormat({
+                decimalPlaces: 0,
+                thousandsSeparator: ","
+            });
+
+            return {"a" : formatter(operableCapacity), "b" : year}
+        }
+    },
+
     _countryOperableNuclearCapacityByYear : function(args) {
         var upper = args.upperLimitYear;
 
@@ -99,7 +125,6 @@ var reactordb = {
             for (var i = 0; i < results.length; i++) {
                 var res = results[i];
                 var years = reactordb._yearsOperable({reactor: res, upper: upper});
-                // var rup = res.reactor.reference_unit_power_capacity_net;
                 for (var j = 0; j < years.length; j++) {
                     var year = years[j];
                     if (!buckets.hasOwnProperty(year)) {
@@ -443,6 +468,15 @@ var reactordb = {
                             thousandsSeparator: ",",
                             suffix: " MWe"
                         })
+                    })
+                }),
+                edges.numbers.newStory({
+                    id: "operable_nuclear_capacity_story",
+                    category: "panel",
+                    template: "{a} GWe in {b}",
+                    calculate: reactordb._countryOperableNuclearCapacity({year: thisYear, country: country_name}),
+                    renderer : edges.bs3.newStoryRenderer({
+                        title: "<h3>Operable Nuclear Capacity</h3>"
                     })
                 }),
                 edges.newMultibar({
