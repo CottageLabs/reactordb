@@ -18,8 +18,8 @@
     <script type="text/javascript">
         jQuery(document).ready(function($) {
             reactordb.makeCountryReport({
-                year: 2016,
-                nuclearShareURL: "http://world-nuclear.org/WNA/media/WNA/Furniture/General/shareofgeneration.csv",
+                year: 2017,
+                nuclearShareURL: "http://www.world-nuclear.org/WNA/media/WNA/Furniture/General/shareofgeneration.csv",
                 reactorsBackground: "http://world-nuclear.org/WNA/media/WNA/Furniture/General/iconReactor.svg",
                 underConstructionBackground: "http://world-nuclear.org/WNA/media/WNA/Furniture/General/iconConstruction.svg",
                 reactorPageURLTemplate: "http://www.world-nuclear.org/reactor/default.aspx/{reactor_name}",
