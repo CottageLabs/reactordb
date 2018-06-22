@@ -1228,7 +1228,7 @@ var reactordb = {
                 <div class="col-sm-6 col-xs-12">\
                     <h1>Reactor Database</h1>\
                 </div>\
-                <div class="col-sm-6 col-xs-4">\
+                <div class="col-sm-6 col-xs-12">\
                     <div class="row">\
                         <div class="col-xs-12 col-sm-6"><div class="' + searchButtonClass + '"><a href="' + this.searchPageURL + '" class="btn btn-info btn-sm">Search the Database</a></div></div>\
                         <div class="col-xs-12 col-sm-6"><div id="country-selector"></div></div>\
