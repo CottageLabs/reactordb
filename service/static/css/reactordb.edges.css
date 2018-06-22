@@ -247,6 +247,11 @@
  * styles for the dashboard page
  */
 
+.reactordb-dashboard-search a {
+    color: #fff !important;
+    text-decoration: none !important;
+}
+
 #global_nuclear_generation_histogram {
     height: 300px;
 }
