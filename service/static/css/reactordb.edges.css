@@ -242,10 +242,17 @@
     font-weight: normal;
 }
 
+.edges-bs3-tabular-results-tablediv {
+    width: 100%;
+}
 
 /*
  * styles for the dashboard page
  */
+
+#dashboard h3 {
+    float: none !important;
+}
 
 .reactordb-dashboard-search a {
     color: #fff !important;
@@ -337,6 +344,10 @@
 /*
  * Styles for the country page
  */
+
+#country-report h3 {
+    float: none !important;
+}
 
 #country_nuclear_generation_histogram {
     height: 300px;

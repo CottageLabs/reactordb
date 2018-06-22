@@ -663,6 +663,16 @@
 #reactor-links h3 {
     font-weight: normal;
 }
+.edges-bs3-tabular-results-tablediv {
+    width: 100%;
+}
+#dashboard h3 {
+    float: none !important;
+}
+.reactordb-dashboard-search a {
+    color: #fff !important;
+    text-decoration: none !important;
+}
 #global_nuclear_generation_histogram {
     height: 300px;
 }
@@ -723,6 +733,9 @@
     .edges-nvd3-pie-svg-container {
         height: 180px;
     }
+}
+#country-report h3 {
+    float: none !important;
 }
 #country_nuclear_generation_histogram {
     height: 300px;
