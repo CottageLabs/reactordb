@@ -19,11 +19,13 @@
         jQuery(document).ready(function($) {
             reactordb.makeCountryReport({
                 year: 2016,
-                nuclearShareUrl: "http://world-nuclear.org/WNA/media/WNA/Furniture/General/shareofgeneration.csv",
+                nuclearShareURL: "http://world-nuclear.org/WNA/media/WNA/Furniture/General/shareofgeneration.csv",
                 reactorsBackground: "http://world-nuclear.org/WNA/media/WNA/Furniture/General/iconReactor.svg",
                 underConstructionBackground: "http://world-nuclear.org/WNA/media/WNA/Furniture/General/iconConstruction.svg",
                 reactorPageURLTemplate: "http://www.world-nuclear.org/reactor/default.aspx/{reactor_name}",
-                country_regex: new RegExp("default.aspx\/(.+)")
+                country_regex: new RegExp("default.aspx\/(.+)"),
+                reactor_search_url: "http://reactordb.world-nuclear.org/query/reactor/_search",
+                operation_search_url: "http://reactordb.world-nuclear.org/query/operation/_search"
             });
         });
     </script>

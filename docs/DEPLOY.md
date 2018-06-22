@@ -94,12 +94,14 @@ To deploy, include a div with id "dashboard" and then call reactordb.makeDashboa
 jQuery(document).ready(function($) {
     reactordb.makeDashboard({
         year: 2016,
-        nuclearShareUrl: "/static/data/nuclear-share.csv",
+        nuclearShareURL: "/static/data/nuclear-share.csv",
         reactorsBackground: "/static/images/operableReactors.svg",
         underConstructionBackground: "/static/images/underConstruction.svg",
         reactorPageURLTemplate: "/reactor/{reactor_name}",
         countryPageURLTemplate: "/country/{country_name}",
-        searchPageURL : "/search"
+        searchPageURL : "/search",
+        reactor_search_url: "/query/reactor/_search",
+        operation_search_url: "/query/operation/_search"
     });
 });
 </script>
@@ -116,14 +118,14 @@ makeDashboard takes a number of arguments you can supply:
 * reactorPageURLTemplate - the URL template for the reactor page, with "{reactor_name}" being replaced by the actual reactor name
 * countryPageURLTemplate - the URL template for the country page, with "{country_name}" being replaced by the actual country name
 * searchPageURL - the URL to the reactor search page
+* reactor_search_url - the URL for the ES reactor search.  Defaults to the reactor_index query endpoint on the current domain
+* operation_search_url - the URL for the ES reactor search.  Defaults to the reactor_index query endpoint on the current domain
 
 **Additional arguments that you can probably leave as default**
 
 * selector - the jQuery selector for the div into which the dashobard will be rendered.  Defaults to "#dashboard"
 * operation_index - the index name for operation data.  Defaults to "operation"
 * reactor_index - the index name for reactor data.  Defaults to "reactor"
-* reactor_search_url - the URL for the ES reactor search.  Defaults to the reactor_index query endpoint on the current domain
-* operation_search_url - the URL for the ES reactor search.  Defaults to the reactor_index query endpoint on the current domain
 * topOperableCapacities - max number of top X operable capacities, defaults to 10
 * topUnderConstructionCapacities - max number of top under construction capacities, defaults 10
 * mostRecentGridConnections - max number of most recent grid connections, defaults to 10
@@ -231,11 +233,13 @@ To deploy, include a div with id "country-report" and then call reactordb.makeCo
 jQuery(document).ready(function($) {
     reactordb.makeCountryReport({
         year: 2016,
-        nuclearShareUrl: "/static/data/nuclear-share.csv",
+        nuclearShareURL: "/static/data/nuclear-share.csv",
         reactorsBackground: "/static/images/operableReactors.svg",
         underConstructionBackground: "/static/images/underConstruction.svg",
         reactorPageURLTemplate: "/reactor/{reactor_name}",
-        country_regex: new RegExp("country\/(.+)");
+        country_regex: new RegExp("country\/(.+)"),
+        reactor_search_url: "http://reactordb.world-nuclear.org/query/reactor/_search",
+        operation_search_url: "http://reactordb.world-nuclear.org/query/operation/_search"
     });
 });
 </script>
@@ -251,14 +255,14 @@ makeCountryReport takes a number of arguments you can supply:
 * underConstructionBackground - image to use as background for count of under construction reactors
 * reactorPageURLTemplate - the URL template for the reactor page, with "{reactor_name}" being replaced by the actual reactor name
 * country_regex - regular expression to extract country name from the url.  Defaults to `new RegExp("country\/(.+)")`
+* reactor_search_url - the URL for the ES reactor search.  Defaults to the reactor_index query endpoint on the current domain
+* operation_search_url - the URL for the ES reactor search.  Defaults to the reactor_index query endpoint on the current domain
 
 **Additional arguments that you can probably leave as default**
 
 * selector - the jQuery selector for the div into which the dashobard will be rendered.  Defaults to "#country-report"
 * operation_index - the index name for operation data.  Defaults to "operation"
 * reactor_index - the index name for reactor data.  Defaults to "reactor"
-* reactor_search_url - the URL for the ES reactor search.  Defaults to the reactor_index query endpoint on the current domain
-* operation_search_url - the URL for the ES reactor search.  Defaults to the reactor_index query endpoint on the current domain
 * country_name - explicitly supply the name of the country for the report.  Most likely this should be left blank, and the country determined
 from the `country_regex`.  Defaults to extracting the country name from the country_regex.
 
