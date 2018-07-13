@@ -57,7 +57,8 @@
 			"edges.renderers.google",
 			"edges.renderers.bs3.SearchingNotificationRenderer",
 			"edges.renderers.bs3.SelectedFiltersRenderer",
-			"edges.renderers.bs3.NavigationTermListRenderer"
+			"edges.renderers.bs3.NavigationTermListRenderer",
+			"edges.renderers.bs3.LeaveSearchNavigationRenderer"
 		],
 
 

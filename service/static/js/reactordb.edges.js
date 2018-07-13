@@ -1455,15 +1455,26 @@ var reactordb = {
                 edges.newPager({
                     id: "top-pager",
                     category: "top-pager",
-                    rederer : edges.bs3.newPagerRenderer({
+                    renderer : edges.bs3.newPagerRenderer({
                         sizeOptions : [10, 25, 50, 100]
                     })
                 }),
                 edges.newPager({
                     id: "bottom-pager",
                     category: "bottom-pager",
-                    rederer : edges.bs3.newPagerRenderer({
+                    renderer : edges.bs3.newPagerRenderer({
                         sizeOptions : [10, 25, 50, 100]
+                    })
+                }),
+
+                // be able to navigate away from the search page to the generic report page
+                edges.newLeaveSearchNavigation({
+                    id: "leave-search-navigation",
+                    category: "results",
+                    urlTemplate: "preview_generic?source={query}",
+                    urlQueryPlaceholder: "{query}",
+                    renderer: edges.bs3.newLeaveSearchNavigationRenderer({
+                        text: "Create a report from these results &raquo;"
                     })
                 }),
 
