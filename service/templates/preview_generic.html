@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+
+{% endblock %}
+
+{% block content %}
+
+{% include '_preview-status.html' %}
+
+<div style="border-bottom: 1px dashed #cccccc; padding-bottom: 10px">
+    <form method="get">
+        <input type="hidden" name="source" value="">
+        Title: <input type="text" name="title"><br>
+        Active Page Sections (comma separated): <textarea name="show" style="width: 100%"></textarea><br>
+        Following page sections are available: operable_nuclear_capacity, electricity_generated<br>
+        Leave empty to show ALL page sections.
+        <button type="submit">Update</button>
+    </form>
+</div>
+
+<div id="generic-report"></div>
+
+{% endblock %}
+
+
+{% block extra_js_bottom %}
+
+{% include 'includes/reactordb.nodeps.full.js.html' %}
+
+<script type="text/javascript" src="{{url_for('static', filename='js/reactordbadmin.js')}}"></script>
+
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    var current_domain = document.location.host;
+    var current_scheme = window.location.protocol;
+    var BASE_URL = current_scheme + "//" + current_domain;
+
+    $("#generic-report").on("edges:post-init", function() {
+        reactordbadmin.base_url = BASE_URL;
+        reactordbadmin.selector = "#generic-report";
+        reactordbadmin.requestStatus();
+    });
+
+    $("#generic-report").on("edges:post-render", function() {
+        var urlParams = reactordb.activeEdges["#generic-report"].urlParams;
+        var source = reactordb.activeEdges["#generic-report"].currentQuery.objectify({
+            include_aggregations: false,
+            include_sort: false,
+            include_paging: false,
+            include_fields: false
+        });
+        $("input[name=source]").val(JSON.stringify(source));
+        if (urlParams.hasOwnProperty("title")) {
+            $("input[name=title]").val(urlParams["title"]);
+        }
+        if (urlParams.hasOwnProperty(("show"))) {
+            $("textarea[name=show]").val(urlParams["show"]);
+        }
+    });
+
+    reactordb.makeGenericReport({
+        selector: "#generic-report",
+        reactor_index: "preview_reactor",
+        operation_index: "preview_operation",
+        year: 2016,
+        reactorPageURLTemplate: "/preview_reactor/{reactor_name}"
+    });
+});
+</script>
+
+{% endblock%}

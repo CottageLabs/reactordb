@@ -374,3 +374,12 @@
     height: 60px;
     text-align: center;
 }
+
+
+/*
+ * Styles for the generic report
+ */
+
+#generic_nuclear_generation_histogram {
+    height: 300px;
+}
