@@ -230,6 +230,43 @@ var reactordb = {
      * =====================================================
      */
 
+    _topCapacityByStatusByCountry : function(params) {
+        var x = params.x;
+        var operationStatus = params.status;
+
+        return function(component) {
+            var result = component.edge.result;
+
+            var values = [];
+            var status = result.aggregation("status");
+            for (var i = 0; i < status.buckets.length; i++){
+                var bucket = status.buckets[i];
+                if (bucket.key === operationStatus) {
+                    for (var j = 0; j < bucket["country"].buckets.length; j++) {
+                        var countryBucket = bucket["country"].buckets[j];
+                        var name = countryBucket.key;
+                        var total_gwe = countryBucket.total_gwe.value;
+                        values.push({label: name, value: total_gwe});
+                    }
+                }
+            }
+
+            values.sort(function(a, b) {
+                if (a.value < b.value) {
+                    return 1;
+                }
+                if (a.value > b.value) {
+                    return -1;
+                }
+                return 0;
+            });
+
+            var limitted = values.slice(0, x);
+            var seriesName = "Total " + operationStatus + " Reactor Net Capacity";
+            return [{key: seriesName, values: limitted}];
+        }
+    },
+
     _showPageSection : function(params) {
         var sectionName = params.sectionName;
         var showComponents = params.showComponents;
@@ -262,13 +299,26 @@ var reactordb = {
         var underConstructionBackground = edges.getParam(params.underConstructionBackground, "/static/images/iconConstruction.svg");
         var shutdownBackground = edges.getParam(params.shutdownBackground, "/static/images/iconConstruction.svg");
 
+        var topX = edges.getParam(params.topX, 10);
+
         var thisYear = edges.getParam(params.year, (new Date()).getUTCFullYear());
 
         var urlParams = edges.getUrlParams();
         var showComponents = [];
-        if (urlParams.hasOwnProperty("show")) {
-            showComponents = urlParams["show"].split(",");
+        if (urlParams.hasOwnProperty("show") && urlParams["show"] !== "") {
+            showComponents = urlParams["show"].split(",").map(function(x) { return x.trim()});
         }
+
+        // depending on which components we're going to load, we will need to augment the base query as we go
+        var baseQuery = es.newQuery({
+            size: 10000,
+            sort: [es.newSort({field: "reactor.name.exact", order: "asc"})],
+            aggs : [
+                es.newTermsAggregation({name: "status", field: "reactor.status.exact", aggs: [
+                    es.newSumAggregation({name: "total_gwe", field : "reactor.reference_unit_power_capacity_net"})
+                ]})
+            ]
+        });
 
         // first load all the required components
         var components = [
@@ -278,7 +328,7 @@ var reactordb = {
                 template: "<h1>{title}</h1>",
                 calculate : function(component) {
                     var values = {};
-                    if (component.edge.urlParams.hasOwnProperty("title")) {
+                    if (component.edge.urlParams.hasOwnProperty("title") && component.edge.urlParams["title"] !== "") {
                         values["title"] = component.edge.urlParams["title"];
                     } else {
                         values["title"] = "Reactor Database Report";
@@ -421,6 +471,70 @@ var reactordb = {
             );
         }
 
+        if (reactordb._showPageSection({showComponents: showComponents, sectionName: "top_operable_country"})
+                || reactordb._showPageSection({showComponents: showComponents, sectionName: "top_under_construction_country"})) {
+
+            var statusAgg = baseQuery.getAggregation({name: "status"});
+            var aggregation = es.newTermsAggregation({
+                name: "country", field: "reactor.country.exact", size: 300, aggs: [
+                    es.newSumAggregation({name: "total_gwe", field: "reactor.reference_unit_power_capacity_net"})
+                ]
+            });
+            statusAgg.addAggregation(aggregation);
+
+            if (reactordb._showPageSection({showComponents: showComponents, sectionName: "top_operable_country"})) {
+                components.push(
+                    edges.newHorizontalMultibar({
+                        id: "top_operable_reactor_capacity_by_country",
+                        category: "panel",
+                        dataFunction: reactordb._topCapacityByStatusByCountry({status: "Operable", x: topX}),
+                        renderer: edges.nvd3.newHorizontalMultibarRenderer({
+                            hideIfNoData: true,
+                            title: "<h3>Top Operable Reactor Net Capacity By Country</h3>",
+                            legend: false,
+                            dynamicHeight: true,
+                            barHeight: 40,
+                            reserveAbove: 50,
+                            reserveBelow: 50,
+                            color: ["#1e9dd8"],
+                            yAxisLabel: "Total Operable Reactor Net Capacity (MWe)",
+                            valueFormat: edges.numFormat({
+                                decimalPlaces: 0,
+                                thousandsSeparator: ",",
+                                suffix: " MWe"
+                            })
+                        })
+                    })
+                );
+            }
+
+            if (reactordb._showPageSection({showComponents: showComponents, sectionName: "top_under_construction_country"})) {
+                components.push(
+                    edges.newHorizontalMultibar({
+                        id: "top_under_construction_reactor_capacity_by_country",
+                        category: "panel",
+                        dataFunction: reactordb._topCapacityByStatusByCountry({status: "Under Construction", x: topX}),
+                        renderer: edges.nvd3.newHorizontalMultibarRenderer({
+                            hideIfNoData: true,
+                            title: "<h3>Top Under Construction Reactor Net Capacity By Country</h3>",
+                            legend: false,
+                            dynamicHeight: true,
+                            barHeight: 40,
+                            reserveAbove: 50,
+                            reserveBelow: 50,
+                            color: ["#1e9dd8"],
+                            yAxisLabel: "Total Operable Reactor Net Capacity (MWe)",
+                            valueFormat: edges.numFormat({
+                                decimalPlaces: 0,
+                                thousandsSeparator: ",",
+                                suffix: " MWe"
+                            })
+                        })
+                    })
+                );
+            }
+        }
+
         components.push(
             edges.newResultsDisplay({
                 id : "generic_operable_reactors",
@@ -518,15 +632,7 @@ var reactordb = {
             template: reactordb.newGenericTemplate(),
             manageUrl: true,
             openingQuery : es.newQuery(),
-            baseQuery: es.newQuery({
-                size: 10000,
-                sort: [es.newSort({field: "reactor.name.exact", order: "asc"})],
-                aggs : [
-                    es.newTermsAggregation({name: "status", field: "reactor.status.exact", aggs: [
-                        es.newSumAggregation({name: "total_gwe", field : "reactor.reference_unit_power_capacity_net"})
-                    ]})
-                ]
-            }),
+            baseQuery: baseQuery,
             secondaryQueries : {
                 a : function(edge) {
                     var results = edge.result.results();
