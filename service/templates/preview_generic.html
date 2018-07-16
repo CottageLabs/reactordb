@@ -12,11 +12,16 @@
     <form method="get">
         <input type="hidden" name="source" value="">
         Title: <input type="text" name="title"><br>
-        Active Page Sections (comma separated, no spaces): <textarea name="show" style="width: 100%"></textarea><br>
+        Active Page Sections (comma separated): <textarea name="show" style="width: 100%"></textarea><br>
         Following page sections are available: operable_nuclear_capacity, electricity_generated, top_operable_country,
-        top_under_construction_country<br>
+        top_under_construction_country, top_load_factor, top_generation, operable_reactors, under_construction_reactors,
+        longterm_shutdown_reactors, permanent_shutdown_reactors<br>
         Leave empty to show ALL page sections.<br>
-        <button type="submit">Update</button>
+        <button type="submit">Update</button><br>
+        URL To share for this report:
+    </form>
+    <form>
+        <textarea name="share" style="width:100%"></textarea>
     </form>
 </div>
 
@@ -56,8 +61,19 @@ jQuery(document).ready(function($) {
             $("input[name=title]").val(urlParams["title"]);
         }
         if (urlParams.hasOwnProperty(("show"))) {
-            $("textarea[name=show]").val(urlParams["show"]);
+            $("textarea[name=show]").val(urlParams["show"].replace(/[\+]/g, " "));
         }
+
+        var shareUrl = BASE_URL + "/preview_generic";
+        var params = ["source=" + encodeURIComponent(JSON.stringify(source))];
+        for (var key in urlParams) {
+            var val = urlParams[key];
+            if (val !== "") {
+                params.push(encodeURIComponent(key) + "=" + encodeURIComponent(val));
+            }
+        }
+        shareUrl = shareUrl + "?" + params.join("&");
+        $("textarea[name=share]").val(shareUrl);
     });
 
     reactordb.makeGenericReport({
@@ -65,7 +81,8 @@ jQuery(document).ready(function($) {
         reactor_index: "preview_reactor",
         operation_index: "preview_operation",
         year: 2016,
-        reactorPageURLTemplate: "/preview_reactor/{reactor_name}"
+        reactorPageURLTemplate: "/preview_reactor/{reactor_name}",
+        countryPageURLTemplate: "/preview_country/{country_name}"
     });
 });
 </script>

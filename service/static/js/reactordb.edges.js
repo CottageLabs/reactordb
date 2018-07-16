@@ -225,6 +225,31 @@ var reactordb = {
         }
     },
 
+    _reactorPageLink : function(params) {
+        var template = params.url_template;
+
+        return function(params) {
+            var reactor = params.result;
+
+            var id = reactor.id;
+            var name = reactor.reactor.name;
+
+            var url = template.replace("{reactor_name}", id);
+            var frag = '<a href="' + url + '">' + name + '</a>';
+            return frag;
+        }
+    },
+
+    _countryPageLink : function(params) {
+        var template = params.url_template;
+
+        return function(country_name) {
+            var url = template.replace("{country_name}", country_name);
+            var frag = '<a href="' + url + '">' + country_name + '</a>';
+            return frag;
+        }
+    },
+
     /* =====================================================
      * Functions for the Generic Report Page
      * =====================================================
@@ -294,6 +319,7 @@ var reactordb = {
         var operation_search_url = params.operation_search_url || current_scheme + "//" + current_domain + "/query/" + operation_index + "/_search";
 
         var reactorPageURLTemplate = edges.getParam(params.reactorPageURLTemplate, "/reactor/{reactor_name}");
+        var countryPageURLTemplate = edges.getParam(params.countryPageURLTemplate, "/country/{country_name}");
 
         var reactorsBackground = edges.getParam(params.reactorsBackground, '/static/images/iconReactor.svg');
         var underConstructionBackground = edges.getParam(params.underConstructionBackground, "/static/images/iconConstruction.svg");
@@ -336,6 +362,25 @@ var reactordb = {
                     return values;
                 },
                 renderer : edges.bs3.newStoryRenderer()
+            }),
+            // selected filters display, with all the fields given their display names
+            edges.newSelectedFilters({
+                id: "selected-filters",
+                category: "selected-filters",
+                fieldDisplays : {
+                    "reactor.country.exact" : "Location",
+                    "reactor.status.exact" : "Current Status",
+                    "reactor.process.exact" : "Reactor Type",
+                    "index.construction_start_year" : "Construction Start Date",
+                    "index.first_grid_connection_year" : "Grid Connection",
+                    "index.permanent_shutdown_year" : "Permanent Shutdown Date",
+                    "reactor.owner.name.exact" : "Owner",
+                    "reactor.operator.exact" : "Operator",
+                    "reactor.reference_unit_power_capacity_net" : "Reference Unit Power (Net Capacity)"
+                },
+                renderer: edges.bs3.newSelectedFiltersRenderer({
+                    allowRemove: false
+                })
             }),
             edges.numbers.newImportantNumbers({
                 id: "operable_reactors_count",
@@ -535,102 +580,234 @@ var reactordb = {
             }
         }
 
-        components.push(
-            edges.newResultsDisplay({
-                id : "generic_operable_reactors",
-                category: "panel",
-                filter: reactordb._filterResultsByStatus({status: "Operable"}),
-                renderer : edges.bs3.newTabularResultsRenderer({
-                    title: "<h3>All Operable Reactors</h3>",
-                    sortable: true,
-                    hideOnNoResults: true,
-                    fieldDisplay : [
-                        {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
-                        {field: "reactor.model", display: "Model"},
-                        {field: "reactor.process", display: "Process"},
-                        {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
-                        {field: "reactor.first_grid_connection", display: "Grid Connection"},
-                        {field: "reactor.load_factor." + thisYear, display: "Load Factor (" + thisYear + ") (%)"},
-                        {
-                            field: "electricity_generated",
-                            fieldFunction: reactordb._electricityGeneratedInYear({year: thisYear}),
-                            display: "Electricity Generated (" + thisYear + ") (GWh)",
-                            valueFunction: edges.numFormat({
-                                reflectNonNumbers: true,
-                                decimalPlaces: 0,
-                                thousandsSeparator: ","
-                            })
+        if (reactordb._showPageSection({showComponents: showComponents, sectionName: "top_load_factor"})) {
+            components.push(
+                edges.newResultsDisplay({
+                    id : "top_load_factor",
+                    category: "panel",
+                    filter: function(results) {
+                        var filtered = [];
+                        for (var i = 0; i < results.results.length; i++) {
+                            var result = results.results[i];
+                            var val = edges.objVal("reactor.load_factor." + String(thisYear), result);
+                            if (val !== false) {
+                                filtered.push(result);
+                            }
                         }
-                    ]
+                        return filtered;
+                    },
+                    sort: function(a, b) {
+                        var aval = edges.objVal("reactor.load_factor." + String(thisYear), a);
+                        var bval = edges.objVal("reactor.load_factor." + String(thisYear), b);
+                        if (aval < bval) {
+                            return 1;
+                        }
+                        if (aval > bval) {
+                            return -1;
+                        }
+                        return 0;
+                    },
+                    limit: topX,
+                    renderer : edges.bs3.newTabularResultsRenderer({
+                        hideOnNoResults: true,
+                        title: "<h3>Top Load Factor (" + thisYear + ")</h3>",
+                        fieldDisplay : [
+                            {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
+                            {field: "reactor.model", display: "Model"},
+                            {field: "reactor.process", display: "Process"},
+                            {field: "reactor.reference_unit_power_capacity_net", display: "Net Capacity (MWe)"},
+                            {field: "reactor.load_factor." + thisYear, display: "Load Factor"},
+                            {field: "reactor.country", display: "Location", valueFunction: reactordb._countryPageLink({url_template: countryPageURLTemplate})}
+                        ]
+                    })
                 })
-            })
-        );
+            );
+        }
 
-        components.push(
-            edges.newResultsDisplay({
-                id : "generic_under_construction_reactors",
-                category: "panel",
-                filter: reactordb._filterResultsByStatus({status: "Under Construction"}),
-                renderer : edges.bs3.newTabularResultsRenderer({
-                    title: "<h3>All Under Construction Reactors</h3>",
-                    sortable: true,
-                    hideOnNoResults: true,
-                    fieldDisplay : [
-                        {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
-                        {field: "reactor.model", display: "Model"},
-                        {field: "reactor.process", display: "Process"},
-                        {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
-                        {field: "reactor.construction_start", display: "Construction Start"}
-                    ]
+        if (reactordb._showPageSection({showComponents: showComponents, sectionName: "top_generation"})) {
+            components.push(
+                edges.newResultsDisplay({
+                    id: "top_annual_generation",
+                    category: "panel",
+                    filter: function (results) {
+                        var filtered = [];
+                        for (var i = 0; i < results.results.length; i++) {
+                            var result = results.results[i];
+                            var val = edges.objVal("reactor.electricity_supplied." + String(thisYear), result);
+                            if (val !== false) {
+                                filtered.push(result);
+                            }
+                        }
+                        return filtered;
+                    },
+                    sort: function (a, b) {
+                        var aval = edges.objVal("reactor.electricity_supplied." + String(thisYear), a);
+                        var bval = edges.objVal("reactor.electricity_supplied." + String(thisYear), b);
+                        if (aval < bval) {
+                            return 1;
+                        }
+                        if (aval > bval) {
+                            return -1;
+                        }
+                        return 0;
+                    },
+                    limit: topX,
+                    renderer: edges.bs3.newTabularResultsRenderer({
+                        hideOnNoResults: true,
+                        title: "<h3>Top Generation (" + thisYear + ")</h3>",
+                        fieldDisplay: [
+                            {
+                                field: "id",
+                                fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}),
+                                display: "Reactor Name",
+                                valueFunction: reactordb._htmlPassThrough
+                            },
+                            {field: "reactor.model", display: "Model"},
+                            {field: "reactor.process", display: "Process"},
+                            {field: "reactor.reference_unit_power_capacity_net", display: "Net Capacity (MWe)"},
+                            {
+                                field: "reactor.electricity_supplied." + thisYear,
+                                display: "Total Generation (" + thisYear + ") (TWh)",
+                                valueFunction: reactordb._gwh2twh
+                            },
+                            {
+                                field: "reactor.country",
+                                display: "Location",
+                                valueFunction: reactordb._countryPageLink({url_template: countryPageURLTemplate})
+                            }
+                        ]
+                    })
                 })
-            })
-        );
+            );
+        }
 
-        components.push(
-            edges.newResultsDisplay({
-                id : "generic_longterm_shutdown_reactors",
-                category: "panel",
-                filter: reactordb._filterResultsByStatus({status: "Long-term Shutdown"}),
-                renderer : edges.bs3.newTabularResultsRenderer({
-                    title: "<h3>All Long-term Shutdown Reactors</h3>",
-                    sortable: true,
-                    hideOnNoResults: true,
-                    fieldDisplay : [
-                        {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
-                        {field: "reactor.model", display: "Model"},
-                        {field: "reactor.process", display: "Process"},
-                        {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
-                        {field: "reactor.longterm_shutdown", display: "Long-term Shutdown"}
-                    ]
+        if (reactordb._showPageSection({showComponents: showComponents, sectionName: "operable_reactors"})) {
+            components.push(
+                edges.newResultsDisplay({
+                    id : "generic_operable_reactors",
+                    category: "panel",
+                    filter: reactordb._filterResultsByStatus({status: "Operable"}),
+                    renderer : edges.bs3.newTabularResultsRenderer({
+                        title: "<h3>All Operable Reactors</h3>",
+                        sortable: true,
+                        hideOnNoResults: true,
+                        fieldDisplay : [
+                            {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
+                            {field: "reactor.model", display: "Model"},
+                            {field: "reactor.process", display: "Process"},
+                            {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
+                            {field: "reactor.first_grid_connection", display: "Grid Connection"},
+                            {field: "reactor.load_factor." + thisYear, display: "Load Factor (" + thisYear + ") (%)"},
+                            {
+                                field: "electricity_generated",
+                                fieldFunction: reactordb._electricityGeneratedInYear({year: thisYear}),
+                                display: "Electricity Generated (" + thisYear + ") (GWh)",
+                                valueFunction: edges.numFormat({
+                                    reflectNonNumbers: true,
+                                    decimalPlaces: 0,
+                                    thousandsSeparator: ","
+                                })
+                            }
+                        ]
+                    })
                 })
-            })
-        );
+            );
+        }
 
-        components.push(
-            edges.newResultsDisplay({
-                id : "generic_permanent_shutdown_reactors",
-                category: "panel",
-                filter: reactordb._filterResultsByStatus({status: "Permanent Shutdown"}),
-                renderer : edges.bs3.newTabularResultsRenderer({
-                    title: "<h3>All Permanent Shutdown Reactors</h3>",
-                    sortable: true,
-                    hideOnNoResults: true,
-                    fieldDisplay : [
-                        {field: "id", fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}), display: "Reactor Name", valueFunction: reactordb._htmlPassThrough},
-                        {field: "reactor.model", display: "Model"},
-                        {field: "reactor.process", display: "Process"},
-                        {field: "reactor.reference_unit_power_capacity_net", display: "Net Capacity (MWe)"},
-                        {field: "reactor.permanent_shutdown", display: "Permanent Shutdown"}
-                    ]
+        if (reactordb._showPageSection({showComponents: showComponents, sectionName: "under_construction_reactors"})) {
+            components.push(
+                edges.newResultsDisplay({
+                    id: "generic_under_construction_reactors",
+                    category: "panel",
+                    filter: reactordb._filterResultsByStatus({status: "Under Construction"}),
+                    renderer: edges.bs3.newTabularResultsRenderer({
+                        title: "<h3>All Under Construction Reactors</h3>",
+                        sortable: true,
+                        hideOnNoResults: true,
+                        fieldDisplay: [
+                            {
+                                field: "id",
+                                fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}),
+                                display: "Reactor Name",
+                                valueFunction: reactordb._htmlPassThrough
+                            },
+                            {field: "reactor.model", display: "Model"},
+                            {field: "reactor.process", display: "Process"},
+                            {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
+                            {field: "reactor.construction_start", display: "Construction Start"}
+                        ]
+                    })
                 })
-            })
-        );
+            );
+        }
+
+        if (reactordb._showPageSection({showComponents: showComponents, sectionName: "longterm_shutdown_reactors"})) {
+            components.push(
+                edges.newResultsDisplay({
+                    id: "generic_longterm_shutdown_reactors",
+                    category: "panel",
+                    filter: reactordb._filterResultsByStatus({status: "Long-term Shutdown"}),
+                    renderer: edges.bs3.newTabularResultsRenderer({
+                        title: "<h3>All Long-term Shutdown Reactors</h3>",
+                        sortable: true,
+                        hideOnNoResults: true,
+                        fieldDisplay: [
+                            {
+                                field: "id",
+                                fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}),
+                                display: "Reactor Name",
+                                valueFunction: reactordb._htmlPassThrough
+                            },
+                            {field: "reactor.model", display: "Model"},
+                            {field: "reactor.process", display: "Process"},
+                            {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
+                            {field: "reactor.longterm_shutdown", display: "Long-term Shutdown"}
+                        ]
+                    })
+                })
+            );
+        }
+
+        if (reactordb._showPageSection({showComponents: showComponents, sectionName: "permanent_shutdown_reactors"})) {
+            components.push(
+                edges.newResultsDisplay({
+                    id: "generic_permanent_shutdown_reactors",
+                    category: "panel",
+                    filter: reactordb._filterResultsByStatus({status: "Permanent Shutdown"}),
+                    renderer: edges.bs3.newTabularResultsRenderer({
+                        title: "<h3>All Permanent Shutdown Reactors</h3>",
+                        sortable: true,
+                        hideOnNoResults: true,
+                        fieldDisplay: [
+                            {
+                                field: "id",
+                                fieldFunction: reactordb._reactorPageLink({url_template: reactorPageURLTemplate}),
+                                display: "Reactor Name",
+                                valueFunction: reactordb._htmlPassThrough
+                            },
+                            {field: "reactor.model", display: "Model"},
+                            {field: "reactor.process", display: "Process"},
+                            {field: "reactor.reference_unit_power_capacity_net", display: "Net Capacity (MWe)"},
+                            {field: "reactor.permanent_shutdown", display: "Permanent Shutdown"}
+                        ]
+                    })
+                })
+            );
+        }
 
         var e = edges.newEdge({
             selector: selector,
             search_url: reactor_search_url,
             template: reactordb.newGenericTemplate(),
             manageUrl: true,
+            urlQueryOptions: {
+                include_query_string : true,
+                include_filters : true,
+                include_paging : false,
+                include_sort : false,
+                include_fields : false,
+                include_aggregations : false
+            },
             openingQuery : es.newQuery(),
             baseQuery: baseQuery,
             secondaryQueries : {
@@ -687,6 +864,13 @@ var reactordb = {
             frag += '<div class="row">\
                 <div class="col-md-12">\
                     <div id="generic_page_title"><h1>Reactor Database Report</h1></div>\
+                </div>\
+            </div>';
+
+            // selected filters
+            frag += '<div class="row">\
+                <div class="col-md-12">\
+                    <div id="selected-filters"></div>\
                 </div>\
             </div>';
 
@@ -1174,31 +1358,6 @@ var reactordb = {
             thousandsSeparator: ","
         });
         return formatter(twh);
-    },
-
-    _reactorPageLink : function(params) {
-        var template = params.url_template;
-
-        return function(params) {
-            var reactor = params.result;
-
-            var id = reactor.id;
-            var name = reactor.reactor.name;
-
-            var url = template.replace("{reactor_name}", id);
-            var frag = '<a href="' + url + '">' + name + '</a>';
-            return frag;
-        }
-    },
-
-    _countryPageLink : function(params) {
-        var template = params.url_template;
-
-        return function(country_name) {
-            var url = template.replace("{country_name}", country_name);
-            var frag = '<a href="' + url + '">' + country_name + '</a>';
-            return frag;
-        }
     },
 
     _globalElectricityGenerationByYear : function(component) {
