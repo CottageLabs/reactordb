@@ -2126,7 +2126,15 @@ var reactordb = {
                     urlTemplate: "preview_generic?source={query}",
                     urlQueryPlaceholder: "{query}",
                     renderer: edges.bs3.newLeaveSearchNavigationRenderer({
-                        text: "Create a report from these results &raquo;"
+                        text: "Create a report from these results &raquo;",
+                        hide: function(renderer) {
+                            if (!renderer.component.edge.result) {
+                                return true;
+                            }
+                            if (renderer.component.edge.result.total() === 0) {
+                                return true;
+                            }
+                        }
                     })
                 }),
 
