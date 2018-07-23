@@ -667,8 +667,12 @@ var reactordb = {
                             {field: "reactor.reference_unit_power_capacity_net", display: "Net Capacity (MWe)"},
                             {
                                 field: "reactor.electricity_supplied." + thisYear,
-                                display: "Total Generation (" + thisYear + ") (TWh)",
-                                valueFunction: reactordb._gwh2twh
+                                display: "Total Generation (" + thisYear + ") (GWh)",
+                                valueFunction: edges.numFormat({
+                                    reflectNonNumbers: true,
+                                    decimalPlaces: 0,
+                                    thousandsSeparator: ","
+                                })
                             },
                             {
                                 field: "reactor.country",
