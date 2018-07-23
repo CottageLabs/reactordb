@@ -323,7 +323,7 @@ var reactordb = {
 
         var reactorsBackground = edges.getParam(params.reactorsBackground, '/static/images/iconReactor.svg');
         var underConstructionBackground = edges.getParam(params.underConstructionBackground, "/static/images/iconConstruction.svg");
-        var shutdownBackground = edges.getParam(params.shutdownBackground, "/static/images/iconConstruction.svg");
+        var shutdownBackground = edges.getParam(params.shutdownBackground, "/static/images/iconShutdown.svg");
 
         var topX = edges.getParam(params.topX, 10);
 
