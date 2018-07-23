@@ -362,81 +362,91 @@ var reactordb = {
                     return values;
                 },
                 renderer : edges.bs3.newStoryRenderer()
-            }),
-            // selected filters display, with all the fields given their display names
-            edges.newSelectedFilters({
-                id: "selected-filters",
-                category: "selected-filters",
-                fieldDisplays : {
-                    "reactor.country.exact" : "Location",
-                    "reactor.status.exact" : "Current Status",
-                    "reactor.process.exact" : "Reactor Type",
-                    "index.construction_start_year" : "Construction Start Date",
-                    "index.first_grid_connection_year" : "Grid Connection",
-                    "index.permanent_shutdown_year" : "Permanent Shutdown Date",
-                    "reactor.owner.name.exact" : "Owner",
-                    "reactor.operator.exact" : "Operator",
-                    "reactor.reference_unit_power_capacity_net" : "Reference Unit Power (Net Capacity)"
-                },
-                renderer: edges.bs3.newSelectedFiltersRenderer({
-                    allowRemove: false
-                })
-            }),
-            edges.numbers.newImportantNumbers({
-                id: "operable_reactors_count",
-                category: "big-number",
-                calculate: reactordb._reactorStatusCount({status: "Operable"}),
-                renderer : edges.bs3.newImportantNumbersRenderer({
-                    title: "<h4>Operable Reactors</h4>",
-                    backgroundImg: reactorsBackground,
-                    mainNumberFormat: edges.numFormat({
-                        decimalPlaces: 0,
-                        thousandsSeparator: ","
-                    }),
-                    secondNumberFormat: edges.numFormat({
-                        decimalPlaces: 0,
-                        thousandsSeparator: ",",
-                        suffix: " MWe"
-                    })
-                })
-            }),
-            edges.numbers.newImportantNumbers({
-                id: "reactors_under_construction_count",
-                category: "big-number",
-                calculate: reactordb._reactorStatusCount({status: "Under Construction"}),
-                renderer : edges.bs3.newImportantNumbersRenderer({
-                    title: "<h4>Reactors&nbsp;Under Construction</h4>",
-                    backgroundImg: underConstructionBackground,
-                    mainNumberFormat: edges.numFormat({
-                        decimalPlaces: 0,
-                        thousandsSeparator: ","
-                    }),
-                    secondNumberFormat: edges.numFormat({
-                        decimalPlaces: 0,
-                        thousandsSeparator: ",",
-                        suffix: " MWe"
-                    })
-                })
-            }),
-            edges.numbers.newImportantNumbers({
-                id: "reactors_shutdown_count",
-                category: "big-number",
-                calculate: reactordb._reactorStatusCount({status: "Permanent Shutdown"}),
-                renderer : edges.bs3.newImportantNumbersRenderer({
-                    title: "<h4>Reactors Shutdown</h4>",
-                    backgroundImg: shutdownBackground,
-                    mainNumberFormat: edges.numFormat({
-                        decimalPlaces: 0,
-                        thousandsSeparator: ","
-                    }),
-                    secondNumberFormat: edges.numFormat({
-                        decimalPlaces: 0,
-                        thousandsSeparator: ",",
-                        suffix: " MWe"
-                    })
-                })
             })
         ];
+
+        if (reactordb._showPageSection({showComponents: showComponents, sectionName: "filters"})) {
+            // selected filters display, with all the fields given their display names
+            components.push(
+                edges.newSelectedFilters({
+                    id: "selected-filters",
+                    category: "selected-filters",
+                    fieldDisplays : {
+                        "reactor.country.exact" : "Location",
+                        "reactor.status.exact" : "Current Status",
+                        "reactor.process.exact" : "Reactor Type",
+                        "index.construction_start_year" : "Construction Start Date",
+                        "index.first_grid_connection_year" : "Grid Connection",
+                        "index.permanent_shutdown_year" : "Permanent Shutdown Date",
+                        "reactor.owner.name.exact" : "Owner",
+                        "reactor.operator.exact" : "Operator",
+                        "reactor.reference_unit_power_capacity_net" : "Reference Unit Power (Net Capacity)"
+                    },
+                    renderer: edges.bs3.newSelectedFiltersRenderer({
+                        allowRemove: false
+                    })
+                })
+            )
+        }
+
+        if (reactordb._showPageSection({showComponents: showComponents, sectionName: "highlight"})) {
+            components.push(
+                edges.numbers.newImportantNumbers({
+                    id: "operable_reactors_count",
+                    category: "big-number",
+                    calculate: reactordb._reactorStatusCount({status: "Operable"}),
+                    renderer: edges.bs3.newImportantNumbersRenderer({
+                        title: "<h4>Operable Reactors</h4>",
+                        backgroundImg: reactorsBackground,
+                        mainNumberFormat: edges.numFormat({
+                            decimalPlaces: 0,
+                            thousandsSeparator: ","
+                        }),
+                        secondNumberFormat: edges.numFormat({
+                            decimalPlaces: 0,
+                            thousandsSeparator: ",",
+                            suffix: " MWe"
+                        })
+                    })
+                }),
+                edges.numbers.newImportantNumbers({
+                    id: "reactors_under_construction_count",
+                    category: "big-number",
+                    calculate: reactordb._reactorStatusCount({status: "Under Construction"}),
+                    renderer: edges.bs3.newImportantNumbersRenderer({
+                        title: "<h4>Reactors&nbsp;Under Construction</h4>",
+                        backgroundImg: underConstructionBackground,
+                        mainNumberFormat: edges.numFormat({
+                            decimalPlaces: 0,
+                            thousandsSeparator: ","
+                        }),
+                        secondNumberFormat: edges.numFormat({
+                            decimalPlaces: 0,
+                            thousandsSeparator: ",",
+                            suffix: " MWe"
+                        })
+                    })
+                }),
+                edges.numbers.newImportantNumbers({
+                    id: "reactors_shutdown_count",
+                    category: "big-number",
+                    calculate: reactordb._reactorStatusCount({status: "Permanent Shutdown"}),
+                    renderer: edges.bs3.newImportantNumbersRenderer({
+                        title: "<h4>Reactors Shutdown</h4>",
+                        backgroundImg: shutdownBackground,
+                        mainNumberFormat: edges.numFormat({
+                            decimalPlaces: 0,
+                            thousandsSeparator: ","
+                        }),
+                        secondNumberFormat: edges.numFormat({
+                            decimalPlaces: 0,
+                            thousandsSeparator: ",",
+                            suffix: " MWe"
+                        })
+                    })
+                })
+            )
+        }
 
         // if there is no component list provided, or operable_nuclear_capacity is in the list of components
         // then add it
