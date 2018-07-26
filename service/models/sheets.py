@@ -32,6 +32,9 @@ def owner(cell):
 
     return owners
 
+def region(cell):
+    return [r.strip() for r in cell.split(",")]
+
 class MasterSheet(clcsv.SheetWrapper):
 
     HEADERS = {
@@ -89,6 +92,7 @@ class MasterSheet(clcsv.SheetWrapper):
         "project_start" : dataobj.date_str(out_format="%Y-%m-%d"),
         "wna_links" : weblinks,
         "wnn_links" : weblinks,
+        "region" : region,
 
         # fields shared with the pris scrape
         "owner" : owner,
