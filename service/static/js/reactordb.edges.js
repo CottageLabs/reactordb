@@ -262,7 +262,7 @@ var reactordb = {
     ],
 
     _topCapacityByStatusBySubProperty : function(params) {
-        var x = params.x;
+        var x = params.x || 0;
         var operationStatus = params.status;
         var sub = params.sub;
 
@@ -293,9 +293,11 @@ var reactordb = {
                 return 0;
             });
 
-            var limitted = values.slice(0, x);
+            if (x > 0) {
+                values = values.slice(0, x);
+            }
             var seriesName = "Total " + operationStatus + " Reactor Net Capacity";
-            return [{key: seriesName, values: limitted}];
+            return [{key: seriesName, values: values}];
         }
     },
 
@@ -609,10 +611,10 @@ var reactordb = {
                     edges.newHorizontalMultibar({
                         id: "top_operable_reactor_capacity_by_process",
                         category: "panel",
-                        dataFunction: reactordb._topCapacityByStatusBySubProperty({status: "Operable", x: topX, sub: "process"}),
+                        dataFunction: reactordb._topCapacityByStatusBySubProperty({status: "Operable", sub: "process"}),
                         renderer: edges.nvd3.newHorizontalMultibarRenderer({
                             hideIfNoData: true,
-                            title: "<h3>Top Operable Reactor Net Capacity By Reactor Type</h3>",
+                            title: "<h3>Operable Reactor Net Capacity By Reactor Type</h3>",
                             legend: false,
                             dynamicHeight: true,
                             barHeight: 40,
@@ -638,7 +640,7 @@ var reactordb = {
                         dataFunction: reactordb._topCapacityByStatusBySubProperty({status: "Under Construction", x: topX, sub: "process"}),
                         renderer: edges.nvd3.newHorizontalMultibarRenderer({
                             hideIfNoData: true,
-                            title: "<h3>Top Under Construction Reactor Net Capacity By Reactor Type</h3>",
+                            title: "<h3>Under Construction Reactor Net Capacity By Reactor Type</h3>",
                             legend: false,
                             dynamicHeight: true,
                             barHeight: 40,
@@ -673,10 +675,10 @@ var reactordb = {
                     edges.newHorizontalMultibar({
                         id: "top_operable_reactor_capacity_by_region",
                         category: "panel",
-                        dataFunction: reactordb._topCapacityByStatusBySubProperty({status: "Operable", x: topX, sub: "region"}),
+                        dataFunction: reactordb._topCapacityByStatusBySubProperty({status: "Operable", sub: "region"}),
                         renderer: edges.nvd3.newHorizontalMultibarRenderer({
                             hideIfNoData: true,
-                            title: "<h3>Top Operable Reactor Net Capacity By Region</h3>",
+                            title: "<h3>Operable Reactor Net Capacity By Region</h3>",
                             legend: false,
                             dynamicHeight: true,
                             barHeight: 40,
@@ -699,10 +701,10 @@ var reactordb = {
                     edges.newHorizontalMultibar({
                         id: "top_under_construction_reactor_capacity_by_region",
                         category: "panel",
-                        dataFunction: reactordb._topCapacityByStatusBySubProperty({status: "Under Construction", x: topX, sub: "region"}),
+                        dataFunction: reactordb._topCapacityByStatusBySubProperty({status: "Under Construction", sub: "region"}),
                         renderer: edges.nvd3.newHorizontalMultibarRenderer({
                             hideIfNoData: true,
-                            title: "<h3>Top Under Construction Reactor Net Capacity By Region</h3>",
+                            title: "<h3>Under Construction Reactor Net Capacity By Region</h3>",
                             legend: false,
                             dynamicHeight: true,
                             barHeight: 40,
