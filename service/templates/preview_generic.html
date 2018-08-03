@@ -21,6 +21,9 @@
         <strong>top_operable_region</strong>, <strong>top_under_construction_region</strong>,
         <strong>top_owners</strong>, <strong>top_operators</strong>
         <br>Leave empty to show all DEFAULT page sections - those not in bold.<br>
+        Referrer: <input type="text" name="ref"><br>
+        Enter "search" to provide the user with the ability to go back to the search page, or leave blank for no
+        navigation option<br>
         <button type="submit">Update</button><br><br>
         URL To share for this report:
     </form>
@@ -67,6 +70,9 @@ jQuery(document).ready(function($) {
         if (urlParams.hasOwnProperty(("show"))) {
             $("textarea[name=show]").val(urlParams["show"].replace(/[\+]/g, " "));
         }
+        if (urlParams.hasOwnProperty("ref")) {
+            $("input[name=ref]").val(urlParams.ref);
+        }
 
         var shareUrl = BASE_URL + "/preview_generic";
         var params = ["source=" + encodeURIComponent(JSON.stringify(source))];
@@ -86,7 +92,8 @@ jQuery(document).ready(function($) {
         operation_index: "preview_operation",
         year: 2016,
         reactorPageURLTemplate: "/preview_reactor/{reactor_name}",
-        countryPageURLTemplate: "/preview_country/{country_name}"
+        countryPageURLTemplate: "/preview_country/{country_name}",
+        searchPageURLTemplate: "/preview_search?source={query}"
     });
 });
 </script>

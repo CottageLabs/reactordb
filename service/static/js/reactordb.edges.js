@@ -325,6 +325,7 @@ var reactordb = {
 
         var reactorPageURLTemplate = edges.getParam(params.reactorPageURLTemplate, "/reactor/{reactor_name}");
         var countryPageURLTemplate = edges.getParam(params.countryPageURLTemplate, "/country/{country_name}");
+        var searchPageURLTemplate = edges.getParam(params.searchPageURLTemplate, "/search?source={query}");
 
         var reactorsBackground = edges.getParam(params.reactorsBackground, '/static/images/iconReactor.svg');
         var underConstructionBackground = edges.getParam(params.underConstructionBackground, "/static/images/iconConstruction.svg");
@@ -353,6 +354,23 @@ var reactordb = {
 
         // first load all the required components
         var components = [
+            edges.newLeaveSearchNavigation({
+                id: "return_to_search",
+                urlTemplate: searchPageURLTemplate,
+                urlQueryPlaceholder: "{query}",
+                renderer: edges.bs3.newLeaveSearchNavigationRenderer({
+                    text: "&laquo; Return to search",
+                    hide: function(renderer) {
+                        var urlParams = renderer.component.edge.urlParams;
+                        if (urlParams.hasOwnProperty("ref")) {
+                            if (urlParams.ref === "search") {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                })
+            }),
             edges.numbers.newStory({
                 id: "generic_page_title",
                 category: "title",
@@ -1078,6 +1096,9 @@ var reactordb = {
             // start building the page template
             var frag = '<div class="' + containerClass + '"><div class="row">';
             frag += '<div class="col-md-12">';
+
+            // return-to-search button
+            frag += '<div class="row"><div class="col-md-12"><div id="return_to_search"></div></div></div>';
 
             // the header for the page
             frag += '<div class="row">\

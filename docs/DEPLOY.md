@@ -6,6 +6,7 @@ This document describes the CSS, JS and other dependencies of the reactor databa
 * Reactor Search
 * Reactor Pages
 * Country Pages
+* Generic Report
 
 
 ## Required CSS files
@@ -75,12 +76,16 @@ with the GLOBAL nuclear share.  See static/data/share-of-electricity-generation.
 at a URL within the CMS, and is provided to the pages when they are created, as documented in the relevant sections below.
 
 * The background image for the "Operable Reactors" count.  This is an image (ideally an SVG) that is displayed behind the count
-of operable reactors which appears on the dashboard and country pages.  This file should be available
+of operable reactors which appears on the dashboard, country pages and generic report.  This file should be available
 at a URL within the CMS, and is provided to the pages when they are created, as documented in the relevant sections below.
 
 * The background image for the "Under Construction Reactors" count.  This is an image (ideally an SVG) that is displayed behind the count
-of under construction reactors which appears on the dashboard and country pages.  This file should be available
+of under construction reactors which appears on the dashboard, country pages and generic report.  This file should be available
 at a URL within the CMS, and is provided to the pages when they are created, as documented in the relevant sections below.
+
+* The backgrount image for the "Reactors Shutdown" count.  This is an image (ideally an SVG) that is displayed
+behind the count of shutdown reactors which appears on the generic report.  This file should be available at a URL within the
+CMS, and is provided to the pages when they are created, as documented in the relevant sections below.
 
 
 ### Global Dashboard
@@ -154,6 +159,7 @@ makeSearch takes several arguments that may need to be supplied:
 * selector - the selector for the div into which the search will be rendered.  Defaults to #reactor-search
 * search_url - the URL of the search service API for querying reactors.  Defaults to /query/reactor/_search in the current domain.
 * reactor_base_url - the base URL of the reactor page.  When appended with the reactor ID, this should resolve to the reactor page.  Defaults to /reactor/ in the current domain.
+* genericPageURLTemplate - the URL template for the generic report page, with the placeholder {query} for the search query. Note the use of the ref=search parameter if you want the user to be able to back-navigate to the search page later
 
 For example:
 
@@ -165,7 +171,8 @@ For example:
         reactordb.makeSearch({
             selector : "#jquery-selector-for-div".
             search_url : "http://api.wna.com/reactordb/query/reactor/_search",
-            reactor_base_url: "http://api.wna.com/reactor/"
+            reactor_base_url: "http://api.wna.com/reactor/",
+            genericPageURLTemplate: "/generic?ref=search&source={query}"
         });
     });
     </script>
@@ -268,3 +275,49 @@ from the `country_regex`.  Defaults to extracting the country name from the coun
 
 
 
+### Generic Report Page
+
+TODO
+
+To deploy, include a div with id "generic-report" and then call reactordb.makeGenericReport() with suitable arguments.
+
+```html
+<div id="generic-report"></div>
+
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    reactordb.makeGenericReport({
+        year: 2016,
+        reactor_search_url: "http://reactordb.world-nuclear.org/query/reactor/_search",
+        operation_search_url: "http://reactordb.world-nuclear.org/query/operation/_search"
+        reactorPageURLTemplate: "/reactor/{reactor_name}",
+        countryPageURLTemplate: "/country/{country_name}",
+        searchPageURLTemplate: "/search?source={query}",
+        reactorsBackground: "/static/images/operableReactors.svg",
+        underConstructionBackground: "/static/images/underConstruction.svg",
+        shutdownBackground: "/static/images/shutdownReactors.svg"
+    });
+});
+</script>
+```
+
+makeGenericReport takes a number of arguments you can supply:
+
+**Arguments you need to supply**
+
+* year - year for which to present data.
+* reactor_search_url - the URL for the ES reactor search.  Defaults to the reactor_index query endpoint on the current domain
+* operation_search_url - the URL for the ES reactor search.  Defaults to the reactor_index query endpoint on the current domain
+* reactorPageURLTemplate - the URL template for the reactor page, with "{reactor_name}" being replaced by the actual reactor name
+* countryPageURLTemplate - the URL template for the country page, with "{country_name}" being replaced by the actual country name
+* searchPageURLTemplate - the URL template for the search page, with "{query}" being replaced by the search query
+* reactorsBackground - image to use as background for count of operable reactors
+* underConstructionBackground - image to use as background for count of under construction reactors
+* shutdownBackground - image to use as background for count of shutdown reactors
+
+**Additional arguments that you can probably leave as default**
+
+* selector - the jQuery selector for the div into which the dashobard will be rendered.  Defaults to "#generic-report"
+* operation_index - the index name for operation data.  Defaults to "operation"
+* reactor_index - the index name for reactor data.  Defaults to "reactor"
+* topX - the maximum number of results to display for "Top X" charts
