@@ -229,6 +229,9 @@ def live_country(country_id=None):
         return redirect(url)
     return render_template("live_country.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"), country_id=country_id)
 
+@app.route("/live_generic")
+def live_generic():
+    return render_template("live_generic.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"))
 
 #######################################################
 

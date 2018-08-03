@@ -19,7 +19,8 @@ jQuery(document).ready(function($) {
     var BASE_URL = current_scheme + "//" + current_domain;
 
     reactordb.makeSearch({
-        reactor_base_url: BASE_URL + "/live_reactor/"
+        reactor_base_url: BASE_URL + "/live_reactor/",
+        genericPageURLTemplate: "/live_generic?source={query}"
     });
 });
 </script>

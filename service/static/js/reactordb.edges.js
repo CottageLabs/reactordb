@@ -2200,6 +2200,8 @@ var reactordb = {
         var search_url = params.search_url || current_scheme + "//" + current_domain + "/query/" + index + "/_search";
         var reactor_base_url = params.reactor_base_url || current_scheme + "//" + current_domain + "/reactor/";
 
+        var genericPageURLTemplate = edges.getParam(params.genericPageURLTemplate, "/generic?source={query}");
+
         var e = edges.newEdge({
             selector: selector,
             template: edges.bs3.newFacetview(),
@@ -2342,7 +2344,7 @@ var reactordb = {
                 edges.newLeaveSearchNavigation({
                     id: "leave-search-navigation",
                     category: "results",
-                    urlTemplate: "preview_generic?source={query}",
+                    urlTemplate: genericPageURLTemplate,
                     urlQueryPlaceholder: "{query}",
                     renderer: edges.bs3.newLeaveSearchNavigationRenderer({
                         text: "Create a report from these results &raquo;",

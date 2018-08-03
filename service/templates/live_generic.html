@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+
+{% endblock %}
+
+{% block content %}
+
+{% include '_live-status.html' %}
+
+<div style="border-bottom: 1px dashed #cccccc; padding-bottom: 10px">
+    <form method="get">
+        <input type="hidden" name="source" value="">
+        Title: <input type="text" name="title"><br>
+        Active Page Sections (comma separated): <textarea name="show" style="width: 100%"></textarea><br>
+        The Following page sections are available:<br>
+        filters, highlight, operable_nuclear_capacity, electricity_generated, top_operable_country,
+        top_under_construction_country, top_load_factor, top_generation, operable_reactors, under_construction_reactors,
+        longterm_shutdown_reactors, permanent_shutdown_reactors,
+        <strong>top_operable_process</strong>, <strong>top_under_construction_process</strong>,
+        <strong>top_operable_region</strong>, <strong>top_under_construction_region</strong>,
+        <strong>top_owners</strong>, <strong>top_operators</strong>
+        <br>Leave empty to show all DEFAULT page sections - those not in bold.<br>
+        <button type="submit">Update</button><br><br>
+        URL To share for this report:
+    </form>
+    <form>
+        <textarea name="share" style="width:100%"></textarea>
+    </form>
+</div>
+
+<div id="generic-report"></div>
+
+{% endblock %}
+
+
+{% block extra_js_bottom %}
+
+<script type="text/javascript" src="{{url_for('static', filename='js/reactordb.nodeps.full.js')}}"></script>
+
+<script type="text/javascript" src="{{url_for('static', filename='js/reactordbadmin.js')}}"></script>
+
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    var current_domain = document.location.host;
+    var current_scheme = window.location.protocol;
+    var BASE_URL = current_scheme + "//" + current_domain;
+
+    $("#generic-report").on("edges:post-render", function() {
+        var urlParams = reactordb.activeEdges["#generic-report"].urlParams;
+        var source = reactordb.activeEdges["#generic-report"].currentQuery.objectify({
+            include_aggregations: false,
+            include_sort: false,
+            include_paging: false,
+            include_fields: false
+        });
+        $("input[name=source]").val(JSON.stringify(source));
+        if (urlParams.hasOwnProperty("title")) {
+            $("input[name=title]").val(urlParams["title"]);
+        }
+        if (urlParams.hasOwnProperty(("show"))) {
+            $("textarea[name=show]").val(urlParams["show"].replace(/[\+]/g, " "));
+        }
+
+        var shareUrl = BASE_URL + "/preview_generic";
+        var params = ["source=" + encodeURIComponent(JSON.stringify(source))];
+        for (var key in urlParams) {
+            var val = urlParams[key];
+            if (val !== "") {
+                params.push(encodeURIComponent(key) + "=" + encodeURIComponent(val));
+            }
+        }
+        shareUrl = shareUrl + "?" + params.join("&");
+        $("textarea[name=share]").val(shareUrl);
+    });
+
+    reactordb.makeGenericReport({
+        selector: "#generic-report",
+        reactor_index: "preview_reactor",
+        operation_index: "preview_operation",
+        year: 2016,
+        reactorPageURLTemplate: "/preview_reactor/{reactor_name}",
+        countryPageURLTemplate: "/preview_country/{country_name}"
+    });
+});
+</script>
+
+{% endblock%}
