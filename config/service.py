@@ -110,7 +110,7 @@ GOOGLE_MAP_API_KEY = None
 
 DEFAULT_MAX_PAGES = 1200
 
-PRISURL = "https://www.iaea.org/PRIS/CountryStatistics/ReactorDetails.aspx"
+PRISURL = "https://pris.iaea.org/PRIS/CountryStatistics/ReactorDetails.aspx"
 
 SECTIONS_AVAILABLE = [
     u'reactor details',
