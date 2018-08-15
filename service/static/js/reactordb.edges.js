@@ -1049,6 +1049,10 @@ var reactordb = {
             baseQuery: baseQuery,
             secondaryQueries : {
                 a : function(edge) {
+                    var current = edge.cloneQuery();
+                    current.clearAggregations();
+                    return current;
+                    /*
                     var results = edge.result.results();
                     var reactorIDs = [];
                     for (var i = 0; i < results.length; i++) {
@@ -1067,6 +1071,7 @@ var reactordb = {
                             ]})
                         ]
                     })
+                    */
                 }
             },
             secondaryUrls : {

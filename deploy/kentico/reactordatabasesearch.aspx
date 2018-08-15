@@ -18,7 +18,7 @@
                 reactordb.makeSearch({
                     search_url: "http://reactordb.world-nuclear.org/query/reactor/_search",
                     reactor_base_url: "http://www.world-nuclear.org/reactor/default.aspx/",
-                    genericPageURLTemplate: "http://www.world-nuclear.org/information-library/facts-and-figures/reactor-database-report.aspx?ref=search&source={query}"
+                    genericPageURLTemplate: "http://world-nuclear.org/information-library/facts-and-figures/reactor-database-data/reactor-database-report.aspx?ref=search&source={query}"
                 });
             });
     </script>

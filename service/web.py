@@ -3,6 +3,7 @@ import os
 import json
 import time
 from octopus.core import app, initialise, add_configuration
+from octopus.lib import plugin
 from octopus.lib.webapp import jsonp
 from flask import Flask, request, abort, render_template, redirect, make_response, jsonify, send_file, \
     send_from_directory, url_for
@@ -11,6 +12,7 @@ from service.lib.pageScraper import scrape_all_pages, scrape_page
 from service.lib.importer import import_reactordb
 from service import models
 import urllib2
+from esprit.models import Query
 
 if __name__ == "__main__":
     import argparse
@@ -232,6 +234,90 @@ def live_country(country_id=None):
 @app.route("/live_generic")
 def live_generic():
     return render_template("live_generic.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"))
+
+#######################################################
+
+#######################################################
+## Custom query endpoints
+
+@app.route("/custom/operation/_search")
+@jsonp
+def custom_operation():
+    return _do_custom_operation_query("reactor", "operation")
+
+@app.route("/custom/preview_operation/_search")
+@jsonp
+def custom_preview_operation():
+    return _do_custom_operation_query("preview_reactor", "preview_operation")
+
+def _do_custom_operation_query(reactor_index, operation_index):
+    if "source" not in request.values:
+        abort(400)
+
+    year = request.values.get("year")
+    if year is None:
+        abort(400)
+    year = int(year)
+
+    qrs = app.config.get("QUERY_ROUTE", {})
+    reactor_cfg = qrs.get("query", {}).get(reactor_index)
+    operation_cfg = qrs.get("query", {}).get(operation_index)
+
+    if reactor_cfg is None or operation_cfg is None:
+        abort(400)
+
+    reactor_dao_name = reactor_cfg.get("dao")
+    operation_dao_name = operation_cfg.get("dao")
+
+    reactor_klass = plugin.load_class(reactor_dao_name)
+    if reactor_klass is None:
+        abort(404)
+
+    operation_klass = plugin.load_class(operation_dao_name)
+    if operation_klass is None:
+        abort(404)
+
+    reactor_query = Query(json.loads(urllib2.unquote(request.values['source'])))
+    reactor_res = reactor_klass.query(q=reactor_query.as_dict())
+    reactor_ids = [
+        res["_source"]["id"]
+        for res in reactor_res.get("hits", {}).get("hits", [])
+        if "_source" in res and "id" in res["_source"]
+    ]
+
+    operation_query = {
+        "query" : {
+            "filtered" : {
+                "filter" : {
+                    "bool" : {
+                        "must" : [
+                            {"range" : {"year" : {"lte" : year, "gte" : 1970}}},
+                            {"terms" : {"reactor.exact" : reactor_ids}}
+                        ]
+                    }
+                },
+                "query" : {"match_all" : {}}
+            }
+        },
+        "size" : 0,
+        "aggs" : {
+            "year" : {
+                "terms" : {"field" : "year", "size" : 100, "order" : {"_term" : "asc"}},
+                "aggs":{
+                    "electricity_generation" : {
+                        "sum" : {"field" : "electricity_supplied"}
+                    }
+                }
+            }
+        }
+    }
+
+    operation_res = operation_klass.query(q=operation_query)
+    resp = make_response(json.dumps(operation_res))
+    resp.mimetype = "application/json"
+    return resp
+
+
 
 #######################################################
 

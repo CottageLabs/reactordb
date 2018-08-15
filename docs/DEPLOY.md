@@ -286,10 +286,11 @@ To deploy, include a div with id "generic-report" and then call reactordb.makeGe
 
 <script type="text/javascript">
 jQuery(document).ready(function($) {
+    var year = 2016
     reactordb.makeGenericReport({
-        year: 2016,
+        year: year,
         reactor_search_url: "http://reactordb.world-nuclear.org/query/reactor/_search",
-        operation_search_url: "http://reactordb.world-nuclear.org/query/operation/_search"
+        operation_search_url: "http://reactordb.world-nuclear.org/custom/operation/_search?year=" + year,
         reactorPageURLTemplate: "/reactor/{reactor_name}",
         countryPageURLTemplate: "/country/{country_name}",
         searchPageURLTemplate: "/search?source={query}",
@@ -307,7 +308,7 @@ makeGenericReport takes a number of arguments you can supply:
 
 * year - year for which to present data.
 * reactor_search_url - the URL for the ES reactor search.  Defaults to the reactor_index query endpoint on the current domain
-* operation_search_url - the URL for the ES reactor search.  Defaults to the reactor_index query endpoint on the current domain
+* operation_search_url - the URL for the ES reactor search.  Defaults to the reactor_index query endpoint on the current domain.  NOTE: in live, this must be set to the custom operation query endpoint, rather than the default one
 * reactorPageURLTemplate - the URL template for the reactor page, with "{reactor_name}" being replaced by the actual reactor name
 * countryPageURLTemplate - the URL template for the country page, with "{country_name}" being replaced by the actual country name
 * searchPageURLTemplate - the URL template for the search page, with "{query}" being replaced by the search query

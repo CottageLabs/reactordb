@@ -81,10 +81,12 @@ jQuery(document).ready(function($) {
         $("textarea[name=share]").val(shareUrl);
     });
 
+    var year = 2016;
     reactordb.makeGenericReport({
         selector: "#generic-report",
         reactor_index: "preview_reactor",
-        operation_index: "preview_operation",
+        // operation_index: "preview_operation",
+        operation_search_url: "/custom/operation/_search?year=" + year,
         year: 2016,
         reactorPageURLTemplate: "/live_reactor/{reactor_name}",
         countryPageURLTemplate: "/live_country/{country_name}",

@@ -15,10 +15,11 @@
 <asp:Content ID="Content3" ContentPlaceHolderID="ContentPlaceHolderScriptsFooter" Runat="Server">
         <script type="text/javascript">
             jQuery(document).ready(function($) {
+                var year = 2017;
                 reactordb.makeGenericReport({
-                    year: 2017,
+                    year: year,
                     reactor_search_url: "http://reactordb.world-nuclear.org/query/reactor/_search",
-                    operation_search_url: "http://reactordb.world-nuclear.org/query/operation/_search"
+                    operation_search_url: "http://reactordb.world-nuclear.org/custom/operation/_search?year=" + year,
                     reactorPageURLTemplate: "/reactor/{reactor_name}",
                     countryPageURLTemplate: "/country/{country_name}",
                     searchPageURLTemplate: "/search?source={query}",
