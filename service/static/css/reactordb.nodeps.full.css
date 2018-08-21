@@ -512,6 +512,10 @@
     text-align: center;
     margin-bottom: 10px;
 }
+.edges-leave-search-navigation-container a {
+    color: #fff !important;
+    text-decoration: none !important;
+}
 .reactordb-reactor-records-record  {
     padding-bottom: 15px;
     padding-top: 15px;
@@ -756,6 +760,9 @@
 .edges-nvd3-pie-display-country_nuclear_share {
     height: 60px;
     text-align: center;
+}
+#generic-report h3 {
+    float: none !important;
 }
 #generic_nuclear_generation_histogram {
     height: 300px;
