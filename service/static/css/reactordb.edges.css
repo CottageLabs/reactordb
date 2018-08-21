@@ -35,6 +35,19 @@
     margin-bottom: 10px;
 }
 
+/*
+ * Styles to set the search container link colour on the live site
+ */
+
+.edges-leave-search-navigation-container a {
+    color: #fff !important;
+    text-decoration: none !important;
+}
+
+/*
+ * styles for the search interface
+ */
+
 .reactordb-reactor-records-record  {
     padding-bottom: 15px;
     padding-top: 15px;
@@ -379,6 +392,10 @@
 /*
  * Styles for the generic report
  */
+
+#generic-report h3 {
+    float: none !important;
+}
 
 #generic_nuclear_generation_histogram {
     height: 300px;
