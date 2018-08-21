@@ -317,7 +317,7 @@ var reactordb = {
         var current_scheme = window.location.protocol;
         if (!params) { params = {} }
 
-        var selector = params.selector || "#country-report";
+        var selector = params.selector || "#generic-report";
         var operation_index = params.operation_index || "operation";
         var reactor_index = params.reactor_index || "reactor";
         var reactor_search_url = params.reactor_search_url || current_scheme + "//" + current_domain + "/query/" + reactor_index + "/_search";
