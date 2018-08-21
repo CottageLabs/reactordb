@@ -17,12 +17,13 @@
             jQuery(document).ready(function($) {
                 var year = 2017;
                 reactordb.makeGenericReport({
+                    selector: "#generic-report",
                     year: year,
                     reactor_search_url: "http://reactordb.world-nuclear.org/query/reactor/_search",
                     operation_search_url: "http://reactordb.world-nuclear.org/custom/operation/_search?year=" + year,
-                    reactorPageURLTemplate: "/reactor/{reactor_name}",
-                    countryPageURLTemplate: "/country/{country_name}",
-                    searchPageURLTemplate: "/search?source={query}",
+                    reactorPageURLTemplate: "http://www.world-nuclear.org/reactor/default.aspx/{reactor_name}",
+                    countryPageURLTemplate: "http://www.world-nuclear.org/country/default.aspx/{country_name}",
+                    searchPageURLTemplate: "http://www.world-nuclear.org/information-library/facts-and-figures/reactor-database-data/reactor-database-search.aspx?source={query}",
                     reactorsBackground: "http://world-nuclear.org/WNA/media/WNA/Furniture/General/iconReactor.svg",
                     underConstructionBackground: "http://world-nuclear.org/WNA/media/WNA/Furniture/General/iconConstruction.svg",
                     shutdownBackground: "http://world-nuclear.org/WNA/media/WNA/Furniture/General/iconShutdown.svg"
