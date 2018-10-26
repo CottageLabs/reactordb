@@ -17,7 +17,7 @@
         filters, highlight, operable_nuclear_capacity, electricity_generated, top_operable_country,
         top_under_construction_country, top_load_factor, top_generation, operable_reactors, under_construction_reactors,
         longterm_shutdown_reactors, permanent_shutdown_reactors,
-        <strong>top_operable_process</strong>, <strong>top_under_construction_process</strong>,
+        <strong>top_electricity_gen</strong>, <strong>top_operable_process</strong>, <strong>top_under_construction_process</strong>,
         <strong>top_operable_region</strong>, <strong>top_under_construction_region</strong>,
         <strong>top_owners</strong>, <strong>top_operators</strong>
         <br>Leave empty to show all DEFAULT page sections - those not in bold.<br>
@@ -84,10 +84,10 @@ jQuery(document).ready(function($) {
     var year = 2016;
     reactordb.makeGenericReport({
         selector: "#generic-report",
-        reactor_index: "preview_reactor",
+        reactor_index: "reactor",
         // operation_index: "preview_operation",
         operation_search_url: "/custom/operation/_search?year=" + year,
-        year: 2016,
+        year: year,
         reactorPageURLTemplate: "/live_reactor/{reactor_name}",
         countryPageURLTemplate: "/live_country/{country_name}",
         searchPageURLTemplate: "/live_search?source={query}"
