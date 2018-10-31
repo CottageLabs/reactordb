@@ -156,7 +156,9 @@ def docs():
 
 @app.route("/embed.html")
 def embed():
-    return render_template("embed.html")
+    resp = make_response(render_template("embed.html"))
+    resp.headers["Access-Control-Allow-Origin"] = "*"
+    return resp
 
 ######################################################
 ## All the preview pages
