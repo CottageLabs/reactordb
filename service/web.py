@@ -154,6 +154,10 @@ def upload():
 def docs():
     return render_template("docs.html")
 
+@app.route("/embed.html")
+def embed():
+    return render_template("embed.html")
+
 ######################################################
 ## All the preview pages
 
