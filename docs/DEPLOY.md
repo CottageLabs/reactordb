@@ -170,8 +170,8 @@ For example:
     jQuery(document).ready(function($) {
         reactordb.makeSearch({
             selector : "#jquery-selector-for-div".
-            search_url : "http://api.wna.com/reactordb/query/reactor/_search",
-            reactor_base_url: "http://api.wna.com/reactor/",
+            search_url : "//api.wna.com/reactordb/query/reactor/_search",
+            reactor_base_url: "//api.wna.com/reactor/",
             genericPageURLTemplate: "/generic?ref=search&source={query}"
         });
     });
@@ -220,8 +220,8 @@ For example:
     jQuery(document).ready(function($) {
         reactordb.makeReactorPage({
             selector: "#my-reactor"
-            reactor_search_url: "http://wna.com/reactordb/query/reactor/_search",
-            operation_search_url: "http://wna.com/reactordb/query/operation/_search",
+            reactor_search_url: "//wna.com/reactordb/query/reactor/_search",
+            operation_search_url: "//wna.com/reactordb/query/operation/_search",
             id_regex: new RegExp("reactor\/(.+)")
         });
     });
@@ -245,8 +245,8 @@ jQuery(document).ready(function($) {
         underConstructionBackground: "/static/images/underConstruction.svg",
         reactorPageURLTemplate: "/reactor/{reactor_name}",
         country_regex: new RegExp("country\/(.+)"),
-        reactor_search_url: "http://reactordb.world-nuclear.org/query/reactor/_search",
-        operation_search_url: "http://reactordb.world-nuclear.org/query/operation/_search"
+        reactor_search_url: "//reactordb.world-nuclear.org/query/reactor/_search",
+        operation_search_url: "//reactordb.world-nuclear.org/query/operation/_search"
     });
 });
 </script>
@@ -289,8 +289,8 @@ jQuery(document).ready(function($) {
     var year = 2016
     reactordb.makeGenericReport({
         year: year,
-        reactor_search_url: "http://reactordb.world-nuclear.org/query/reactor/_search",
-        operation_search_url: "http://reactordb.world-nuclear.org/custom/operation/_search?year=" + year,
+        reactor_search_url: "//reactordb.world-nuclear.org/query/reactor/_search",
+        operation_search_url: "//reactordb.world-nuclear.org/custom/operation/_search?year=" + year,
         reactorPageURLTemplate: "/reactor/{reactor_name}",
         countryPageURLTemplate: "/country/{country_name}",
         searchPageURLTemplate: "/search?source={query}",

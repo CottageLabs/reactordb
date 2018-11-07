@@ -16,9 +16,9 @@
         <script type="text/javascript">
             jQuery(document).ready(function ($) {
                 reactordb.makeSearch({
-                    search_url: "http://reactordb.world-nuclear.org/query/reactor/_search",
-                    reactor_base_url: "http://www.world-nuclear.org/reactor/default.aspx/",
-                    genericPageURLTemplate: "http://world-nuclear.org/information-library/facts-and-figures/reactor-database-data/reactor-database-report.aspx?ref=search&source={query}"
+                    search_url: "//reactordb.world-nuclear.org/query/reactor/_search",
+                    reactor_base_url: "//www.world-nuclear.org/reactor/default.aspx/",
+                    genericPageURLTemplate: "//world-nuclear.org/information-library/facts-and-figures/reactor-database-data/reactor-database-report.aspx?ref=search&source={query}"
                 });
             });
     </script>

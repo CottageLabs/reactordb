@@ -18,8 +18,8 @@
     <script type="text/javascript">
         jQuery(document).ready(function ($) {
             reactordb.makeReactorPage({
-                reactor_search_url: "http://reactordb.world-nuclear.org/query/reactor/_search",
-                operation_search_url: "http://reactordb.world-nuclear.org/query/operation/_search",
+                reactor_search_url: "//reactordb.world-nuclear.org/query/reactor/_search",
+                operation_search_url: "//reactordb.world-nuclear.org/query/operation/_search",
                 id_regex: new RegExp("default.aspx\/(.+)")
             });
         });

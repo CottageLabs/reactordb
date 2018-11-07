@@ -20,12 +20,12 @@
             reactordb.makeCountryReport({
                 year: 2017,
                 nuclearShareURL: "/WNA/media/WNA/Furniture/General/shareofgeneration.csv",
-                reactorsBackground: "http://world-nuclear.org/WNA/media/WNA/Furniture/General/iconReactor.svg",
-                underConstructionBackground: "http://world-nuclear.org/WNA/media/WNA/Furniture/General/iconConstruction.svg",
-                reactorPageURLTemplate: "http://www.world-nuclear.org/reactor/default.aspx/{reactor_name}",
+                reactorsBackground: "//world-nuclear.org/WNA/media/WNA/Furniture/General/iconReactor.svg",
+                underConstructionBackground: "//world-nuclear.org/WNA/media/WNA/Furniture/General/iconConstruction.svg",
+                reactorPageURLTemplate: "//www.world-nuclear.org/reactor/default.aspx/{reactor_name}",
                 country_regex: new RegExp("default.aspx\/(.+)"),
-                reactor_search_url: "http://reactordb.world-nuclear.org/query/reactor/_search",
-                operation_search_url: "http://reactordb.world-nuclear.org/query/operation/_search"
+                reactor_search_url: "//reactordb.world-nuclear.org/query/reactor/_search",
+                operation_search_url: "//reactordb.world-nuclear.org/query/operation/_search"
             });
         });
     </script>

@@ -17,13 +17,13 @@
             reactordb.makeDashboard({
                 year: 2017,
                 nuclearShareURL: "/WNA/media/WNA/Furniture/General/shareofgeneration.csv",
-                reactorsBackground: "http://world-nuclear.org/WNA/media/WNA/Furniture/General/iconReactor.svg",
-                underConstructionBackground: "http://world-nuclear.org/WNA/media/WNA/Furniture/General/iconConstruction.svg",
-                reactorPageURLTemplate: "http://www.world-nuclear.org/reactor/default.aspx/{reactor_name}",
-                countryPageURLTemplate: "http://www.world-nuclear.org/country/default.aspx/{country_name}",
-                searchPageURL : "http://www.world-nuclear.org/information-library/facts-and-figures/reactor-database-data/reactor-database-search.aspx",
-                reactor_search_url: "http://reactordb.world-nuclear.org/query/reactor/_search",
-                operation_search_url: "http://reactordb.world-nuclear.org/query/operation/_search"
+                reactorsBackground: "//world-nuclear.org/WNA/media/WNA/Furniture/General/iconReactor.svg",
+                underConstructionBackground: "//world-nuclear.org/WNA/media/WNA/Furniture/General/iconConstruction.svg",
+                reactorPageURLTemplate: "//www.world-nuclear.org/reactor/default.aspx/{reactor_name}",
+                countryPageURLTemplate: "//www.world-nuclear.org/country/default.aspx/{country_name}",
+                searchPageURL : "//www.world-nuclear.org/information-library/facts-and-figures/reactor-database-data/reactor-database-search.aspx",
+                reactor_search_url: "//reactordb.world-nuclear.org/query/reactor/_search",
+                operation_search_url: "//reactordb.world-nuclear.org/query/operation/_search"
             });
     </script>
 </asp:Content>
