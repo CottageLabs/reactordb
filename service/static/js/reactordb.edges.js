@@ -510,7 +510,7 @@ var reactordb = {
                 edges.numbers.newStory({
                     id: "operable_nuclear_capacity_story",
                     category: "panel",
-                    template: "{a} GWe in {b}",
+                    template: "{a} MWe in {b}",
                     calculate: reactordb._operableNuclearCapacityInResults({year: thisYear}),
                     renderer : edges.bs3.newStoryRenderer({
                         title: "<h3>Operable Nuclear Capacity</h3>"
@@ -535,7 +535,7 @@ var reactordb = {
                         yTickFormat: ",.0f",
                         showLegend: false,
                         xAxisLabel: "Year",
-                        yAxisLabel: "Operable Nuclear Capacity (GWe)",
+                        yAxisLabel: "Operable Nuclear Capacity (MWe)",
                         marginLeft: 80
                     })
                 })
@@ -1460,7 +1460,7 @@ var reactordb = {
                 edges.numbers.newStory({
                     id: "operable_nuclear_capacity_story",
                     category: "panel",
-                    template: "{a} GWe in {b}",
+                    template: "{a} MWe in {b}",
                     calculate: reactordb._operableNuclearCapacityInResults({year: thisYear}),
                     renderer : edges.bs3.newStoryRenderer({
                         title: "<h3>Operable Nuclear Capacity</h3>"
@@ -1476,7 +1476,7 @@ var reactordb = {
                         yTickFormat : ",.0f",
                         showLegend: false,
                         xAxisLabel: "Year",
-                        yAxisLabel: "Operable Nuclear Capacity (GWe)",
+                        yAxisLabel: "Operable Nuclear Capacity (MWe)",
                         marginLeft: 80
                     })
                 }),
