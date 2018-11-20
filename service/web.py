@@ -199,6 +199,10 @@ def preview_country(country_id=None):
 def preview_generic():
     return render_template("preview_generic.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"))
 
+@app.route("/preview_widget")
+def preview_widget():
+    return render_template("preview_widget.html")
+
 #######################################################
 
 

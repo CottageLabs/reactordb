@@ -30,7 +30,8 @@ jQuery(document).ready(function($) {
     reactordb.makeSearch({
         index: "preview_reactor",
         reactor_base_url: BASE_URL + "/preview_reactor/",
-        genericPageURLTemplate: "/preview_generic?ref=search&source={query}"
+        genericPageURLTemplate: "/preview_generic?ref=search&source={query}",
+        widgetPageURLTemplate: "/preview_widget?source={query}"
     });
 
 });
