@@ -1,0 +1,33 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reactordb.onlydeps.framework.css') }}">
+</head>
+
+<body>
+
+<p>some preliminary text</p>
+
+<!-- this is the embed snippet, it appears in the main body of the page -->
+<div id="mywidget"></div>
+<script type="text/javascript">
+    var RDB_WIDGET_CONFIG = {
+        id: "mywidget",
+        include: "/embed.html",
+        // base: "//reactordb.world-nuclear.org"
+        base : "",
+        type: "highlight",
+        query: {"query":{"filtered":{"filter":{"bool":{"must":[{"terms":{"reactor.process.exact":["BWR"]}}]}},"query":{"match_all":{}}}}}
+    };
+</script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/embed.js') }}"></script>
+
+<p>some following text</p>
+
+<!-- the base javascript includes happen at the end -->
+<script type="text/javascript" src="/static/vendor/edges/vendor/jquery-1.11.1/jquery-1.11.1.js"></script>
+<script type="text/javascript" src="/static/vendor/edges/vendor/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,22 @@
+.rdbwidgets-editor-control-panel label {
+    margin-right: 10px;
+}
+
+.rdbwidgets-editor-control-panel .form-control {
+    margin-right: 15px;
+    margin-bottom: 10px;
+}
+
+.rdbwidgets-control-panel-combo {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #cccccc;
+    border-top: 1px dashed #cccccc;
+}
+
+.rdbwidgets-preview-container {
+    border: 1px dashed #cccccc;
+    padding: 10px;
+    border-radius: 5px;
+}

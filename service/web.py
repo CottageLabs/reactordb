@@ -156,9 +156,18 @@ def docs():
 
 @app.route("/embed.html")
 def embed():
-    resp = make_response(render_template("embed.html"))
+    resp = make_response(render_template("embed.html", id=request.values.get("id"), base=request.values.get("base")))
     resp.headers["Access-Control-Allow-Origin"] = "*"
     return resp
+
+
+######################################################
+## The widget demo page
+
+@app.route("/widget_demo")
+def widget_demo():
+    return render_template("widget.html")
+
 
 ######################################################
 ## All the preview pages
