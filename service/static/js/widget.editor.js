@@ -431,7 +431,8 @@ var rdbwidgets = {
                         "reactor.model" : "Model"
                     },
                     renderer : edges.bs3.newSelectedFiltersRenderer({
-                        showSearchString: true
+                        showSearchString: true,
+                        allowRemove: false
                     })
                 }),
                 rdbwidgets.newControlPanel({
@@ -446,11 +447,6 @@ var rdbwidgets = {
                     base: base,
                     include: include,
                     renderer : rdbwidgets.newWidgetPreviewRenderer()
-                }),
-                rdbwidgets.newEmbedSnippet({
-                    id: "snippet",
-                    category: "snippet",
-                    renderer : rdbwidgets.newEmbedSnippetRenderer()
                 })
             ]
         });
@@ -495,12 +491,6 @@ var rdbwidgets = {
             var preview = edge.category("preview");
             for (var i = 0; i < preview.length; i++) {
                 frag += '<div class="row"><div class="col-md-12"><div class="' + previewClass + '"><div id="' + preview[i].id + '"></div></div></div></div>';
-            }
-
-            // code snippet
-            var snippet = edge.category("snippet");
-            for (var i = 0; i < preview.length; i++) {
-                frag += '<div class="row"><div class="col-md-12"><div class="' + snippetClass + '"><div id="' + snippet[i].id + '"></div></div></div></div>';
             }
 
             // close off all the big containers and return
@@ -721,7 +711,7 @@ var rdbwidgets = {
                 id = name;
             }
 
-            var button = '<button class="btn btn-info form-control" id="' + id + '">' + label + '</button>';
+            var button = '<button class="btn btn-info form-control" id="' + id + '" disabled>' + label + '</button>';
             return button;
         };
 
@@ -996,38 +986,41 @@ var rdbwidgets = {
         this.namespace = "rdbwidgets-preview";
 
         this.draw = function() {
-            var containerClass = edges.css_classes(this.namespace, "container", this);
+            var previewContainerClass = edges.css_classes(this.namespace, "container", this);
 
-            if (Object.keys(this.component.config).length === 0) {
+            var nopreview = Object.keys(this.component.config).length === 0;
+
+            // if there's no config, don't show the widget
+            if (nopreview) {
                 var noWidgetClass = edges.css_classes(this.namespace, "no-widget", this);
-                var frag = '<div class="' + containerClass + '"><div class="' + noWidgetClass + '">No Preview Available Yet</div></div>';
+                var frag = '<div class="' + previewContainerClass + '"><div class="' + noWidgetClass + '">No Preview Available Yet</div></div>';
                 this.component.context.html(frag);
-            } else {
-                var frag = '<div class="' + containerClass + '">\
-                    <div id="' + this.component.widget_id + '">\
-                        <div id="' + this.component.widget_id + '-inner">Preview will be displayed here when available</div>\
-                    </div>\
-                    </div>';
-                this.component.context.html(frag);
-                widget.init(this.component.config);
+                return;
             }
+
+            var frag = '<div class="' + previewContainerClass + '">\
+                <div id="' + this.component.widget_id + '">\
+                    <div id="' + this.component.widget_id + '-inner">Preview will be displayed here when available</div>\
+                </div>\
+                </div>';
+
+            var snippetContainerClass = edges.css_classes(this.namespace, "snippet", this);
+            frag += '<div class="' + snippetContainerClass + '">Use the following code to embed this in a web page: <pre>' + this._embedSnippet() + '</pre></div>';
+
+            this.component.context.html(frag);
+            widget.init(this.component.config);
+
         };
-    },
 
-    newEmbedSnippet : function(params) {
-        return edges.instantiate(rdbwidgets.EmbedSnippet, params, edges.newComponent);
-    },
-    EmbedSnippet : function(params) {
-        this.synchronise = function() {};
-    },
+        this._embedSnippet = function() {
+            var div ='<div id="' + this.component.widget_id + '"></div>\n';
 
-    newEmbedSnippetRenderer : function(params) {
-        return edges.instantiate(rdbwidgets.EmbedSnippetRenderer, params, edges.newRenderer);
-    },
-    EmbedSnippetRenderer : function(params) {
+            var settings = '<script type="text/javascript">\nvar RDB_WIDGET_CONFIG = ' + JSON.stringify(this.component.config, null, 2) + '\n</script>\n';
+            var include = '<script type="text/javascript" src="embed.js"></script>';
 
-        this.namespace = "rdbwidgets-snippet";
-
-        this.draw = function() {};
+            var snippet = div + settings + include;
+            snippet = edges.escapeHtml(snippet);
+            return snippet;
+        };
     }
 };

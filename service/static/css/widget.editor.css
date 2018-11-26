@@ -10,7 +10,7 @@
 .rdbwidgets-control-panel-combo {
     margin-top: 10px;
     margin-bottom: 10px;
-    padding-bottom: 10px;
+    padding: 10px;
     border-bottom: 1px dashed #cccccc;
     border-top: 1px dashed #cccccc;
 }
@@ -19,4 +19,10 @@
     border: 1px dashed #cccccc;
     padding: 10px;
     border-radius: 5px;
+    margin-top: 50px;
 }
+
+.rdbwidgets-preview-snippet {
+    margin-top: 50px;
+}
+
