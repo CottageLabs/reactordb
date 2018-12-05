@@ -9,6 +9,8 @@
 <p>some preliminary text</p>
 
 <!-- this is the embed snippet, it appears in the main body of the page -->
+
+<!--
 <div id="mywidget"></div>
 <script type="text/javascript">
     var RDB_WIDGET_CONFIG = {
@@ -18,6 +20,21 @@
         base : "",
         type: "highlight",
         query: {"query":{"filtered":{"filter":{"bool":{"must":[{"terms":{"reactor.process.exact":["BWR"]}}]}},"query":{"match_all":{}}}}}
+    };
+</script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/embed.js') }}"></script>
+-->
+
+<div id="mywidget" style="height: 300px"></div>
+<script type="text/javascript">
+    var RDB_WIDGET_CONFIG = {
+        id: "mywidget",
+        include: "/embed.html",
+        // base: "//reactordb.world-nuclear.org"
+        base : "",
+        type: "chart_histogram",
+        query: {"query":{"filtered":{"filter":{"bool":{"must":[{"terms":{"reactor.process.exact":["BWR"]}}]}},"query":{"match_all":{}}}}},
+        settings: {start: "1970", end: "2018", value: "annual_time_online"}
     };
 </script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/embed.js') }}"></script>

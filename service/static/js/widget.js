@@ -1,52 +1,33 @@
 var widget = {
     activeEdge : false,
 
-    types : ["highlight"],
+    types : ["highlight", "chart_histogram"],
 
     init : function(params) {
-        var current_domain = document.location.host;
-        var current_scheme = window.location.protocol;
-
-        var selector = "#" + params.id + "-inner";
+        params.selector = "#" + params.id + "-inner";
         var type = params.type;
-
-        var index = params.index || "reactor";
-        var search_url = params.search_url || current_scheme + "//" + current_domain + "/query/" + index + "/_search";
 
         if ($.inArray(type, widget.types) === -1) {
             return false;
         }
 
-        var openingQuery = false;
-        var components = [];
-        var template = false;
         if (type === "highlight") {
-            var info = widget.highlight(params);
-            components = info.components;
-            openingQuery = info.openingQuery;
-            template = info.template;
+            widget.activeEdge = widget.highlight(params);
+        } else if (type == "chart_histogram") {
+            widget.activeEdge = widget.chartHistogram(params);
         }
-
-        var e = edges.newEdge({
-            selector: selector,
-            template: template,
-            search_url: search_url,
-            manageUrl : false,
-            openingQuery: openingQuery,
-            components : components
-        });
-
-        widget.activeEdge = e;
 
         return true;
     },
 
     newSingleComponentTemplate : function(params) {
-        return edges.instantiate(widget.WidgetTemplate, params, edges.newTemplate);
+        return edges.instantiate(widget.SingleComponentTemplate, params, edges.newTemplate);
     },
     SingleComponentTemplate : function(params) {
 
         this.namespace = "widget-single";
+
+        this.height = params.height || false;
 
         this.draw = function(edge) {
             this.edge = edge;
@@ -54,9 +35,16 @@ var widget = {
             // the classes we're going to need
             var containerClass = edges.css_classes(this.namespace, "container");
 
+            var panel = this.edge.category("panel");
+
+            var style = "";
+            if (this.height) {
+                style = ' style="height: ' + this.height + 'px" ';
+            }
+
             // start building the page template
             var frag = '<div class="' + containerClass + '"><div class="row">';
-            frag += '<div class="col-md-12"><div id="thewidget"></div></div></div></div>';
+            frag += '<div class="col-md-12"><div id="' + panel[0].id + '" ' + style + '></div></div></div></div>';
 
             edge.context.html(frag);
         };
@@ -107,6 +95,8 @@ var widget = {
     },
 
     highlight : function(params) {
+        var selector = params.selector;
+
         var reactorsBackground = params.base + "/static/images/iconReactor.svg";
         var underConstructionBackground = params.base + "/static/images/iconConstruction.svg";
         var shutdownBackground = params.base + "/static/images/iconShutdown.svg";
@@ -122,7 +112,7 @@ var widget = {
 
         components.push(
             edges.numbers.newImportantNumbers({
-                id: "operable_reactors_count",
+                id: "operable_reactors_count_" + params.id,
                 category: "big-number",
                 calculate: widget._reactorStatusCount({status: "Operable"}),
                 renderer: edges.bs3.newImportantNumbersRenderer({
@@ -140,7 +130,7 @@ var widget = {
                 })
             }),
             edges.numbers.newImportantNumbers({
-                id: "reactors_under_construction_count",
+                id: "reactors_under_construction_count_" + params.id,
                 category: "big-number",
                 calculate: widget._reactorStatusCount({status: "Under Construction"}),
                 renderer: edges.bs3.newImportantNumbersRenderer({
@@ -158,7 +148,7 @@ var widget = {
                 })
             }),
             edges.numbers.newImportantNumbers({
-                id: "reactors_shutdown_count",
+                id: "reactors_shutdown_count_" + params.id,
                 category: "big-number",
                 calculate: widget._reactorStatusCount({status: "Permanent Shutdown"}),
                 renderer: edges.bs3.newImportantNumbersRenderer({
@@ -177,7 +167,57 @@ var widget = {
             })
         );
 
-        return {components: components, openingQuery: openingQuery, template: widget.newHighlightTemplate()};
+        var search_url = params.base + "/query/reactor/_search";
+        return edges.newEdge({
+            selector: selector,
+            template: widget.newHighlightTemplate(),
+            search_url: search_url,
+            manageUrl : false,
+            openingQuery: openingQuery,
+            components : components
+        });
+    },
+
+    chartHistogram : function(params) {
+        var selector = params.selector;
+
+        if (!params.hasOwnProperty("settings")) {
+            return;
+        }
+        if (!params.settings.hasOwnProperty("start") ||
+                !params.settings.hasOwnProperty("end") ||
+                !params.settings.hasOwnProperty("value")) {
+            return false;
+        }
+
+        var openingQuery = es.newQuery({raw: params.query});
+        openingQuery.size = 10000;
+        var components = [
+            edges.newMultibar({
+                id: "chart_histogram_" + params.id,
+                category: "panel",
+                dataFunction: widget._dataSeriesFromHistogram({seriesName: params.settings.label}),
+                renderer : edges.nvd3.newMultibarRenderer({
+                    xTickFormat: ".0f",
+                    barColor : ["#1e9dd8"],
+                    yTickFormat : ",.0f",
+                    showLegend: false,
+                    xAxisLabel: "Year",
+                    yAxisLabel: params.settings.label,
+                    marginLeft: 80
+                })
+            })
+        ];
+
+        var search_url = params.base + "/custom/chart_histogram/_search?start=" + params.settings.start + "&end=" + params.settings.end + "&field=" + params.settings.value;
+        return edges.newEdge({
+            selector: selector,
+            template: widget.newSingleComponentTemplate({height: params.settings.height || false}),
+            search_url: search_url,
+            manageUrl : false,
+            openingQuery: openingQuery,
+            components : components
+        });
     },
 
     _reactorStatusCount : function(params) {
@@ -201,4 +241,21 @@ var widget = {
             return {main: main, second: second};
         }
     },
+
+    _dataSeriesFromHistogram : function(params) {
+        var seriesName = params.seriesName;
+
+        return function(component) {
+            var results = component.edge.result;
+            var buckets = results.data.aggregations.chart_histogram.buckets;
+            var values = [];
+            for (var i = 0; i < buckets.length; i++) {
+                var bucket = buckets[i];
+                var gen = bucket.summation.value;
+                values.push({label: bucket.key, value: gen});
+            }
+
+            return [{key: seriesName, values: values}]
+        }
+    }
 };

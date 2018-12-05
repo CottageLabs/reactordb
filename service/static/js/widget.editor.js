@@ -168,6 +168,34 @@ var rdbwidgets = {
             return list;
         },
 
+        defaultOperationsFieldName : function(params) {
+            var ref = params.ref;
+
+            return function(params) {
+                if (!params) { params = {} }
+                var currentData = params.currentData;
+                var previousData = params.previousData;
+                var idx = params.idx;
+
+                if (!currentData) {
+                    return "";
+                }
+
+                // get the value of the field we are dependent on
+                var reactorField = rdbwidgets.data._getFieldValue({data: currentData, ref: ref, idx: idx});
+
+                var raw = rdbwidgets.data.raw.operations;
+                for (var i = 0; i < raw.length; i++) {
+                    if (raw[i].id === reactorField) {
+                        return raw[i].display;
+                    }
+                }
+
+                return "unknown";
+            }
+        },
+
+
         _getFieldValue : function(params) {
             var ref = params.ref;
             var idx = params.idx;
@@ -344,7 +372,7 @@ var rdbwidgets = {
             },
             {
                 "name": "Chart : Histogram",
-                "id" : "chart_historgram",
+                "id" : "chart_histogram",
                 "fields": [
                     {
                         "name": "start",
@@ -362,7 +390,20 @@ var rdbwidgets = {
                         "name": "value",
                         "type": "select",
                         "source": rdbwidgets.data.numericOperationsFields,
-                        "label" : "Value Field"
+                        "label" : "Value Field",
+                        "dependents" : ["label"]
+                    },
+                    {
+                        "name" : "label",
+                        "type" : "text",
+                        "default" : rdbwidgets.data.defaultOperationsFieldName({ref : "value"}),
+                        "label" : "Name"
+                    },
+                    {
+                        "name" : "height",
+                        "type" : "text",
+                        "default" : "300",
+                        "label" : "Widget Height (pixels)"
                     }
                 ]
             },
@@ -873,6 +914,7 @@ var rdbwidgets = {
         this.inputChanged = function(element) {
             this.readForm();
             this._updateDependents(element);
+            this.readForm();
             this.component.cycle();
         };
 
@@ -965,7 +1007,8 @@ var rdbwidgets = {
                 type: this.edge.resources.control.type,
                 query: this.edge.currentQuery.objectify(),
                 base: this.base,
-                include: this.include
+                include: this.include,
+                settings: this.edge.resources.control.settings
             }
         };
 

@@ -337,6 +337,95 @@ def _do_custom_operation_query(reactor_index, operation_index):
     return resp
 
 
+@app.route("/custom/chart_histogram/_search")
+@jsonp
+def chart_histogram():
+    return _do_chart_histogram("reactor", "operation")
+
+@app.route("/custom/preview_chart_histogram/_search")
+@jsonp
+def chart_histogram():
+    return _do_chart_histogram("preview_reactor", "preview_operation")
+
+def _do_chart_histogram(reactor_index, operation_index):
+    if "source" not in request.values:
+        abort(400)
+
+    start = request.values.get("start")
+    if start is None:
+        abort(400)
+    start = int(start)
+
+    end = request.values.get("end")
+    if end is None:
+        abort(400)
+    end = int(end)
+
+    field = request.values.get("field")
+    if field is None:
+        abort(400)
+
+    qrs = app.config.get("QUERY_ROUTE", {})
+    reactor_cfg = qrs.get("query", {}).get(reactor_index)
+    operation_cfg = qrs.get("query", {}).get(operation_index)
+
+    if reactor_cfg is None or operation_cfg is None:
+        abort(400)
+
+    reactor_dao_name = reactor_cfg.get("dao")
+    operation_dao_name = operation_cfg.get("dao")
+
+    reactor_klass = plugin.load_class(reactor_dao_name)
+    if reactor_klass is None:
+        abort(404)
+
+    operation_klass = plugin.load_class(operation_dao_name)
+    if operation_klass is None:
+        abort(404)
+
+    reactor_query = Query(json.loads(urllib2.unquote(request.values['source'])))
+    reactor_res = reactor_klass.query(q=reactor_query.as_dict())
+    reactor_ids = [
+        res["_source"]["id"]
+        for res in reactor_res.get("hits", {}).get("hits", [])
+        if "_source" in res and "id" in res["_source"]
+    ]
+
+    operation_query = {
+        "query" : {
+            "filtered" : {
+                "filter" : {
+                    "bool" : {
+                        "must" : [
+                            {"range" : {"year" : {"lte" : end, "gte" : start}}},
+                            {"terms" : {"reactor.exact" : reactor_ids}}
+                        ]
+                    }
+                },
+                "query" : {"match_all" : {}}
+            }
+        },
+        "size" : 0,
+        "aggs" : {
+            "chart_histogram" : {
+                "histogram" : {
+                    "field" : "year",
+                    "interval" : 1,
+                },
+                "aggs":{
+                    "summation" : {
+                        "sum" : {"field" : field}
+                    }
+                }
+            }
+        }
+    }
+
+    operation_res = operation_klass.query(q=operation_query)
+    resp = make_response(json.dumps(operation_res))
+    resp.mimetype = "application/json"
+    return resp
+
 
 #######################################################
 
