@@ -146,7 +146,7 @@ def upload():
             # Start multiprocess
             Process(target=import_reactordb, args=(master_path, pris_path, history_path)).start()
 
-    return render_template("upload_csv.html", msg=msg, valid_file_master=valid_file_master, \
+    return render_template("upload_csv.html", msg=msg, valid_file_master=valid_file_master,
                            valid_file_pris=valid_file_pris, valid_file_history=valid_file_history)
 
 
@@ -154,9 +154,18 @@ def upload():
 def docs():
     return render_template("docs.html")
 
+@app.route("/embed.js")
+def embed_js():
+    resp = make_response(render_template("embed.js", id=request.values.get("id")))
+    resp.mimetype = "text/javascript"
+    return resp
+
 @app.route("/embed.html")
 def embed():
-    resp = make_response(render_template("embed.html", id=request.values.get("id"), base=request.values.get("base")))
+    resp = make_response(render_template("embed.html",
+                                         id=request.values.get("id"),
+                                         base=request.values.get("base"),
+                                         assets=request.values.get("assets")))
     resp.headers["Access-Control-Allow-Origin"] = "*"
     return resp
 

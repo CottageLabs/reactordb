@@ -4,6 +4,7 @@ var widget = {
     types : ["highlight", "chart_histogram"],
 
     init : function(params) {
+        // alert(params.id);
         params.selector = "#" + params.id + "-inner";
         var type = params.type;
 
@@ -12,12 +13,12 @@ var widget = {
         }
 
         if (type === "highlight") {
-            widget.activeEdge = widget.highlight(params);
+            return widget.highlight(params);
         } else if (type == "chart_histogram") {
-            widget.activeEdge = widget.chartHistogram(params);
+            return widget.chartHistogram(params);
         }
 
-        return true;
+        return false;
     },
 
     newSingleComponentTemplate : function(params) {
@@ -56,6 +57,7 @@ var widget = {
     HighlightTemplate : function(params) {
 
         this.namespace = "widget-highlight";
+        this.id = params.id;
 
         this.draw = function(edge) {
             this.edge = edge;
@@ -67,21 +69,21 @@ var widget = {
                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">\
                     <div class="row">\
                         <div class="col-lg-8 col-lg-offset-4 col-md-8 col-md-offset-4 col-sm-8 col-sm-offset-4 col-xs-10 col-xs-offset-1">\
-                            <div id="operable_reactors_count"></div>\
+                            <div id="operable_reactors_count_' + this.id + '"></div>\
                         </div>\
                     </div>\
                 </div>\
                 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">\
                     <div class="row">\
                         <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-10 col-xs-offset-1">\
-                            <div id="reactors_under_construction_count"></div>\
+                            <div id="reactors_under_construction_count_' + this.id + '"></div>\
                         </div>\
                     </div>\
                 </div>\
                 <div class="col-lg-4 col-lg-offset-0 col-md-4 col-md-offset-0 col-sm-4 col-sm-offset-0 col-xs-10 col-xs-offset-1">\
                     <div class="row">\
                         <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">\
-                            <div id="reactors_shutdown_count"></div>\
+                            <div id="reactors_shutdown_count_' + this.id + '"></div>\
                         </div>\
                     </div>\
                 </div>\
@@ -170,7 +172,7 @@ var widget = {
         var search_url = params.base + "/query/reactor/_search";
         return edges.newEdge({
             selector: selector,
-            template: widget.newHighlightTemplate(),
+            template: widget.newHighlightTemplate({id: params.id}),
             search_url: search_url,
             manageUrl : false,
             openingQuery: openingQuery,

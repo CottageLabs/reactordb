@@ -1,3 +1,5 @@
+{% if assets == "true" %}
+
 <!-- CSS - this goes in first -->
 
 <!--
@@ -13,12 +15,15 @@ this is just bootstrap, it should be included in the base site template already
 <!-- reactor database and edges components -->
 <link rel="stylesheet" href="{{ base }}/static/css/reactordb.nodeps.full.css">
 
+{% endif %}
 
 <!-- HTML, must come after CSS and before JavaScript -->
 
 <!-- the div into which we will insert the widget -->
 <div id="{{ id }}-inner"></div>
 
+
+{% if assets == "true" %}
 
 <!-- JAVASCRIPT -->
 
@@ -31,12 +36,19 @@ this is just bootstrap, it should be included in the base site template already
 <!-- widget js (compile this in with the relevant dependencies later) -->
 <script type="text/javascript" src="{{ base }}/static/js/widget.js"></script>
 
+{% endif %}
+
 <!-- activate the widget in the page -->
 <script type="text/javascript">
-var waitForReactorDB = setInterval(function () {
+var waitForReactorDB{{ id }} = setInterval(function () {
     if (typeof reactordb != 'undefined' && typeof widget != "undefined") {
-        widget.init(RDB_WIDGET_CONFIG);
-        clearInterval(waitForReactorDB);
+        var e = widget.init(RDB_WIDGET_CONFIG_{{ id }});
+        var id = "{{ id }}";
+        var idx = RDB_WIDGET_REGISTRY.pending.indexOf(id);
+        RDB_WIDGET_REGISTRY.pending.splice(idx, 1);
+        RDB_WIDGET_REGISTRY.widgets[id] = e;
+
+        clearInterval(waitForReactorDB{{ id }});
     }
-}, 10);
+}, 30);
 </script>
