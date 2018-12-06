@@ -81,7 +81,7 @@ var rdbwidgets = {
                     }
                 }
 
-                return "unknown";
+                return "";
             }
         },
 
@@ -191,10 +191,9 @@ var rdbwidgets = {
                     }
                 }
 
-                return "unknown";
+                return "";
             }
         },
-
 
         _getFieldValue : function(params) {
             var ref = params.ref;
@@ -206,7 +205,7 @@ var rdbwidgets = {
             var node = data[bits[0]];
             if (bits.length > 1) {
                 if (idx !== false) {
-                    val = node[idx - 1][bits[1]];
+                    val = node[idx][bits[1]];
                 } else {
                     val = node[bits[1]];
                 }
@@ -273,7 +272,8 @@ var rdbwidgets = {
                                 "label" : "Value Formatting"
                             }
                         ],
-                        "repeatable": true
+                        "repeatable": true,
+                        "limit" : 10
                     },
                     {
                         "name": "order",
@@ -290,8 +290,8 @@ var rdbwidgets = {
                                 "name": "dir",
                                 "type": "select",
                                 "source": [
-                                    {val: "ascending", display: "ascending"},
-                                    {val: "descending", display: "descending"}
+                                    {val: "asc", display: "ascending"},
+                                    {val: "desc", display: "descending"}
                                 ],
                                 "label" : "Sort Direction"
                             }
@@ -354,7 +354,8 @@ var rdbwidgets = {
                                 "label" : "Display Name"
                             }
                         ],
-                        "repeatable": true
+                        "repeatable": true,
+                        "limit" : 10
                     },
                     {
                         "name": "order",
@@ -665,7 +666,7 @@ var rdbwidgets = {
 
             var source = options.map(function(x) { return {val: x.id, display: x.name} });
             source.unshift({val: "", display: "Select a Widget Type"});
-            frag += this._select({id: typeSelectId, source: source, name: "widget-type", label : "Widget Type", layout: "inline"});
+            frag += this._select({id: typeSelectId, source: source, name: "widget-type", label : "Widget Type", layout: "inline", read: false});
             frag += '<div id="' + controlsId + '"></div>';
             frag += '</form></div>';
 
@@ -675,119 +676,6 @@ var rdbwidgets = {
             edges.on(typeSelectIdSelector, "change", this, "typeChanged");
 
             this.drawn = true;
-        };
-
-        this._select = function(params) {
-            var source = params.source;
-            var name = params.name;
-            var label = params.label;
-            var id = params.id;
-            var layout = params.layout || "regular";
-
-            if (!id) {
-                id = name;
-            }
-
-            if (typeof(source) === 'function') {
-                source = source();
-            }
-            var options = "";
-            for (var i = 0; i < source.length; i++) {
-                options += '<option value="' + source[i].val + '">' + source[i].display + '</option>';
-            }
-            var select = '<select id="' + id + '" name="' + name + '" class="form-control">' + options + '</select>';
-
-            var labelFrag = '<label for="' + id + '">' + label + '</label>';
-            var frag = '<div class="form-group">' + labelFrag + select + '</div>';
-
-            if (layout === "inline") {
-                frag = '<div class="form-inline">' + frag + '</div>'
-            }
-
-            return frag;
-        };
-
-        this._options = function(params) {
-            var source = params.source;
-
-            var options = "";
-            for (var i = 0; i < source.length; i++) {
-                options += '<option value="' + source[i].val + '">' + source[i].display + '</option>';
-            }
-            return options;
-        };
-
-        this._text = function(params) {
-            var defaultValue = params.default;
-            var name = params.name;
-            var label = params.label;
-            var id = params.id;
-            var layout = params.layout || "regular";
-
-            if (!id) {
-                id = name;
-            }
-
-            if (typeof(defaultValue) === 'function') {
-                defaultValue = defaultValue();
-            }
-
-            var input = '<input name="' + name + '" id= "' + id + '" type="text" value="' + defaultValue + '" class="form-control">';
-            var labelFrag = '<label for="' + id + '">' + label + '</label>';
-            var frag = '<div class="form-group">' + labelFrag + input + '</div>';
-
-            if (layout === "inline") {
-                frag = '<div class="form-inline">' + frag + '</div>'
-            }
-
-            return frag;
-        };
-
-        this._button = function(params) {
-            var name = params.name;
-            var label = params.label;
-            var id = params.id;
-
-            if (!id) {
-                id = name;
-            }
-
-            var button = '<button class="btn btn-info form-control" id="' + id + '" disabled>' + label + '</button>';
-            return button;
-        };
-
-        this._combo = function(params) {
-            var label = params.label;
-            var subFields = params.subfields;
-            var name = params.name;
-            var repeatable = params.repeatable || false;
-
-            var prepped = [];
-            for (var i = 0; i < subFields.length; i++) {
-                var subField = subFields[i];
-                subField = $.extend({}, subField);
-                subField.name = name + "__" + subField.name;
-                if (repeatable) {
-                    subField.name += "__1";
-                }
-                prepped.push(subField);
-            }
-
-            var repeatFrag = "";
-            if (repeatable) {
-                repeatFrag = this._button({name: name + "__add", label: "Add More"});
-                prepped.push({
-                    type: "button",
-                    name: name + "__remove__1",
-                    label: "Remove"
-                });
-            }
-
-            var controls = this._formControls({fieldSet: prepped, layout: "inline"});
-
-            var comboClass = edges.css_classes(this.namespace, "combo", this);
-            var frag = '<div class="' + comboClass + '"><strong>' + label + '</strong><br>' + controls + repeatFrag + "</div>";
-            return frag;
         };
 
         this.typeChanged = function() {
@@ -818,41 +706,551 @@ var rdbwidgets = {
             $(controlsSelector).html(frag);
 
             this.readForm();
-            var inputs = this.component.context.find(controlsSelector).find(":input");
-            edges.on(inputs, "change", this, "inputChanged");
+            this.bounceFormWatchers();
+            this.setRepeatedElements();
 
             this.component.cycle();
         };
 
-        this._formControls = function(params) {
-            var fieldSet = params.fieldSet;
-            var layout = params.layout || "regular";
-
-            var frag = "";
-            for (var i = 0; i < fieldSet.length; i++) {
-                var fieldDef = fieldSet[i];
-                fieldDef = $.extend({}, fieldDef);
-                fieldDef.layout = layout === "regular" ? "inline" : "regular";
-                var fieldType = fieldDef.type;
-
-                if (fieldType === "combo") {
-                    frag += this._combo(fieldDef);
-                } else if (fieldType === "select") {
-                    frag += this._select(fieldDef);
-                } else if (fieldType === "text") {
-                    frag += this._text(fieldDef);
-                } else if (fieldType === "button") {
-                    frag += this._button(fieldDef);
-                }
-            }
-
-            if (layout === "inline") {
-                frag = '<div class="form-inline">' + frag + '</div>';
-            }
-            return frag;
+        this.bounceFormWatchers = function(params) {
+            var controlsSelector = edges.css_id_selector(this.namespace, "controls", this);
+            var inputs = this.component.context.find(controlsSelector).find(":input");
+            this.component.context.find(controlsSelector).unbind("change.Input");
+            edges.on(inputs, "change.Input", this, "inputChanged");
         };
 
         this.readForm = function(params) {
+            var record = {};
+            var lists = {};
+
+            var that = this;
+            this.component.context.find("[data-read=true]").each(function () {
+                var element = $(this);
+
+                var type = element.attr("data-read-type");
+                var tag = element.prop("tagName");
+                var val = element.val();
+                var separator = element.attr("data-read-separator");
+                var valSeparator = element.attr("data-read-value-separator");
+                var ifChecked = element.attr("data-read-if-checked");
+                var readIfNot = element.attr("data-read-if-not");
+                var readIfVal = element.attr("data-read-if-val");
+
+                // don't read the value if it is conditional on another field being checked
+                if (ifChecked) {
+                    var checkCount = 0;
+                    var selectors = ifChecked.split(" ");
+                    for (var i = 0; i < selectors.length; i++) {
+                        if ($(selectors[i]).is(":checked")) {
+                            checkCount++;
+                        }
+                    }
+                    if (checkCount < selectors.length) {
+                        return;
+                    }
+                }
+
+                // don't read the field if the value is in the list of values not to read
+                if (readIfNot) {
+                    // strip the leading and tailing quotes
+                    readIfNot = readIfNot.substring(1, readIfNot.length - 1);
+
+                    // split the values out
+                    var vals = readIfNot.split("' '");
+
+                    // don't read this field, if the value is in the list
+                    for (var i = 0; i < vals.length; i++) {
+                        if (vals[i] === val) {
+                            return;
+                        }
+                    }
+                }
+
+                // only read this field if some other field value is set as specified
+                if (readIfVal) {
+                    var rivbits = readIfVal.split(" ");
+                    var selector = rivbits.shift();
+                    var valueSection = rivbits.join(" ");
+                    var rivval = valueSection.substring(1, valueSection.length - 1);   // strip the quote marks
+                    if ($(selector).val() !== rivval) {
+                        return;
+                    }
+                }
+
+                var field = element.attr("data-read-field");
+                if (!field) {
+                    field = element.attr("name");
+                }
+                if (!field) {
+                    field = element.attr("id");
+                }
+
+                if (separator) {
+                    var bits = field.split(separator);
+                    field = bits.join(".");
+                }
+
+                if (tag === "INPUT") {
+                    var itype = element.attr("type");
+                    if (itype === "checkbox") {
+                        if (!$(this).is(':checked')) {
+                            return;
+                        }
+                        if (val === "true") {
+                            val = true;
+                        } else if (val === "false") {
+                            val = false;
+                        }
+                    } else if (itype === "radio") {
+                        if (!$(this).is(':checked')) {
+                            return;
+                        }
+                        if (val === "true") {
+                            val = true;
+                        } else if (val === "false") {
+                            val = false;
+                        }
+                    }
+                }
+
+                // don't store empty vals
+                if (val === "" || val === null) {
+                    return;
+                }
+
+                if (valSeparator) {
+                    val = val.split(valSeparator)
+                }
+
+                var subField = null;
+                if (type === "object-list") {
+                    var listField = element.attr("data-read-list-field");
+                    var indexRx = element.attr("data-read-index-pattern");
+                    var fieldRx = element.attr("data-read-field-pattern");
+
+                    var idx = field.match(indexRx)[1];
+                    subField = field.match(fieldRx)[1];
+                    field = listField;
+
+                    if (!lists[field]) {
+                        lists[field] = {};
+                    }
+                    if (!lists[field][idx]) {
+                        lists[field][idx] = {};
+                    }
+                }
+
+                if (type === "single") {
+                    that._setPath(record, field, val);
+                } else if (type === "object-list" && lists.hasOwnProperty(field) && lists[field].hasOwnProperty(idx)) {
+                    that._setPath(lists[field][idx], subField, val);
+                }
+            });
+
+
+            for (var field in lists) {
+                var lookupTable = {};
+                var indexes = [];
+
+                for (var idx in lists[field]) {
+                    var i = parseInt(idx);
+                    lookupTable[i] = idx;
+                    indexes.push(i);
+                }
+
+                indexes.sort();
+                var newList = [];
+                for (var i = 0; i < indexes.length; i++) {
+                    var idx = indexes[i];
+                    var original = lookupTable[idx];
+                    newList.push(lists[field][original]);
+                }
+
+                this._setPath(record, field, newList);
+            }
+
+            this.component.setCurrentData({data: record});
+        };
+
+        this.repeat = function(params) {
+            var button_selector = params.button_selector;
+            var list_selector = params.list_selector;
+            var entry_prefix = params.entry_prefix;
+            var enable_remove = params.enable_remove || false;
+            var remove_behaviour = params.remove_behaviour || "hide";
+            var remove_selector = params.remove_selector;
+            var remove_callback = params.remove_callback;
+            var limit = params.limit || false;
+
+            var source = "";
+            var first = true;
+            var max = 0;
+            var attributes = {};
+
+            var blocks = this.component.context.find(list_selector).children();
+            var count = blocks.length;
+            if (limit !== false && count >= limit) {
+                return 0;
+            }
+
+            blocks.each(function () {
+                var bits = $(this).attr("id").split("_");
+                var n = parseInt(bits[bits.length - 1]);
+                if (n > max) {
+                    max = n
+                }
+                if (first) {
+                    first = false;
+                    source = $(this).html();
+                    $(this).each(function () {
+                        $.each(this.attributes, function () {
+                            attributes[this.name] = this.value;
+                        });
+                    });
+                }
+            });
+
+            var nid = entry_prefix + "_" + (max + 1);
+            var attrs = "";
+            for (var key in attributes) {
+                if (key != "id") {
+                    attrs += key + "='" + attributes[key] + "'"
+                }
+            }
+            var ns = "<div id='" + nid + "' " + attrs + ">" + source + "</div>";
+
+            // append a new section with a new, higher number (and hide it)
+            this.component.context.find(list_selector).append(ns);
+
+            var that = this;
+            this.component.context.find("#" + nid).find(".repeatable-control").each(function () {
+                var name = $(this).attr("name");
+                var bits = name.split("-");
+                bits[1] = max + 1;
+                var newname = bits.join("-");
+
+                var el = $(this);
+                var itype = el.attr("type");
+                el.attr("name", newname)
+                    .attr("id", newname);
+                if (itype !== "checkbox" && itype !== "radio") {
+                    el.val("");
+                }
+
+                that.component.context.find("#" + nid).find("label[for=" + name + "]").attr("for", newname);
+            });
+
+            if (enable_remove) {
+                if (remove_behaviour === "hide") {
+                    this.component.context.find(remove_selector).show();
+                } else if (remove_behaviour === "disable") {
+                    this.component.context.find(remove_selector).removeAttr("disabled");
+                }
+                this.component.context.find(remove_selector).unbind("click")
+                    .click(function (event) {
+                        event.preventDefault();
+                        $(this).parents(".repeatable_container").remove();
+
+                        if (that.component.context.find(list_selector).children().size() == 1) {
+                            if (remove_behaviour === "hide") {
+                                that.component.context.find(remove_selector).hide();
+                            } else if (remove_behaviour === "disable") {
+                                that.component.context.find(remove_selector).attr("disabled", "disabled");
+                            }
+                        }
+                        that.component.context.find(button_selector).removeAttr("disabled");
+
+                        if (remove_callback) {remove_callback()}
+                        that.bounceFormWatchers();
+                    }
+                );
+            }
+
+            that.bounceFormWatchers();
+
+            if (limit !== false) {
+                return limit - (count + 1);
+            } else {
+                return -1;
+            }
+        };
+
+        this.setRepeatedElements = function(params) {
+            var fieldSet = this.component.getCurrentFieldSet();
+            for (var i = 0; i < fieldSet.length; i++) {
+                var fieldDef = fieldSet[i];
+                if (fieldDef.repeatable === true) {
+                    this.bindRepeatable({
+                        list_selector: "#" + fieldDef.name + "_list",
+                        entry_prefix: fieldDef.name,
+                        button_selector : "." + fieldDef.name + "__add",
+                        limit: fieldDef.limit || false,
+                        enable_remove: true,
+                        remove_selector: "." + fieldDef.name + "__remove",
+                        remove_behaviour: "hide"
+                    });
+                }
+            }
+        };
+
+        this.bindRepeatable = function (params) {
+            var list_selector = params.list_selector;
+            var entry_prefix = params.entry_prefix;
+            var button_selector = params.button_selector;
+            var limit = params.limit || false;
+            var enable_remove = params.enable_remove || false;
+            var remove_selector = params.remove_selector;
+            var remove_behaviour = params.remove_behaviour || "hide";
+
+            var before_callback = params.before_callback;
+            var more_callback = params.more_callback;
+            var remove_callback = params.remove_callback;
+
+            var that = this;
+            this.component.context.find(button_selector).click(function (event) {
+                event.preventDefault();
+
+                if (before_callback) { before_callback() }
+
+                var remaining = that.repeat({
+                    button_selector: button_selector,
+                    list_selector : list_selector,
+                    entry_prefix : entry_prefix,
+                    enable_remove : enable_remove,
+                    remove_behaviour: remove_behaviour,
+                    remove_selector : remove_selector,
+                    remove_callback : remove_callback,
+                    limit: limit
+                });
+
+                // each time it is used, re-bind it, as there may now be more
+                // than one "more" button
+                that.component.context.find(button_selector).unbind("click");
+                if (remaining === 0) {
+                    that.component.context.find(button_selector).attr("disabled", "disabled");
+                }
+                that.bindRepeatable(params);
+
+                if (more_callback) { more_callback() }
+            })
+        };
+
+        this.populateForm = function(params) {
+            var context = params.context;
+            var obj = params.obj;
+
+            var fields = Object.keys(obj);
+            for (var i = 0; i < fields.length; i++) {
+                var key = fields[i];
+                var value = obj[key];
+
+                if (depositForms.params.populators && depositForms.params.populators[key]) {
+                    depositForms.params.populators[key](value);
+
+                } else if (key === "files") {
+                    for (var j = 0; j < value.length; j++) {
+                        var fileEntry = value[j];
+                        var file = {
+                            name: fileEntry.file_name,
+                            type: fileEntry.file_mime_type,
+                            size: fileEntry.file_size
+                        };
+
+                        var id = depositForms.generateUUID();
+                        var container = depositForms._fu_make_container(id);
+
+                        var remember = {};
+                        if (depositForms.fu_params.restoreMemory) {
+                            remember = depositForms.fu_params.restoreMemory(fileEntry);
+                        }
+
+                        depositForms._fu_add_uploaded({
+                            file: file,
+                            container: container,
+                            remember: remember
+                        });
+                    }
+
+                    depositForms._announceFileSizeInfo({totalSizeLimit: depositForms.fu_params.totalSizeLimit});
+
+                } else if (depositForms._isPrimitiveNonBool(value)) {
+                    // ordinary key/value pair
+                    var el = depositForms._findFormElements({context: context, key: key});
+                    if (el) {
+                        depositForms._setVal({element: el, val: value});
+                        el.trigger("change");
+                    }
+
+                } else if (value === true || value === false) {
+                    // boolean key/value pair
+                    var el = depositForms._findFormElements({context: context, key: key});
+                    if (el) {
+                        var type = el.attr("type");
+                        if (!type) {
+                            continue;
+                        }
+                        type = type.toLowerCase();
+                        if (type === "checkbox") {
+                            if (value === true) {
+                                depositForms._setVal({element: el, val: "true"});
+                                el.trigger("change");
+                            }
+                        } else if (type === "radio") {
+                            for (var j = 0; j < el.length; j++) {
+                                var rel = $(el[j]);
+                                if (rel.attr("value") === "true" && value === true) {
+                                    depositForms._setVal({element: rel, val: "true"});
+                                    rel.trigger("change");
+                                } else if (rel.attr("value") === "false" && value === false) {
+                                    depositForms._setVal({element: rel, val: "false"});
+                                    rel.trigger("change");
+                                }
+                            }
+                        }
+                    }
+
+                } else if ($.isPlainObject(value) && !$.isArray(value)) {
+                    // a sub-object
+                    if (depositForms.params.populators && depositForms.params.populators[key]) {
+                        depositForms.params.populators[key](value);
+                    } else {
+                        var separator = "___";
+                        var innerContext = key + separator;
+                        depositForms.populateForm({
+                            context: innerContext,
+                            obj: value
+                        })
+                    }
+
+                } else if ($.isArray(value) && value.length > 0) {
+                    // an array
+                    if ($.isPlainObject(value[0])) {
+                        var innerContext = key + "___";
+                        var repeatButton = $("[data-repeat-for='" + key + "']");
+                        if (repeatButton.length > 0)
+                        {
+                            for (var j = 1; j < value.length; j++) {
+                                repeatButton.trigger("click");
+                            }
+                        }
+
+                        for (var j = 0; j < value.length; j++) {
+                            if (repeatButton.length > 0) {
+                                innerContext = key + "-" + String(j) + "-";
+                            }
+                            depositForms.populateForm({
+                                context : innerContext,
+                                obj: value[j]
+                            });
+                        }
+                    } else {
+                        var el = depositForms._findFormElements({context: context, key: key});
+                        if (el) {
+                            depositForms._setVal({element: el, val: value});
+                        }
+                    }
+                }
+            }
+        };
+
+        this._isPrimitiveNonBool = function(v) {
+            return !($.isPlainObject(v) || $.isArray(v) || v === false || v === true)
+        };
+
+        this._findFormElements = function(params) {
+            var context = params.context;
+            var field = params.key;
+            var container = $(depositForms.params.form_selector);
+
+            if (context) {
+                field = context + field;
+            }
+
+            var selectors = [
+                "input[name='" + field + "']",
+                "input[id='" + field + "']",
+                "textarea[name='" + field + "']",
+                "textarea[id='" + field + "']",
+                "select[name='" + field + "']",
+                "select[id='" + field + "']"
+            ];
+
+            var el = false;
+            for (var i = 0; i < selectors.length; i++) {
+                var jqel = $(selectors[i], container);
+                if (jqel.length > 0) {
+                    el = jqel;
+                    break;
+                }
+            }
+
+            return el;
+        };
+
+        this._setVal = function(params) {
+            var jqel = params.element;
+            var val = params.val;
+
+            // some properties we might be interested in
+            var tag = jqel.prop("tagName");
+            var type = jqel.attr("type");
+
+            var cattr = jqel.attr("class");
+            var classes = [];
+            if (cattr) {
+                classes = cattr.split(" ");
+            }
+            var isSelect2 = false;
+            for (var i = 0; i < classes.length; i++) {
+                if (classes[i].lastIndexOf("select2", 0) === 0) {
+                    isSelect2 = true;
+                }
+            }
+
+            // if this is a select2 select box, setting the val directly won't have the desired
+            // effect, and we want to use the select2 native method
+            if (tag && tag.toLowerCase() === "select" && isSelect2) {
+                jqel.select2("val", val);
+                return;
+            } else if (tag && tag.toLowerCase() === "input" && isSelect2) {
+                var sdata = [];
+                for (var i = 0; i < val.length; i++) {
+                    sdata.push({id: val[i], text: val[i]});
+                }
+                jqel.select2("data", sdata);
+                return;
+            }
+
+            // if this is a checkbox or radio, check it, and ensure that the value is set appropriately
+            if (type && (type.toLowerCase() === "checkbox" || type.toLowerCase() === "radio")) {
+                jqel.prop("checked", true);
+                jqel.attr("value", val);
+                return;
+            }
+
+            // finally, jquery's default value setter - will work for most form elements
+            jqel.val(val);
+        };
+
+        this._setPath = function(obj, path, value) {
+            var parts = path.split(".");
+            var context = obj;
+
+            for (var i = 0; i < parts.length; i++) {
+                var p = parts[i];
+
+                if (!context.hasOwnProperty(p) && i < parts.length - 1) {
+                    context[p] = {};
+                    context = context[p];
+                } else if (context.hasOwnProperty(p) && i < parts.length - 1) {
+                    context = context[p];
+                } else {
+                    context[p] = value;
+                }
+            }
+        };
+
+        this.readFormOld = function(params) {
             var controlsIdSelector = edges.css_id_selector(this.namespace, "controls", this);
             var controls = this.component.context.find(controlsIdSelector);
             var inputs = controls.find(":input");
@@ -918,20 +1316,247 @@ var rdbwidgets = {
             this.component.cycle();
         };
 
+        this._select = function(params) {
+            var source = params.source;
+            var name = params.name;
+            var label = params.label;
+            var id = params.id;
+            var layout = params.layout || "regular";
+            var read = edges.getParam(params.read, true);
+            var readType = edges.getParam(params.readType, "single");
+            var fieldSeparator = edges.getParam(params.fieldSeparator, false);
+            var repeatable = edges.getParam(params.repeatable, false);
+            var indexPattern = edges.getParam(params.indexPattern, false);
+            var listField = edges.getParam(params.listField, false);
+            var fieldPattern = edges.getParam(params.fieldPattern, false);
+
+            if (!id) {
+                id = name;
+            }
+
+            var readFrag = "";
+            if (read) {
+                readFrag =  ' data-read="true" data-read-type="' + readType + '"';
+                if (fieldSeparator) {
+                    readFrag += ' data-read-separator="' + fieldSeparator + '" ';
+                }
+                if (repeatable) {
+                    readFrag += ' data-read-index-pattern="' + indexPattern + '" ';
+                    readFrag += ' data-read-list-field="' + listField + '" ';
+                    readFrag += ' data-read-field-pattern="' + fieldPattern + '" ';
+                }
+            }
+
+            var repeatFrag = "";
+            if (repeatable) {
+                repeatFrag = ' repeatable-control ';
+            }
+
+            if (typeof(source) === 'function') {
+                source = source();
+            }
+            var options = "";
+            for (var i = 0; i < source.length; i++) {
+                options += '<option value="' + source[i].val + '">' + source[i].display + '</option>';
+            }
+            var select = '<select id="' + id + '" name="' + name + '" class="form-control' + repeatFrag + '"' + readFrag + '>' + options + '</select>';
+
+            var labelFrag = '<label for="' + id + '">' + label + '</label>';
+            var frag = '<div class="form-group">' + labelFrag + select + '</div>';
+
+            if (layout === "inline") {
+                frag = '<div class="form-inline">' + frag + '</div>'
+            }
+
+            return frag;
+        };
+
+        this._options = function(params) {
+            var source = params.source;
+
+            var options = "";
+            for (var i = 0; i < source.length; i++) {
+                options += '<option value="' + source[i].val + '">' + source[i].display + '</option>';
+            }
+            return options;
+        };
+
+        this._text = function(params) {
+            var defaultValue = params.default;
+            var name = params.name;
+            var label = params.label;
+            var id = params.id;
+            var layout = params.layout || "regular";
+            var read = edges.getParam(params.read, true);
+            var readType = edges.getParam(params.readType, "single");
+            var fieldSeparator = edges.getParam(params.fieldSeparator, false);
+            var repeatable = edges.getParam(params.repeatable, false);
+            var indexPattern = edges.getParam(params.indexPattern, false);
+            var listField = edges.getParam(params.listField, false);
+            var fieldPattern = edges.getParam(params.fieldPattern, false);
+
+            if (!id) {
+                id = name;
+            }
+
+            var readFrag = "";
+            if (read) {
+                readFrag =  ' data-read="true" data-read-type="' + readType + '"';
+                if (fieldSeparator) {
+                    readFrag += ' data-read-separator="' + fieldSeparator + '" ';
+                }
+                if (repeatable) {
+                    readFrag += ' data-read-index-pattern="' + indexPattern + '" ';
+                    readFrag += ' data-read-list-field="' + listField + '" ';
+                    readFrag += ' data-read-field-pattern="' + fieldPattern + '" ';
+                }
+            }
+
+            var repeatFrag = "";
+            if (repeatable) {
+                repeatFrag = ' repeatable-control ';
+            }
+
+            if (typeof(defaultValue) === 'function') {
+                defaultValue = defaultValue();
+            }
+
+            var input = '<input name="' + name + '" id= "' + id + '" type="text" value="' + defaultValue + '" class="form-control' + repeatFrag + '" ' + readFrag + '>';
+            var labelFrag = '<label for="' + id + '">' + label + '</label>';
+            var frag = '<div class="form-group">' + labelFrag + input + '</div>';
+
+            if (layout === "inline") {
+                frag = '<div class="form-inline">' + frag + '</div>'
+            }
+
+            return frag;
+        };
+
+        this._button = function(params) {
+            var name = params.name;
+            var label = params.label;
+            var id = params.id;
+            var style = params.style || "btn-info";
+            var classes = params.classes || "";
+            var hide = edges.getParam(params.hide, false);
+
+            if (!id) {
+                id = name;
+            }
+
+            var displayFrag = "";
+            if (hide) {
+                displayFrag = ' style="display:none" ';
+            }
+
+            var button = '<button class="btn ' + style + ' form-control ' + classes + '" id="' + id + '"' + displayFrag + '>' + label + '</button>';
+            return button;
+        };
+
+        this._combo = function(params) {
+            var label = params.label;
+            var subFields = params.subfields;
+            var name = params.name;
+            var repeatable = params.repeatable || false;
+
+            var fieldSeparator = "__";
+
+            var prepped = [];
+            for (var i = 0; i < subFields.length; i++) {
+                var subField = subFields[i];
+                subField = $.extend({}, subField);
+
+                if (repeatable) {
+                    subField.name = name + "-0-" + subField.name;
+                    subField.readType = "object-list";
+                    subField.indexPattern = name + "-(\\d+)-.*";
+                    subField.listField = name;
+                    subField.fieldPattern = name + "-\\d+-(.*)";
+                    subField.repeatable = true;
+                } else {
+                    subField.name = name + fieldSeparator + subField.name;
+                    subField.fieldSeparator = fieldSeparator;
+                    subField.readType = "single";
+                }
+
+                prepped.push(subField);
+            }
+
+            var repeatFrag = "";
+            if (repeatable) {
+                repeatFrag = this._button({name: name + "__add", label: "Add More", style: "btn-primary", classes: name + "__add"});
+                prepped.push({
+                    type: "button",
+                    name: name + "__remove",
+                    label: "Remove",
+                    style: "btn-danger",
+                    classes: name + "__remove",
+                    hide: true
+                });
+            }
+
+            var controls = this._formControls({fieldSet: prepped, layout: "inline"});
+            if (repeatable) {
+                controls = '<div id="' + name + '_list"><div id="' + name + '_0" class="repeatable_container">' + controls + '</div></div>';
+            }
+
+            var comboClass = edges.css_classes(this.namespace, "combo", this);
+            var frag = '<div class="' + comboClass + '"><strong>' + label + '</strong><br>' + controls + repeatFrag + "</div>";
+            return frag;
+        };
+
+        this._formControls = function(params) {
+            var fieldSet = params.fieldSet;
+            var layout = params.layout || "regular";
+
+            var frag = "";
+            for (var i = 0; i < fieldSet.length; i++) {
+                var fieldDef = fieldSet[i];
+                fieldDef = $.extend({}, fieldDef);
+                fieldDef.layout = layout === "regular" ? "inline" : "regular";
+                var fieldType = fieldDef.type;
+
+                if (fieldType === "combo") {
+                    frag += this._combo(fieldDef);
+                } else if (fieldType === "select") {
+                    frag += this._select(fieldDef);
+                } else if (fieldType === "text") {
+                    frag += this._text(fieldDef);
+                } else if (fieldType === "button") {
+                    frag += this._button(fieldDef);
+                }
+            }
+
+            if (layout === "inline") {
+                frag = '<div class="form-inline">' + frag + '</div>';
+            }
+            return frag;
+        };
+
         this._updateDependents = function(element) {
             var jqel = $(element);
             var name = jqel.attr("name");
-            var bits = name.split("__");
+
+            var type = jqel.attr("data-read-type");
+            var separator = jqel.attr("data-read-separator");
 
             var fieldId = "";
-            if (bits.length  === 1) {
-                fieldId = bits[0];
-            } else if (bits.length > 1) {
-                fieldId = bits[0] + "." + bits[1]
-            }
             var idx = false;
-            if (bits.length === 3) {
-                idx = parseInt(bits[2]);
+            if (type === "single") {
+                if (separator) {
+                    var bits = name.split(separator);
+                    fieldId = bits[0] + "." + bits[1];
+                } else {
+                    fieldId = name;
+                }
+            } else if (type === "object-list") {
+                var listField = jqel.attr("data-read-list-field");
+                var indexRx = jqel.attr("data-read-index-pattern");
+                var fieldRx = jqel.attr("data-read-field-pattern");
+
+                idx = parseInt(name.match(indexRx)[1]);
+                var subField = name.match(fieldRx)[1];
+                fieldId = listField + "." + subField;
             }
 
             var fieldDef = this.component.getCurrentFieldDef({id : fieldId});
@@ -945,14 +1570,13 @@ var rdbwidgets = {
                 if ("source" in dependentDef) {
                     var source = dependentDef.source({currentData: this.component.currentData, previousData: this.component.previousData, idx: idx})
 
-                    var selector = dependentDef.name.replace(".", "__");
-                    var fieldBits = fieldDef.name.split(".");
-                    var dependentBits = dependentDef.name.split(".");
-                    var sameObject = fieldBits[0] === dependentBits[0];
-                    if (idx !== false && sameObject) {
-                        selector += "__" + idx;
-                    }
+                    var selector = this._mapToFormName({fieldDef: dependentDef, idx: idx});
                     selector = "[name=" + selector + "]";
+
+                    //var fieldBits = fieldDef.name.split(".");
+                    //var dependentBits = dependentDef.name.split(".");
+                    //var sameObject = fieldBits[0] === dependentBits[0];
+
                     var el = this.component.context.find(selector);
 
                     var options = this._options({source : source});
@@ -961,17 +1585,29 @@ var rdbwidgets = {
                 if ("default" in dependentDef) {
                     var defaultVal = dependentDef.default({currentData: this.component.currentData, previousData: this.component.previousData, idx: idx});
 
-                    var selector = dependentDef.name.replace(".", "__");
-                    var fieldBits = fieldDef.name.split(".");
-                    var dependentBits = dependentDef.name.split(".");
-                    var sameObject = fieldBits[0] === dependentBits[0];
-                    if (idx !== false && sameObject) {
-                        selector += "__" + idx;
-                    }
+                    var selector = this._mapToFormName({fieldDef: dependentDef, idx: idx});
                     selector = "[name=" + selector + "]";
+
+                    //var fieldBits = fieldDef.name.split(".");
+                    //var dependentBits = dependentDef.name.split(".");
+                    //var sameObject = fieldBits[0] === dependentBits[0];
+
                     var el = this.component.context.find(selector);
                     el.val(defaultVal);
                 }
+            }
+        };
+
+        this._mapToFormName = function(params) {
+            var fieldDef = params.fieldDef;
+            var idx = params.idx;
+
+            var bits = fieldDef.name.split(".");
+
+            if (idx === false) {
+                return bits.join("__")
+            } else {
+                return bits[0] + "-" + idx + "-" + bits[1];
             }
         };
     },
@@ -1058,8 +1694,10 @@ var rdbwidgets = {
         this._embedSnippet = function() {
             var div ='<div id="' + this.component.widget_id + '"></div>\n';
 
-            var settings = '<script type="text/javascript">\nvar RDB_WIDGET_CONFIG = ' + JSON.stringify(this.component.config, null, 2) + '\n</script>\n';
-            var include = '<script type="text/javascript" src="embed.js"></script>';
+            var settings = '<script type="text/javascript">\nvar RDB_WIDGET_CONFIG_';
+            settings += this.component.widget_id + ' = ' + JSON.stringify(this.component.config, null, 2) + '\n</script>\n';
+
+            var include = '<script type="text/javascript" src="embed.js?id=' + this.component.widget_id + '"></script>';
 
             var snippet = div + settings + include;
             snippet = edges.escapeHtml(snippet);

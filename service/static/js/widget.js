@@ -1,21 +1,42 @@
 var widget = {
     activeEdge : false,
 
-    types : ["highlight", "chart_histogram"],
+    formatters : {
+        year : function(val) {
+            return (new Date(val)).getUTCFullYear();
+        },
+        year_month : function(val) {
+            return val;
+        },
+        full_date : function(val) {
+            return val;
+        },
+        number : function(val) {
+            var formatter = edges.numFormat({
+                reflectNonNumbers: true,
+                thousandsSeparator: ","
+            });
+            return formatter(val);
+        },
+        country_link : function(val) {
+            return val;
+        },
+        reactor_link : function(val) {
+            return '<a href="#">' + val + '</a>';
+        }
+    },
 
     init : function(params) {
         // alert(params.id);
         params.selector = "#" + params.id + "-inner";
         var type = params.type;
 
-        if ($.inArray(type, widget.types) === -1) {
-            return false;
-        }
-
         if (type === "highlight") {
             return widget.highlight(params);
-        } else if (type == "chart_histogram") {
+        } else if (type === "chart_histogram") {
             return widget.chartHistogram(params);
+        } else if (type === "table_reactor") {
+            return widget.tableReactor(params);
         }
 
         return false;
@@ -215,6 +236,66 @@ var widget = {
         return edges.newEdge({
             selector: selector,
             template: widget.newSingleComponentTemplate({height: params.settings.height || false}),
+            search_url: search_url,
+            manageUrl : false,
+            openingQuery: openingQuery,
+            components : components
+        });
+    },
+
+    tableReactor : function(params) {
+        var selector = params.selector;
+
+        // validate the incoming data, to determine if we can render the widget
+        if (!params.hasOwnProperty("settings")) {
+            return;
+        }
+        if (!params.settings.hasOwnProperty("limit") ||
+                !params.settings.hasOwnProperty("order") ||
+                !params.settings.hasOwnProperty("reactor")) {
+            return false;
+        }
+        if (!params.settings.order.hasOwnProperty("field") ||
+            params.settings.reactor.length === 0) {
+            return false;
+        }
+        for (var i = 0; i < params.settings.reactor; i++) {
+            var reactorField = params.settings.reactor[i];
+            if (!reactorField.hasOwnProperty("field") || !reactorField.hasOwnProperty("display")) {
+                return false;
+            }
+        }
+
+        // compile the query
+        var openingQuery = es.newQuery({raw: params.query});
+        openingQuery.size = parseInt(params.settings.limit);
+        openingQuery.addSortBy(es.newSort({field: params.settings.order.field + ".exact", order: params.settings.order.dir}));
+
+        var fieldDisplay = [];
+        for (var i = 0; i < params.settings.reactor.length; i++) {
+            var fieldDef = params.settings.reactor[i];
+            var obj = {field: fieldDef.field, display: fieldDef.display};
+            if (fieldDef.hasOwnProperty("formatting")) {
+                var fn = widget.formatters[fieldDef.formatting];
+                obj.valueFunction = fn;
+            }
+            fieldDisplay.push(obj);
+        }
+
+        var components = [
+            edges.newResultsDisplay({
+                id : "results_table_" + params.id,
+                category: "panel",
+                renderer : edges.bs3.newTabularResultsRenderer({
+                    fieldDisplay : fieldDisplay
+                })
+            })
+        ];
+
+        var search_url = params.base + "/query/reactor/_search";
+        return edges.newEdge({
+            selector: selector,
+            template: widget.newSingleComponentTemplate(),
             search_url: search_url,
             manageUrl : false,
             openingQuery: openingQuery,

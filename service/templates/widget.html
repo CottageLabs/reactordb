@@ -6,10 +6,47 @@
 
 <body>
 
-<p>some preliminary text</p>
+<p>some preliminary text, introducing this table</p>
 
 <!-- this is the embed snippet, it appears in the main body of the page -->
 
+<div id="widget_pwc7z"></div>
+<script type="text/javascript">
+var RDB_WIDGET_CONFIG_widget_pwc7z = {
+  "id": "widget_pwc7z",
+  "type": "table_reactor",
+  "query": {"query": {"filtered": {"filter": {"bool": {"must": [{"terms": {"reactor.process.exact": ["BWR"]}}]}}, "query": {"match_all": {}}}}},
+  "base": "http://localhost:5028",
+  "include": "/embed.html",
+  "settings": {
+    "order": {
+      "field": "reactor.name",
+      "dir": "asc"
+    },
+    "limit": "15",
+    "reactor": [
+      {
+        "field": "reactor.name",
+        "display": "Reactor Name",
+          "formatting" : "reactor_link"
+      },
+      {
+        "field": "reactor.construction_start",
+        "display": "Construction Start",
+          "formatting" : "year"
+      },
+      {
+        "field": "reactor.reference_unit_power_capacity_net",
+        "display": "Reference Unit Power (Capacity Net)",
+          "formatting" : "number"
+      }
+    ]
+  }
+}
+</script>
+<script type="text/javascript" src="embed.js?id=widget_pwc7z"></script>
+
+<p>Then some more stuff here linking that table to these highlight numbers</p>
 
 <div id="first_widget"></div>
 <script type="text/javascript">
@@ -24,6 +61,7 @@
 </script>
 <script type="text/javascript" src="embed.js?id=first_widget"></script>
 
+<p>And finally describe how we move on to this histogram</p>
 
 <div id="second_widget"></div>
 <script type="text/javascript">
@@ -39,7 +77,7 @@
 </script>
 <script type="text/javascript" src="embed.js?id=second_widget"></script>
 
-<p>some following text</p>
+<p>some following text to conclude the page</p>
 
 <!-- the base javascript includes happen at the end -->
 <script type="text/javascript" src="/static/vendor/edges/vendor/jquery-1.11.1/jquery-1.11.1.js"></script>
