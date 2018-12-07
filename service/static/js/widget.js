@@ -27,7 +27,7 @@ var widget = {
     },
 
     init : function(params) {
-        // alert(params.id);
+        alert(params.id);
         params.selector = "#" + params.id + "-inner";
         var type = params.type;
 
@@ -37,6 +37,8 @@ var widget = {
             return widget.chartHistogram(params);
         } else if (type === "table_reactor") {
             return widget.tableReactor(params);
+        } else if (type == "chart_accumulator") {
+            return widget.chartAccumulator(params);
         }
 
         return false;
@@ -209,12 +211,29 @@ var widget = {
         }
         if (!params.settings.hasOwnProperty("start") ||
                 !params.settings.hasOwnProperty("end") ||
-                !params.settings.hasOwnProperty("value")) {
+                !params.settings.hasOwnProperty("value") ||
+                !params.settings.hasOwnProperty("label") ||
+                !params.settings.hasOwnProperty("height")) {
             return false;
         }
 
         var openingQuery = es.newQuery({raw: params.query});
         openingQuery.size = 10000;
+
+        var leftMargin = params.settings.left;
+        if (!leftMargin) {
+            leftMargin = 80
+        } else {
+            leftMargin = parseInt(leftMargin)
+        }
+
+        var labelDistance = params.settings.distance;
+        if (!labelDistance) {
+            labelDistance = 0
+        } else {
+            labelDistance = parseInt(labelDistance)
+        }
+
         var components = [
             edges.newMultibar({
                 id: "chart_histogram_" + params.id,
@@ -227,12 +246,78 @@ var widget = {
                     showLegend: false,
                     xAxisLabel: "Year",
                     yAxisLabel: params.settings.label,
-                    marginLeft: 80
+                    marginLeft: leftMargin,
+                    yAxisLabelDistance: labelDistance
                 })
             })
         ];
 
         var search_url = params.base + "/custom/chart_histogram/_search?start=" + params.settings.start + "&end=" + params.settings.end + "&field=" + params.settings.value;
+        return edges.newEdge({
+            selector: selector,
+            template: widget.newSingleComponentTemplate({height: params.settings.height || false}),
+            search_url: search_url,
+            manageUrl : false,
+            openingQuery: openingQuery,
+            components : components
+        });
+    },
+
+    chartAccumulator : function(params) {
+        var selector = params.selector;
+
+        if (!params.hasOwnProperty("settings")) {
+            return;
+        }
+        if (!params.settings.hasOwnProperty("start") ||
+                !params.settings.hasOwnProperty("end") ||
+                !params.settings.hasOwnProperty("value") ||
+                !params.settings.hasOwnProperty("label") ||
+                !params.settings.hasOwnProperty("height")) {
+            return false;
+        }
+
+        var openingQuery = es.newQuery({raw: params.query});
+        openingQuery.size = 10000;
+
+        var leftMargin = params.settings.left;
+        if (!leftMargin) {
+            leftMargin = 80
+        } else {
+            leftMargin = parseInt(leftMargin)
+        }
+
+        var labelDistance = params.settings.distance;
+        if (!labelDistance) {
+            labelDistance = 0
+        } else {
+            labelDistance = parseInt(labelDistance)
+        }
+
+        var components = [
+            edges.newMultibar({
+                id: "chart_accumulator_" + params.id,
+                category: "panel",
+                dataFunction: widget._dataSeriesFromAccumulator({
+                    seriesName: params.settings.label,
+                    field: params.settings.value,
+                    start: params.settings.start,
+                    end: params.settings.end
+                }),
+                renderer : edges.nvd3.newMultibarRenderer({
+                    xTickFormat: ".0f",
+                    barColor : ["#1e9dd8"],
+                    yTickFormat : ",.0f",
+                    showLegend: false,
+                    xAxisLabel: "Year",
+                    yAxisLabel: params.settings.label,
+                    marginLeft: leftMargin,
+                    yAxisLabelDistance: labelDistance
+                })
+            })
+        ];
+
+        var search_url = params.base + "/query/reactor/_search";
         return edges.newEdge({
             selector: selector,
             template: widget.newSingleComponentTemplate({height: params.settings.height || false}),
@@ -337,6 +422,53 @@ var widget = {
                 var gen = bucket.summation.value;
                 values.push({label: bucket.key, value: gen});
             }
+
+            return [{key: seriesName, values: values}]
+        }
+    },
+
+    _dataSeriesFromAccumulator : function(params) {
+        var seriesName = params.seriesName;
+        var start = parseInt(params.start);
+        var end = parseInt(params.end);
+
+        return function(component) {
+            var results = component.edge.result.results();
+
+            var histogram = {};
+            for (var i = 0; i < results.length; i++) {
+                var result = results[i];
+                var field = "reactor." + params.field + "_cumulative";
+                var accumulator = edges.objVal(field, result);
+                var years = Object.keys(accumulator);
+                for (var j = 0; j < years.length; j++) {
+                    var year = years[j];
+                    var yearNum = parseInt(year);
+                    if (yearNum < start || yearNum > end) {
+                        continue;
+                    }
+                    var val = accumulator[year];
+                    if (!histogram.hasOwnProperty(year)) {
+                        histogram[year] = val;
+                    } else {
+                        histogram[year] += val;
+                    }
+                }
+            }
+
+            var values = [];
+            for (var year in histogram) {
+                values.push({label: year, value: histogram[year]});
+            }
+            values.sort(function(a, b) {
+                if (parseInt(a.year) < parseInt(b.year)) {
+                    return 1;
+                }
+                if (parseInt(a.year) > parseInt(b.year)) {
+                    return -1;
+                }
+                return 0;
+            });
 
             return [{key: seriesName, values: values}]
         }

@@ -405,6 +405,18 @@ var rdbwidgets = {
                         "type" : "text",
                         "default" : "300",
                         "label" : "Widget Height (pixels)"
+                    },
+                    {
+                        "name" : "left",
+                        "type" : "text",
+                        "default" : "80",
+                        "label" : "Left Margin (pixels)"
+                    },
+                    {
+                        "name" : "distance",
+                        "type" : "text",
+                        "default" : "0",
+                        "label" : "Y Axis Label Distance (pixels)"
                     }
                 ]
             },
@@ -428,7 +440,32 @@ var rdbwidgets = {
                         "name": "value",
                         "type": "select",
                         "source": rdbwidgets.data.numericOperationsFields,
-                        "label" : "Field to Accumulate"
+                        "label" : "Field to Accumulate",
+                        "dependents" : ["label"]
+                    },
+                    {
+                        "name" : "label",
+                        "type" : "text",
+                        "default" : rdbwidgets.data.defaultOperationsFieldName({ref : "value"}),
+                        "label" : "Name"
+                    },
+                    {
+                        "name" : "height",
+                        "type" : "text",
+                        "default" : "300",
+                        "label" : "Widget Height (pixels)"
+                    },
+                    {
+                        "name" : "left",
+                        "type" : "text",
+                        "default" : "80",
+                        "label" : "Left Margin (pixels)"
+                    },
+                    {
+                        "name" : "distance",
+                        "type" : "text",
+                        "default" : "0",
+                        "label" : "Y Axis Label Distance (pixels)"
                     }
                 ]
             }
