@@ -960,8 +960,13 @@ var rdbwidgets = {
                         }
                         that.component.context.find(button_selector).removeAttr("disabled");
 
+                        that.reNumberRepeatable({entryPrefix : entry_prefix});
+
                         if (remove_callback) {remove_callback()}
                         that.bounceFormWatchers();
+
+                        that.readForm();
+                        that.component.cycle();
                     }
                 );
             }
@@ -972,6 +977,52 @@ var rdbwidgets = {
                 return limit - (count + 1);
             } else {
                 return -1;
+            }
+        };
+
+        this.reNumberRepeatable = function(params) {
+            var entryPrefix = params.entryPrefix;
+
+            var list = this.component.context.find("#" + entryPrefix + "_list");
+            var containers = list.find(".repeatable_container");
+
+            var records = [];
+            for (var i = 0; i < containers.length; i++) {
+                var container = $(containers[i]);
+                var controls = container.find(".repeatable-control");
+                var labels = [];
+                for (var j = 0; j < controls.length ; j++) {
+                    var control = $(controls[j]);
+                    var name = control.attr("name");
+                    var label = container.find("label[for=" + name + "]");
+                    labels.push($(label[0]));
+                }
+                records.push({container: container, controls: controls, labels: labels, n : i});
+            }
+
+            for (var i = 0 ; i < records.length; i++) {
+                var record = records[i];
+
+                var containerId = entryPrefix + "_" + record.n;
+                record.container.attr("id", containerId);
+
+                var nameMap = {};
+                for (var j = 0; j < record.controls.length; j++) {
+                    var control = $(record.controls[j]);
+                    var currentName = control.attr("name");
+                    var fieldRx = control.attr("data-read-field-pattern");
+                    var subField = currentName.match(fieldRx)[1];
+                    var controlName = entryPrefix + "-" + record.n + "-" + subField;
+                    control.attr("name", controlName);
+                    control.attr("id", controlName);
+                    nameMap[currentName] = controlName;
+                }
+
+                for (var j = 0; j < record.labels.length; j++) {
+                    var label = record.labels[j];
+                    var forControl = label.attr("for");
+                    label.attr("for", nameMap[forControl]);
+                }
             }
         };
 
