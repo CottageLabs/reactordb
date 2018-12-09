@@ -136,7 +136,8 @@ class Reactor(dataobj.DataObj, ReactorDAO):
             },
             "objects" : [
                 "reactor",
-                "index"
+                "index",
+                "operation"
             ],
 
             "structs" : {
@@ -269,7 +270,8 @@ class Reactor(dataobj.DataObj, ReactorDAO):
             "load_factor" : ("reactor.load_factor", None),
             "energy_availability" : ("reactor.energy_availability", None),
             "electricity_supplied_cumulative" : ("reactor.electricity_supplied_cumulative", None),
-            "electricity_supplied" : ("reactor.electricity_supplied", None)
+            "electricity_supplied" : ("reactor.electricity_supplied", None),
+            "operation" : ("operation", None)
         }
 
         self._add_struct(struct)

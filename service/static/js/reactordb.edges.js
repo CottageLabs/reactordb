@@ -91,7 +91,10 @@ var reactordb = {
             var results = component.edge.result.results();
             for (var i = 0; i < results.length; i++) {
                 var res = results[i];
-                var rupDict = res.reactor.reference_unit_power;
+                var rupDict = {};
+                if (res.operation.hasOwnProperty("reference_unit_power")) {
+                    rupDict = res.operation.reference_unit_power;
+                }
                 var rup = 0;
                 if (rupDict.hasOwnProperty(year)) {
                     rup = rupDict[year];
@@ -122,7 +125,10 @@ var reactordb = {
                     if (!buckets.hasOwnProperty(year)) {
                         buckets[year] = 0;
                     }
-                    var rupDict = res.reactor.reference_unit_power;
+                    var rupDict = {};
+                    if (res.operation.hasOwnProperty("reference_unit_power")) {
+                        rupDict = res.operation.reference_unit_power;
+                    }
                     var rup = 0;
                     if (rupDict.hasOwnProperty(year)) {
                         rup = rupDict[year];
@@ -584,7 +590,7 @@ var reactordb = {
         if (reactordb._showPageSection({showComponents: showComponents, sectionName: "top_electricity_gen"})) {
             var aggregation = es.newTermsAggregation({
                 name: "country", field: "reactor.country.exact", size: 300, aggs: [
-                    es.newSumAggregation({name: "electricity_generated", field: "reactor.electricity_supplied." + thisYear})
+                    es.newSumAggregation({name: "electricity_generated", field: "operation.electricity_supplied." + thisYear})
                 ]
             });
             baseQuery.addAggregation(aggregation);
@@ -887,7 +893,7 @@ var reactordb = {
                         var filtered = [];
                         for (var i = 0; i < results.results.length; i++) {
                             var result = results.results[i];
-                            var val = edges.objVal("reactor.load_factor." + String(thisYear), result);
+                            var val = edges.objVal("operation.load_factor_annual." + String(thisYear), result);
                             if (val !== false) {
                                 filtered.push(result);
                             }
@@ -895,8 +901,8 @@ var reactordb = {
                         return filtered;
                     },
                     sort: function(a, b) {
-                        var aval = edges.objVal("reactor.load_factor." + String(thisYear), a);
-                        var bval = edges.objVal("reactor.load_factor." + String(thisYear), b);
+                        var aval = edges.objVal("operation.load_factor_annual." + String(thisYear), a);
+                        var bval = edges.objVal("operation.load_factor_annual." + String(thisYear), b);
                         if (aval < bval) {
                             return 1;
                         }
@@ -914,7 +920,7 @@ var reactordb = {
                             {field: "reactor.model", display: "Model"},
                             {field: "reactor.process", display: "Process"},
                             {field: "reactor.reference_unit_power_capacity_net", display: "Net Capacity (MWe)"},
-                            {field: "reactor.load_factor." + thisYear, display: "Load Factor"},
+                            {field: "operation.load_factor_annual." + thisYear, display: "Load Factor"},
                             {field: "reactor.country", display: "Location", valueFunction: reactordb._countryPageLink({url_template: countryPageURLTemplate})}
                         ]
                     })
@@ -931,7 +937,7 @@ var reactordb = {
                         var filtered = [];
                         for (var i = 0; i < results.results.length; i++) {
                             var result = results.results[i];
-                            var val = edges.objVal("reactor.electricity_supplied." + String(thisYear), result);
+                            var val = edges.objVal("operation.electricity_supplied." + String(thisYear), result);
                             if (val !== false) {
                                 filtered.push(result);
                             }
@@ -939,8 +945,8 @@ var reactordb = {
                         return filtered;
                     },
                     sort: function (a, b) {
-                        var aval = edges.objVal("reactor.electricity_supplied." + String(thisYear), a);
-                        var bval = edges.objVal("reactor.electricity_supplied." + String(thisYear), b);
+                        var aval = edges.objVal("operation.electricity_supplied." + String(thisYear), a);
+                        var bval = edges.objVal("operation.electricity_supplied." + String(thisYear), b);
                         if (aval < bval) {
                             return 1;
                         }
@@ -964,7 +970,7 @@ var reactordb = {
                             {field: "reactor.process", display: "Process"},
                             {field: "reactor.reference_unit_power_capacity_net", display: "Net Capacity (MWe)"},
                             {
-                                field: "reactor.electricity_supplied." + thisYear,
+                                field: "operation.electricity_supplied." + thisYear,
                                 display: "Total Generation (" + thisYear + ") (GWh)",
                                 valueFunction: edges.numFormat({
                                     reflectNonNumbers: true,
@@ -999,7 +1005,7 @@ var reactordb = {
                             {field: "reactor.process", display: "Process"},
                             {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
                             {field: "reactor.first_grid_connection", display: "Grid Connection"},
-                            {field: "reactor.load_factor." + thisYear, display: "Load Factor (" + thisYear + ") (%)"},
+                            {field: "operation.load_factor_annual." + thisYear, display: "Load Factor (" + thisYear + ") (%)"},
                             {
                                 field: "electricity_generated",
                                 fieldFunction: reactordb._electricityGeneratedInYear({year: thisYear}),
@@ -1117,26 +1123,6 @@ var reactordb = {
                     var current = edge.cloneQuery();
                     current.clearAggregations();
                     return current;
-                    /*
-                    var results = edge.result.results();
-                    var reactorIDs = [];
-                    for (var i = 0; i < results.length; i++) {
-                        reactorIDs.push(results[i]["id"])
-                    }
-
-                    return es.newQuery({
-                        must : [
-                            es.newRangeFilter({field: "year", lte: thisYear, gte: 1970}),
-                            es.newTermsFilter({field: "reactor.exact", values: reactorIDs})
-                        ],
-                        size: 0,
-                        aggs : [
-                            es.newTermsAggregation({name: "year", field: "year", size: 100, orderBy: "_term", orderDir: "asc", aggs : [
-                                es.newSumAggregation({name: "electricity_generation", field: "electricity_supplied"})
-                            ]})
-                        ]
-                    })
-                    */
                 }
             },
             secondaryUrls : {
@@ -1239,7 +1225,10 @@ var reactordb = {
             var result = params.result;
             var def = params.default;
 
-            var esc = result.reactor.electricity_supplied_cumulative;
+            var esc = {};
+            if (result.operation.hasOwnProperty("electricity_supplied_cumulative")) {
+                esc = result.operation.electricity_supplied_cumulative;
+            }
             var current = 0.0;
             if (esc.hasOwnProperty(year)) {
                 current = esc[year];
@@ -1260,8 +1249,11 @@ var reactordb = {
         var result = params.result;
 
         var lifetimeGen = 0.0;
-        for (var year in result.reactor.electricity_supplied_cumulative) {
-            var gen = result.reactor.electricity_supplied_cumulative[year];
+        if (!result.operation.hasOwnProperty("electricity_supplied_cumulative")) {
+            return lifetimeGen;
+        }
+        for (var year in result.operation.electricity_supplied_cumulative) {
+            var gen = result.operation.electricity_supplied_cumulative[year];
             if (gen > lifetimeGen) {
                 lifetimeGen = gen;
             }
@@ -1517,7 +1509,7 @@ var reactordb = {
                             {field: "reactor.process", display: "Process"},
                             {field: "reactor.reference_unit_power_capacity_net", display: "Capacity (MWe)"},
                             {field: "reactor.first_grid_connection", display: "Grid Connection"},
-                            {field: "reactor.load_factor." + thisYear, display: "Load Factor (" + thisYear + ") (%)"},
+                            {field: "operation.load_factor_annual." + thisYear, display: "Load Factor (" + thisYear + ") (%)"},
                             {
                                 field: "electricity_generated",
                                 fieldFunction: reactordb._electricityGeneratedInYear({year: thisYear}),
@@ -1944,19 +1936,19 @@ var reactordb = {
                 e : function() {
                     return es.newQuery({
                         size: topLoadFactors,
-                        sort: [es.newSort({field: "reactor.load_factor." + thisYear, order: "desc"})]
+                        sort: [es.newSort({field: "operation.load_factor_annual." + thisYear, order: "desc"})]
                     })
                 },
                 f : function() {
                     return es.newQuery({
                         size: topLifetimeGenerations,
-                        sort: [es.newSort({field: "reactor.electricity_supplied_cumulative." + thisYear, order: "desc"})]
+                        sort: [es.newSort({field: "operation.electricity_supplied_cumulative." + thisYear, order: "desc"})]
                     })
                 },
                 g : function() {
                     return es.newQuery({
                         size: topAnnualGenerations,
-                        sort: [es.newSort({field: "reactor.electricity_supplied." + thisYear, order: "desc"})]
+                        sort: [es.newSort({field: "operation.electricity_supplied." + thisYear, order: "desc"})]
                     })
                 }
             },
@@ -2145,7 +2137,7 @@ var reactordb = {
                             {field: "reactor.model", display: "Model"},
                             {field: "reactor.process", display: "Process"},
                             {field: "reactor.reference_unit_power_capacity_net", display: "Net Capacity (MWe)"},
-                            {field: "reactor.load_factor." + thisYear, display: "Load Factor"},
+                            {field: "operation.load_factor_annual." + thisYear, display: "Load Factor"},
                             {field: "reactor.country", display: "Location", valueFunction: reactordb._countryPageLink({url_template: countryPageURLTemplate})}
                         ]
                     })
@@ -2162,7 +2154,7 @@ var reactordb = {
                             {field: "reactor.process", display: "Process"},
                             {field: "reactor.reference_unit_power_capacity_net", display: "Net Capacity (MWe)"},
                             {
-                                field: "reactor.electricity_supplied." + thisYear,
+                                field: "operation.electricity_supplied." + thisYear,
                                 display: "Total Generation (" + thisYear + ") (TWh)",
                                 valueFunction: reactordb._gwh2twh
                             },
@@ -2182,7 +2174,7 @@ var reactordb = {
                             {field: "reactor.process", display: "Process"},
                             {field: "reactor.reference_unit_power_capacity_net", display: "Net Capacity (MWe)"},
                             {
-                                field: "reactor.electricity_supplied_cumulative." + thisYear,
+                                field: "operation.electricity_supplied_cumulative." + thisYear,
                                 display: "Total Generation (to end " + thisYear + ") (TWh)",
                                 valueFunction: reactordb._gwh2twh
                             },

@@ -24,10 +24,11 @@ var rdbwidgets = {
                 {id: "operation_factor", type: ["number"], display: "Operation Factor"},
                 {id: "load_factor_cumulative", type: ["number"], display: "Load Factor Cumulative"},
                 {id: "load_factor_annual", type: ["number"], display: "Load Factor Annual"},
-                {id: "energy_availability_factor_annual", type: ["number"], display: "Energy Availability Factor Annual"},
+                {id: "energy_availability_factor_annual", type: ["number"], display: "Energy Availability Factor (Annual)"},
                 {id: "electricity_supplied", type: ["number"], display: "Electricity Supplied"},
-                {id: "energy_availability_factor_cumulative", type: ["number"], display: "Energy Availability Factor Cumulative"},
-                {id: "reference_unit_power", type: ["number"], display: "Reference Unit Power"}
+                {id: "energy_availability_factor_cumulative", type: ["number"], display: "Energy Availability Factor (Cumulative)"},
+                {id: "reference_unit_power", type: ["number"], display: "Reference Unit Power"},
+                {id: "electricity_supplied_cumulative", type: ["number"], display: "Electricity Supplied (Cumulative)"}
             ],
             formatters : {
                 date : [
@@ -479,6 +480,7 @@ var rdbwidgets = {
         var selector = params.selector;
         var index = params.index || "reactor";
         var search_url = params.search_url || current_scheme + "//" + current_domain + "/query/" + index + "/_search";
+        var prefix = edges.getParam(params.prefix, "");
 
         var base = params.base;
         var include = params.include;
@@ -486,7 +488,7 @@ var rdbwidgets = {
         var e = edges.newEdge({
             selector: selector,
             template: rdbwidgets.newWidgetEditorTemplate(),
-            search_url: search_url,
+            // search_url: search_url,
             manageUrl : true,
             components : [
                 // selected filters display, with all the fields given their display names
@@ -525,6 +527,7 @@ var rdbwidgets = {
                     category: "preview",
                     base: base,
                     include: include,
+                    prefix: prefix,
                     renderer : rdbwidgets.newWidgetPreviewRenderer()
                 })
             ]
@@ -1706,10 +1709,12 @@ var rdbwidgets = {
     WidgetPreview : function(params) {
         this.base = params.base;
         this.include = params.include;
+        this.prefix = params.prefix;
 
         this.config = {};
 
         this.widget_id = "";
+        this.widget = false;
 
         this.synchronise = function() {
             if (this.widget_id === "") {
@@ -1775,7 +1780,9 @@ var rdbwidgets = {
             frag += '<div class="' + snippetContainerClass + '">Use the following code to embed this in a web page: <pre>' + this._embedSnippet() + '</pre></div>';
 
             this.component.context.html(frag);
-            widget.init(this.component.config);
+            var localCfg = $.extend({}, this.component.config);
+            localCfg.prefix = this.component.prefix;
+            this.component.widget = widget.init(localCfg);
 
         };
 

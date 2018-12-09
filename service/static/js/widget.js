@@ -27,7 +27,9 @@ var widget = {
     },
 
     init : function(params) {
-        alert(params.id);
+        // use this to stop execution on an embed page, so that you can attach the debugger to the anonymously
+        // loaded code
+        // alert(params.id);
         params.selector = "#" + params.id + "-inner";
         var type = params.type;
 
@@ -121,6 +123,7 @@ var widget = {
 
     highlight : function(params) {
         var selector = params.selector;
+        var prefix = edges.getParam(params.prefix, "");
 
         var reactorsBackground = params.base + "/static/images/iconReactor.svg";
         var underConstructionBackground = params.base + "/static/images/iconConstruction.svg";
@@ -192,7 +195,7 @@ var widget = {
             })
         );
 
-        var search_url = params.base + "/query/reactor/_search";
+        var search_url = params.base + "/query/" + prefix + "reactor/_search";
         return edges.newEdge({
             selector: selector,
             template: widget.newHighlightTemplate({id: params.id}),
@@ -205,6 +208,7 @@ var widget = {
 
     chartHistogram : function(params) {
         var selector = params.selector;
+        var prefix = edges.getParam(params.prefix, "");
 
         if (!params.hasOwnProperty("settings")) {
             return;
@@ -252,7 +256,7 @@ var widget = {
             })
         ];
 
-        var search_url = params.base + "/custom/chart_histogram/_search?start=" + params.settings.start + "&end=" + params.settings.end + "&field=" + params.settings.value;
+        var search_url = params.base + "/custom/" + prefix + "chart_histogram/_search?start=" + params.settings.start + "&end=" + params.settings.end + "&field=" + params.settings.value;
         return edges.newEdge({
             selector: selector,
             template: widget.newSingleComponentTemplate({height: params.settings.height || false}),
@@ -265,6 +269,7 @@ var widget = {
 
     chartAccumulator : function(params) {
         var selector = params.selector;
+        var prefix = edges.getParam(params.prefix, "");
 
         if (!params.hasOwnProperty("settings")) {
             return;
@@ -317,7 +322,7 @@ var widget = {
             })
         ];
 
-        var search_url = params.base + "/query/reactor/_search";
+        var search_url = params.base + "/query/" + prefix + "reactor/_search";
         return edges.newEdge({
             selector: selector,
             template: widget.newSingleComponentTemplate({height: params.settings.height || false}),
@@ -330,6 +335,7 @@ var widget = {
 
     tableReactor : function(params) {
         var selector = params.selector;
+        var prefix = edges.getParam(params.prefix, "");
 
         // validate the incoming data, to determine if we can render the widget
         if (!params.hasOwnProperty("settings")) {
@@ -377,7 +383,7 @@ var widget = {
             })
         ];
 
-        var search_url = params.base + "/query/reactor/_search";
+        var search_url = params.base + "/query/" + prefix + "reactor/_search";
         return edges.newEdge({
             selector: selector,
             template: widget.newSingleComponentTemplate(),
@@ -438,7 +444,7 @@ var widget = {
             var histogram = {};
             for (var i = 0; i < results.length; i++) {
                 var result = results[i];
-                var field = "reactor." + params.field + "_cumulative";
+                var field = "operation." + params.field;
                 var accumulator = edges.objVal(field, result);
                 var years = Object.keys(accumulator);
                 for (var j = 0; j < years.length; j++) {

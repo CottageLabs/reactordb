@@ -61,44 +61,7 @@ def import_reactordb(master_path, pris_path, history_path):
         # translate the status to the internally preferred value if necessary
         obj["status"] = STATUS_MAP.get(obj.get("status"), obj.get("status"))
 
-        # for all the operation histories for this reactor, also extract the information we want
-        # to store against it
-        load_factor = {}
-        energy_availability = {}
-        electricity_supplied = {}
-        rups = {}
-        for h in histories:
-            lf = h.load_factor_annual
-            ea = h.energy_availability_factor_annual
-            es = h.electricity_supplied
-            rup = h.reference_unit_power
-            year = h.year
-            if lf is None:
-                lf = 0.0
-            if ea is None:
-                ea = 0.0
-            if es is None:
-                es = 0.0
-            if rup is None:
-                rup = 0.0
-            load_factor[str(year)] = float(lf)
-            energy_availability[str(year)] = float(ea)
-            electricity_supplied[year] = float(es)
-            rups[year] = float(rup)
-
-        obj["load_factor"] = load_factor
-        obj["energy_availability"] = energy_availability
-        obj["reference_unit_power"] = rups
-        obj["electricity_supplied"] = electricity_supplied
-
-        electricity_supplied_cumulative = {}
-        es_years = electricity_supplied.keys()
-        es_years.sort()
-        total = 0.0
-        for year in es_years:
-            total += electricity_supplied[year]
-            electricity_supplied_cumulative[str(year)] = total
-        obj["electricity_supplied_cumulative"] = electricity_supplied_cumulative
+        _add_operation_data(obj, histories)
 
         # make and populate a reactor object, then save it
         r = Reactor()
@@ -111,4 +74,44 @@ def import_reactordb(master_path, pris_path, history_path):
             h.save()
 
 
+def _add_operation_data(obj, histories):
 
+    fields = [
+        "annual_time_online",
+        "operation_factor",
+        "load_factor_cumulative",
+        "load_factor_annual",
+        "energy_availability_factor_annual",
+        "electricity_supplied",
+        "energy_availability_factor_cumulative",
+        "reference_unit_power"
+    ]
+
+    cumulative = [
+        "electricity_supplied"
+    ]
+
+    obj["operation"] = {}
+
+    for h in histories:
+        year = h.year
+        for f in fields:
+            if f not in obj["operation"]:
+                obj["operation"][f] = {}
+            val = h.__getattr__(f)
+            if val is None:
+                val = 0.0
+            obj["operation"][f][str(year)] = float(val)
+
+    for c in cumulative:
+        if c not in obj["operation"]:
+            continue
+        cf = c + "_cumulative"
+        obj["operation"][cf] = {}
+        data = obj["operation"][c]
+        years = data.keys()
+        years.sort()
+        total = 0.0
+        for year in years:
+            total += data[year]
+            obj["operation"][cf][str(year)] = total

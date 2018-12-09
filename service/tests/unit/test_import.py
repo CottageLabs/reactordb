@@ -31,11 +31,11 @@ class TestImport(ESTestCase):
 
         res = models.Reactor.object_query()
         assert len(res) == 10
-        assert len(res[0].load_factor.keys()) > 0
-        assert len(res[0].energy_availability.keys()) > 0
-        assert len(res[0].electricity_supplied_cumulative.keys()) > 0
-        assert len(res[0].reference_unit_power.keys()) > 0
-        assert len(res[0].electricity_supplied.keys()) > 0
+        assert len(res[0].data["operation"]["load_factor_annual"].keys()) > 0
+        assert len(res[0].data["operation"]["energy_availability_factor_annual"].keys()) > 0
+        assert len(res[0].data["operation"]["electricity_supplied_cumulative"].keys()) > 0
+        assert len(res[0].data["operation"]["reference_unit_power"].keys()) > 0
+        assert len(res[0].data["operation"]["electricity_supplied"].keys()) > 0
         assert res[0].country is not None
         assert res[0].data["index"]["country"] == res[0].country.lower()
 
