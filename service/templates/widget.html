@@ -14,7 +14,8 @@ var RDB_WIDGET_CONFIG_widget_5br75 = {
   "id": "widget_5br75",
   "type": "chart_accumulator",
   "query": {"query": {"filtered": {"filter": {"bool": {"must": [{"terms": {"reactor.process.exact": ["BWR"]}}]}}, "query": {"match_all": {}}}}},
-  "base": "http://localhost:5028",
+  "base": "",
+    "prefix" : "preview_",
   "include": "/embed.html",
   "settings": {
     "start": "1970",
@@ -39,7 +40,8 @@ var RDB_WIDGET_CONFIG_widget_pwc7z = {
   "id": "widget_pwc7z",
   "type": "table_reactor",
   "query": {"query": {"filtered": {"filter": {"bool": {"must": [{"terms": {"reactor.process.exact": ["BWR"]}}]}}, "query": {"match_all": {}}}}},
-  "base": "http://localhost:5028",
+  "prefix" : "preview_",
+    "base": "",
   "include": "/embed.html",
   "settings": {
     "order": {
@@ -78,6 +80,7 @@ var RDB_WIDGET_CONFIG_widget_pwc7z = {
         include: "/embed.html",
         // base: "//reactordb.world-nuclear.org"
         base : "",
+        "prefix" : "preview_",
         type: "highlight",
         query: {"query":{"filtered":{"filter":{"bool":{"must":[{"terms":{"reactor.process.exact":["BWR"]}}]}},"query":{"match_all":{}}}}}
     };
@@ -93,6 +96,7 @@ var RDB_WIDGET_CONFIG_widget_pwc7z = {
         include: "/embed.html",
         // base: "//reactordb.world-nuclear.org"
         base : "",
+        "prefix" : "preview_",
         type: "chart_histogram",
         query: {"query":{"filtered":{"filter":{"bool":{"must":[{"terms":{"reactor.process.exact":["BWR"]}}]}},"query":{"match_all":{}}}}},
         settings: {start: "1970", end: "2018", value: "annual_time_online", label: "Annual Time Online", height: "300"}
