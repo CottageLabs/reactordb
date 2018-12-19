@@ -87,24 +87,27 @@ var RDB_WIDGET_CONFIG_widget_pwc7z = {
   "settings": {
     "order": {
       "field": "reactor.name",
-      "dir": "asc"
+      "dir": "asc",
+      "sort_type": "exact"
     },
     "limit": "15",
+    "countryPageTemplate": "/preview_country/{country}",
+    "reactorPageTemplate": "/preview_reactor/{reactor}",
     "reactor": [
       {
         "field": "reactor.name",
         "display": "Reactor Name",
-          "formatting" : "reactor_link"
+        "formatting": "reactor_link"
       },
       {
         "field": "reactor.construction_start",
         "display": "Construction Start",
-          "formatting" : "year"
+        "formatting": "year"
       },
       {
         "field": "reactor.reference_unit_power_capacity_net",
         "display": "Reference Unit Power (Capacity Net)",
-          "formatting" : "number"
+        "formatting": "number"
       }
     ]
   }
