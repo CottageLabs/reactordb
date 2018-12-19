@@ -41,7 +41,8 @@ this is just bootstrap, it should be included in the base site template already
 <!-- activate the widget in the page -->
 <script type="text/javascript">
 var waitForReactorDB{{ id }} = setInterval(function () {
-    if (typeof reactordb != 'undefined' && typeof widget != "undefined") {
+    // if (typeof reactordb != 'undefined' && typeof widget != "undefined") {
+    if (typeof widget != "undefined") {
         var e = widget.init(RDB_WIDGET_CONFIG_{{ id }});
         var id = "{{ id }}";
         var idx = RDB_WIDGET_REGISTRY.pending.indexOf(id);

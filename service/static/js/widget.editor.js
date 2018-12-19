@@ -446,6 +446,16 @@ var rdbwidgets = {
                         "type": "text",
                         "default": "10",
                         "label" : "Maximum Number of Records to Show"
+                    },
+                    {
+                        "name" : "countryPageTemplate",
+                        "type" : "hidden",
+                        "default" : params.countryPageTemplate
+                    },
+                    {
+                        "name" : "reactorPageTemplate",
+                        "type" : "hidden",
+                        "default" : params.reactorPageTemplate
                     }
                 ]
             },
