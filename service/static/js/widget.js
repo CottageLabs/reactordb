@@ -29,7 +29,7 @@ var widget = {
     init : function(params) {
         // use this to stop execution on an embed page, so that you can attach the debugger to the anonymously
         // loaded code
-        // alert(params.id);
+        alert(params.id);
         params.selector = "#" + params.id + "-inner";
         var type = params.type;
 
@@ -39,8 +39,10 @@ var widget = {
             return widget.chartHistogram(params);
         } else if (type === "table_reactor") {
             return widget.tableReactor(params);
-        } else if (type == "chart_accumulator") {
+        } else if (type === "chart_accumulator") {
             return widget.chartAccumulator(params);
+        } else if (type === "table_aggregate") {
+            return widget.tableAggregate(params);
         }
 
         return false;
@@ -394,6 +396,103 @@ var widget = {
         });
     },
 
+    tableAggregate : function(params) {
+        var selector = params.selector;
+        var prefix = edges.getParam(params.prefix, "");
+
+        // validate the incoming data, to determine if we can render the widget
+        if (!params.hasOwnProperty("settings")) {
+            return;
+        }
+        if (!params.settings.hasOwnProperty("aggregate_around") ||
+                !params.settings.hasOwnProperty("order") ||
+                !params.settings.hasOwnProperty("aggregate_on") ||
+                !params.settings.hasOwnProperty("limit")) {
+            return false;
+        }
+        if (!params.settings.aggregate_around.hasOwnProperty("field") ||
+                !params.settings.aggregate_around.hasOwnProperty("display")) {
+            return false;
+        }
+        for (var i = 0; i < params.settings.aggregate_on.length; i++) {
+            var aggField = params.settings.aggregate_on[i];
+            if (!aggField.hasOwnProperty("field") || !aggField.hasOwnProperty("display")) {
+                return false;
+            }
+        }
+
+        // compile the query
+        var subaggs = [];
+        for (var i = 0; i < params.settings.aggregate_on.length; i++) {
+            var aggField = params.settings.aggregate_on[i];
+            subaggs.push(
+                es.newSumAggregation({name: aggField.field, field: aggField.field})
+            );
+        }
+
+        var openingQuery = es.newQuery({raw: params.query});
+        openingQuery.size = 0;
+        openingQuery.addAggregation(
+            es.newTermsAggregation({
+                name: params.settings.aggregate_around.field,
+                field: params.settings.aggregate_around.field + ".exact",
+                size: 10000,
+                aggs: subaggs})
+        );
+
+        var fieldDisplay = [];
+        var aaObj = {field: params.settings.aggregate_around.field, display: params.settings.aggregate_around.display};
+        if (params.settings.aggregate_around.hasOwnProperty("formatting")) {
+            var fn = widget.formatters[params.settings.aggregate_around.formatting];
+            aaObj.valueFunction = fn;
+        }
+        fieldDisplay.push(aaObj);
+
+        for (var i = 0; i < params.settings.aggregate_on.length; i++) {
+            var fieldDef = params.settings.aggregate_on[i];
+            var obj = {field: fieldDef.field, display: fieldDef.display};
+            if (fieldDef.hasOwnProperty("formatting")) {
+                var fn = widget.formatters[fieldDef.formatting];
+                obj.valueFunction = fn;
+            }
+            fieldDisplay.push(obj);
+        }
+
+        var components = [
+            edges.newAggregateTable({
+                id : "aggregate_table_" + params.id,
+                category: "panel",
+                limit: params.settings.limit,
+                sort: function(a,b) {
+                    var acomp = parseInt(a[params.settings.order] || 0);
+                    var bcomp = parseInt(b[params.settings.order] || 0);
+                    if (acomp < bcomp) {
+                        return 1;
+                    }
+                    if (acomp > bcomp) {
+                        return -1;
+                    }
+                    return 0;
+                },
+                aggregateAround: params.settings.aggregate_around.field,
+                splitFieldsOn: ".",
+                renderer : edges.bs3.newTabularResultsRenderer({
+                    fieldDisplay : fieldDisplay
+                })
+            })
+        ];
+
+        var search_url = params.base + "/query/" + prefix + "reactor/_search";
+        return edges.newEdge({
+            selector: selector,
+            template: widget.newSingleComponentTemplate(),
+            search_url: search_url,
+            manageUrl : false,
+            openingQuery: openingQuery,
+            components : components
+        });
+    },
+
     _reactorStatusCount : function(params) {
         var status = params.status;
 
@@ -479,4 +578,5 @@ var widget = {
             return [{key: seriesName, values: values}]
         }
     }
+
 };

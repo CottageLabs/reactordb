@@ -22,7 +22,8 @@
 		"reactordb.admin" : ["js", "reactordbadmin.js"],
 		"showdown" : ["octopus_vendor", "showdown-1.2.3/showdown.min.js"],
 		"bootstrap3" : ["edges_vendor", "bootstrap-3.3.1/js/bootstrap.min.js"],
-		"glyphtofa.css" : ["css", "glyphtofa.css"]
+		"glyphtofa.css" : ["css", "glyphtofa.css"],
+		"widget.edges" : ["js", "widget.js"]
 	},
 	"dependencies" : {
 		"reactordb.edges.css" : [
@@ -60,8 +61,18 @@
 			"edges.renderers.bs3.NavigationTermListRenderer",
 			"edges.renderers.bs3.LeaveSearchNavigationRenderer"
 		],
-
-
+		"widget.edges" : [
+			"edges.core",
+			"es1x",
+			"edges.components.numbers",
+			"edges.components.charts",
+			"edges.components.tables",
+			"edges.renderers.nvd3",
+			"edges.renderers.bs3.TabularResultsRenderer",
+			"edges.components.search",
+			"edges.renderers.bs3.ImportantNumbersRenderer",
+			"edges.renderers.bs3.SelectedFiltersRenderer"
+		],
 		"service.css" : [],
 		"reactordb.admin" : ["reactordb.edges"],
 		"showdown" : [],
@@ -72,6 +83,34 @@
 		"font-awesome.css" : "https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"
 	},
 	"outputs" : {
+		"widget.nodeps.full.js" : {
+			"pipelines" : {
+				"js-src": {
+					"out": ["js", "widget.nodeps.full.js"]
+				},
+				"js-includes": {
+					"out": ["includes", "widget.nodeps.full.js.html"],
+					"path_prefix_substitutions" : {
+						"magnificent-octopus/octopus/static/vendor/edges/" : "/static/vendor/edges/",
+						"service/static/" : "/static/"
+					}
+				}
+			},
+			"assets" : [
+				"widget.edges"
+			],
+			"exclude" : [
+				"d3",
+				"jquery",
+				"papaparse",
+				"nvd3",
+				"google.maps",
+				"tablesorter",
+				"showdown",
+				"bootstrap3",
+				"edges.csv"
+			]
+		},
 		"reactordb.nodeps.full.js" : {
 			"pipelines" : {
 				"js-src": {

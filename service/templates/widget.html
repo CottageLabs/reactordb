@@ -32,6 +32,43 @@ var RDB_WIDGET_CONFIG_widget_5br75 = {
 
 <p>some more text, introducing this table</p>
 
+<div id="widget_fjas8"></div>
+<script type="text/javascript">
+var RDB_WIDGET_CONFIG_widget_fjas8 = {
+  "id": "widget_fjas8",
+  "type": "table_aggregate",
+    "query": {"query": {"filtered": {"filter": {"bool": {"must": [{"terms": {"reactor.process.exact": ["BWR"]}}]}}, "query": {"match_all": {}}}}},
+  "base": "",
+    "prefix" : "preview_",
+  "include": "/embed.html",
+  "settings": {
+    "aggregate_around": {
+      "field": "reactor.country",
+      "display": "Location"
+    },
+    "order": "reactor.design_net_capacity",
+    "limit": "10",
+    "aggregate_on": [
+      {
+        "field": "reactor.reference_unit_power_capacity_net",
+        "display": "Reference Unit Power (Capacity Net)"
+      },
+      {
+        "field": "reactor.gross_capacity",
+        "display": "Gross Capacity"
+      },
+      {
+        "field": "reactor.design_net_capacity",
+        "display": "Design Net Capacity"
+      }
+    ]
+  }
+}
+</script>
+<script type="text/javascript" src="embed.js?id=widget_fjas8"></script>
+
+<p>and then this table</p>
+
 <!-- this is the embed snippet, it appears in the main body of the page -->
 
 <div id="widget_pwc7z"></div>

@@ -5,19 +5,19 @@ var rdbwidgets = {
         raw: {
             reactor : [
                 {id : "reference_unit_power_capacity_net", type : ["single", "number"], display : "Reference Unit Power (Capacity Net)"},
-                {id : "process", type : ["single"], display : "Reactor Type"},
+                {id : "process", type : ["single", "text"], display : "Reactor Type"},
                 {id : "construction_start", type : ["single", "date"], display : "Construction Start"},
-                {id : "operator", type : ["single"], display: "Operator"},
+                {id : "operator", type : ["single", "text"], display: "Operator"},
                 {id : "first_grid_connection", type : ["single", "date"], display : "First Grid Connection"},
                 {id : "gross_capacity", type: ["single", "number"], display: "Gross Capacity"},
-                {id : "status", type: ["single"], display : "Current Status"},
+                {id : "status", type: ["single", "text"], display : "Current Status"},
                 {id : "first_criticality", type : ["single", "date"], display : "First Criticality" },
                 {id : "commercial_operation", type : ["single", "date"], display: "Commercial Operation"},
                 {id : "termal_capacity", type: ["single", "number"], display: "Thermal Capacity"},
                 {id : "design_net_capacity", type: ["single", "number"], display: "Design Net Capacity"},
-                {id : "name", type: ["single", "reactor-link"], display: "Reactor Name"},
-                {id : "country", type: ["single", "country-link"], display: "Location"},
-                {id : "model", type : ["single"], display: "Model"}
+                {id : "name", type: ["single", "reactor-link", "text"], display: "Reactor Name"},
+                {id : "country", type: ["single", "country-link", "text"], display: "Location"},
+                {id : "model", type : ["single", "text"], display: "Model"}
             ],
             operations : [
                 {id: "annual_time_online", type : ["number"], display: "Annual Time Online"},
@@ -53,6 +53,17 @@ var rdbwidgets = {
             var list = [{val: "", display: "Select a Reactor Field"}];
             for (var i = 0; i < raw.length; i++) {
                 if ($.inArray("single", raw[i].type) !== -1) {
+                    list.push({val: "reactor." + raw[i].id, display: "reactor." + raw[i].id});
+                }
+            }
+            return list;
+        },
+
+        singleTextValueReactorFields : function() {
+            var raw = rdbwidgets.data.raw.reactor;
+            var list = [{val: "", display: "Select a Reactor Field"}];
+            for (var i = 0; i < raw.length; i++) {
+                if ($.inArray("single", raw[i].type) !== -1 && $.inArray("text", raw[i].type) !== -1) {
                     list.push({val: "reactor." + raw[i].id, display: "reactor." + raw[i].id});
                 }
             }
@@ -318,7 +329,7 @@ var rdbwidgets = {
                             {
                                 "name": "field",
                                 "type": "select",
-                                "source": rdbwidgets.data.singleValueReactorFields,
+                                "source": rdbwidgets.data.singleTextValueReactorFields,
                                 "label" : "Field",
                                 "dependents" : ["aggregate_around.display", "aggregate_around.formatting"]
                             },
@@ -346,13 +357,19 @@ var rdbwidgets = {
                                 "type": "select",
                                 "source": rdbwidgets.data.numericReactorFields,
                                 "label" : "Field",
-                                "dependents" : ["aggregate_on.display", "order"]
+                                "dependents" : ["aggregate_on.display", "aggregate_on.formatting", "order"]
                             },
                             {
                                 "name": "display",
                                 "type": "text",
                                 "default": rdbwidgets.data.defaultReactorFieldName({ref : "aggregate_on.field"}),
                                 "label" : "Display Name"
+                            },
+                            {
+                                "name": "formatting",
+                                "type": "select",
+                                "source": rdbwidgets.data.fieldFormatters({ref: "aggregate_on.field"}),
+                                "label" : "Value Formatting"
                             }
                         ],
                         "repeatable": true,
@@ -533,7 +550,7 @@ var rdbwidgets = {
             ]
         });
 
-        reactordb.activeEdges[selector] = e;
+        rdbwidgets.activeEdges[selector] = e;
     },
 
     newWidgetEditorTemplate : function(params) {
@@ -1661,12 +1678,18 @@ var rdbwidgets = {
                 if ("source" in dependentDef) {
                     var source = dependentDef.source({currentData: this.component.currentData, previousData: this.component.previousData, idx: idx})
 
-                    var selector = this._mapToFormName({fieldDef: dependentDef, idx: idx});
-                    selector = "[name=" + selector + "]";
+                    var fieldBits = fieldDef.name.split(".");
+                    var dependentBits = dependentDef.name.split(".");
+                    var sameObject = fieldBits[0] === dependentBits[0];
 
-                    //var fieldBits = fieldDef.name.split(".");
-                    //var dependentBits = dependentDef.name.split(".");
-                    //var sameObject = fieldBits[0] === dependentBits[0];
+                    var args = {fieldDef: dependentDef};
+                    if (sameObject) {
+                        args.idx = idx;
+                    } else {
+                        args.idx = false;
+                    }
+                    var selector = this._mapToFormName(args);
+                    selector = "[name=" + selector + "]";
 
                     var el = this.component.context.find(selector);
 
