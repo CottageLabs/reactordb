@@ -1646,7 +1646,7 @@ var rdbwidgets = {
                 displayFrag = ' style="display:none" ';
             }
 
-            var button = '<button class="btn ' + style + ' form-control ' + classes + '" id="' + id + '"' + displayFrag + '>' + label + '</button>';
+            var button = '<button type="button" class="btn ' + style + ' form-control ' + classes + '" id="' + id + '"' + displayFrag + '>' + label + '</button>';
             return button;
         };
 
