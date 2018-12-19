@@ -58,6 +58,12 @@ class MasterSheet(clcsv.SheetWrapper):
         u"Website" : "website",
         u"WNA Web Links" : "wna_links",
         u"WNN Web Links" : "wnn_links",
+        u"Planned start-up" : "planned_start_up",
+        u"Licensed to": "licensed_to",
+        u"Planned closure" : "planned_closure",
+        u"Comment 1" : "comment_1",
+        u"Comment 2" : "comment_2",
+        u"Comment 3" : "comment_3",
 
         # fields shared with the scraped sheet
         u"Alternate Name" : "alternate_name",
@@ -122,7 +128,10 @@ class MasterSheet(clcsv.SheetWrapper):
         "commercial_operation" : ["N/A"],
         "longterm_shutdown" : ["N/A"],
         "restart" : ["N/A"],
-        "permanent_shutdown" : ["N/A"]
+        "permanent_shutdown" : ["N/A"],
+        "planned_start_up" : ["N/A"],
+        "licensed_to" : ["N/A"],
+        "planned_closure" : ["N/A"]
     }
 
     EMPTY_STRING_AS_NONE = True

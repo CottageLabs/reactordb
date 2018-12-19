@@ -17,7 +17,13 @@ var rdbwidgets = {
                 {id : "design_net_capacity", type: ["single", "number"], display: "Design Net Capacity"},
                 {id : "name", type: ["single", "reactor-link", "text"], sort_type: "exact", display: "Reactor Name"},
                 {id : "country", type: ["single", "country-link", "text"], sort_type: "exact", display: "Location"},
-                {id : "model", type : ["single", "text"], sort_type: "exact", display: "Model"}
+                {id : "model", type : ["single", "text"], sort_type: "exact", display: "Model"},
+                {id : "planned_start_up", type : ["single"], sort_type: "exact", display: "Planned Start-up"},
+                {id : "planned_closure", type : ["single"], sort_type: "exact", display: "Planned Closure"},
+                {id : "licensed_to", type : ["single"], sort_type: "exact", display: "Licensed To"},
+                {id : "comment_1", type : ["single"], sort_type: "exact", display: "Comment 1"},
+                {id : "comment_2", type : ["single"], sort_type: "exact", display: "Comment 2"},
+                {id : "comment_3", type : ["single"], sort_type: "exact", display: "Comment 3"}
             ],
             operations : [
                 {id: "annual_time_online", type : ["number"], display: "Annual Time Online"},
