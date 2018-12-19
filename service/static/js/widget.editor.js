@@ -34,7 +34,7 @@ var rdbwidgets = {
                 {id : "restart", type : ["single", "date"], display : "Restart"},
                 {id : "site_name", type: ["single", "text"], sort_type: "exact", display : "Site Name"},
                 {id : "status", type: ["single", "text"], sort_type: "exact", display : "Current Status"},
-                {id : "termal_capacity", type: ["single", "number"], display: "Thermal Capacity"},
+                {id : "thermal_capacity", type: ["single", "number"], display: "Thermal Capacity"},
                 {id : "url", type: ["single"], sort_type: "exact", display: "Thermal Capacity"},
                 {id : "vendor", type: ["single", "text"], sort_type: "exact", display: "Vendor"}
             ],
