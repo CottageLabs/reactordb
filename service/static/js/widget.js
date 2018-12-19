@@ -29,7 +29,7 @@ var widget = {
     init : function(params) {
         // use this to stop execution on an embed page, so that you can attach the debugger to the anonymously
         // loaded code
-        alert(params.id);
+        // alert(params.id);
         params.selector = "#" + params.id + "-inner";
         var type = params.type;
 
@@ -359,10 +359,17 @@ var widget = {
             }
         }
 
+        var sortSuffix = "";
+        if (params.settings.order.hasOwnProperty("sort_type")) {
+            if (params.settings.order.sort_type === "exact") {
+                sortSuffix = ".exact";
+            }
+        }
+
         // compile the query
         var openingQuery = es.newQuery({raw: params.query});
         openingQuery.size = parseInt(params.settings.limit);
-        openingQuery.addSortBy(es.newSort({field: params.settings.order.field + ".exact", order: params.settings.order.dir}));
+        openingQuery.addSortBy(es.newSort({field: params.settings.order.field + sortSuffix, order: params.settings.order.dir}));
 
         var fieldDisplay = [];
         for (var i = 0; i < params.settings.reactor.length; i++) {

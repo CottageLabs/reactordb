@@ -5,19 +5,19 @@ var rdbwidgets = {
         raw: {
             reactor : [
                 {id : "reference_unit_power_capacity_net", type : ["single", "number"], display : "Reference Unit Power (Capacity Net)"},
-                {id : "process", type : ["single", "text"], display : "Reactor Type"},
+                {id : "process", type : ["single", "text"], sort_type: "exact", display : "Reactor Type"},
                 {id : "construction_start", type : ["single", "date"], display : "Construction Start"},
-                {id : "operator", type : ["single", "text"], display: "Operator"},
+                {id : "operator", type : ["single", "text"], sort_type: "exact", display: "Operator"},
                 {id : "first_grid_connection", type : ["single", "date"], display : "First Grid Connection"},
                 {id : "gross_capacity", type: ["single", "number"], display: "Gross Capacity"},
-                {id : "status", type: ["single", "text"], display : "Current Status"},
+                {id : "status", type: ["single", "text"], sort_type: "exact", display : "Current Status"},
                 {id : "first_criticality", type : ["single", "date"], display : "First Criticality" },
                 {id : "commercial_operation", type : ["single", "date"], display: "Commercial Operation"},
                 {id : "termal_capacity", type: ["single", "number"], display: "Thermal Capacity"},
                 {id : "design_net_capacity", type: ["single", "number"], display: "Design Net Capacity"},
-                {id : "name", type: ["single", "reactor-link", "text"], display: "Reactor Name"},
-                {id : "country", type: ["single", "country-link", "text"], display: "Location"},
-                {id : "model", type : ["single", "text"], display: "Model"}
+                {id : "name", type: ["single", "reactor-link", "text"], sort_type: "exact", display: "Reactor Name"},
+                {id : "country", type: ["single", "country-link", "text"], sort_type: "exact", display: "Location"},
+                {id : "model", type : ["single", "text"], sort_type: "exact", display: "Model"}
             ],
             operations : [
                 {id: "annual_time_online", type : ["number"], display: "Annual Time Online"},
@@ -207,6 +207,31 @@ var rdbwidgets = {
             }
         },
 
+        sortType : function(params) {
+            var ref = params.ref;
+
+            return function(params) {
+                if (!params) { params = {} }
+                var currentData = params.currentData;
+                var previousData = params.previousData;
+                var idx = params.idx;
+
+                if (!currentData) {
+                    return "";
+                }
+
+                // get the value of the field we are dependent on
+                var reactorField = rdbwidgets.data._getFieldValue({data: currentData, ref: ref, idx: idx});
+
+                var raw = rdbwidgets.data.raw.reactor;
+                for (var i = 0; i < raw.length; i++) {
+                    if ("reactor." + raw[i].id === reactorField) {
+                        return raw[i].sort_type || "";
+                    }
+                }
+            }
+        },
+
         _getFieldValue : function(params) {
             var ref = params.ref;
             var idx = params.idx;
@@ -296,7 +321,8 @@ var rdbwidgets = {
                                 "name": "field",
                                 "type": "select",
                                 "source": rdbwidgets.data.singleValueReactorFields,
-                                "label" : "Sort on Field"
+                                "label" : "Sort on Field",
+                                "dependents" : ["order.sort_type"]
                             },
                             {
                                 "name": "dir",
@@ -306,6 +332,11 @@ var rdbwidgets = {
                                     {val: "desc", display: "descending"}
                                 ],
                                 "label" : "Sort Direction"
+                            },
+                            {
+                                "name" : "sort_type",
+                                "type" : "hidden",
+                                "default" : rdbwidgets.data.sortType({ref: "order.field"})
                             }
                         ]
                     },
@@ -1430,6 +1461,7 @@ var rdbwidgets = {
             var label = params.label;
             var id = params.id;
             var layout = params.layout || "regular";
+            /*
             var read = edges.getParam(params.read, true);
             var readType = edges.getParam(params.readType, "single");
             var fieldSeparator = edges.getParam(params.fieldSeparator, false);
@@ -1437,11 +1469,12 @@ var rdbwidgets = {
             var indexPattern = edges.getParam(params.indexPattern, false);
             var listField = edges.getParam(params.listField, false);
             var fieldPattern = edges.getParam(params.fieldPattern, false);
-
+            */
             if (!id) {
                 id = name;
             }
 
+            /*
             var readFrag = "";
             if (read) {
                 readFrag =  ' data-read="true" data-read-type="' + readType + '"';
@@ -1458,7 +1491,11 @@ var rdbwidgets = {
             var repeatFrag = "";
             if (repeatable) {
                 repeatFrag = ' repeatable-control ';
-            }
+            }*/
+
+            var rrf = this._get_read_and_repeat_frags(params);
+            var readFrag = rrf.read;
+            var repeatFrag = rrf.repeat;
 
             if (typeof(source) === 'function') {
                 source = source();
@@ -1479,22 +1516,7 @@ var rdbwidgets = {
             return frag;
         };
 
-        this._options = function(params) {
-            var source = params.source;
-
-            var options = "";
-            for (var i = 0; i < source.length; i++) {
-                options += '<option value="' + source[i].val + '">' + source[i].display + '</option>';
-            }
-            return options;
-        };
-
-        this._text = function(params) {
-            var defaultValue = params.default;
-            var name = params.name;
-            var label = params.label;
-            var id = params.id;
-            var layout = params.layout || "regular";
+        this._get_read_and_repeat_frags = function(params) {
             var read = edges.getParam(params.read, true);
             var readType = edges.getParam(params.readType, "single");
             var fieldSeparator = edges.getParam(params.fieldSeparator, false);
@@ -1502,10 +1524,6 @@ var rdbwidgets = {
             var indexPattern = edges.getParam(params.indexPattern, false);
             var listField = edges.getParam(params.listField, false);
             var fieldPattern = edges.getParam(params.fieldPattern, false);
-
-            if (!id) {
-                id = name;
-            }
 
             var readFrag = "";
             if (read) {
@@ -1524,6 +1542,61 @@ var rdbwidgets = {
             if (repeatable) {
                 repeatFrag = ' repeatable-control ';
             }
+
+            return {read: readFrag, repeat: repeatFrag};
+        };
+
+        this._options = function(params) {
+            var source = params.source;
+
+            var options = "";
+            for (var i = 0; i < source.length; i++) {
+                options += '<option value="' + source[i].val + '">' + source[i].display + '</option>';
+            }
+            return options;
+        };
+
+        this._text = function(params) {
+            var defaultValue = params.default;
+            var name = params.name;
+            var label = params.label;
+            var id = params.id;
+            var layout = params.layout || "regular";
+            /*
+            var read = edges.getParam(params.read, true);
+            var readType = edges.getParam(params.readType, "single");
+            var fieldSeparator = edges.getParam(params.fieldSeparator, false);
+            var repeatable = edges.getParam(params.repeatable, false);
+            var indexPattern = edges.getParam(params.indexPattern, false);
+            var listField = edges.getParam(params.listField, false);
+            var fieldPattern = edges.getParam(params.fieldPattern, false);
+            */
+            if (!id) {
+                id = name;
+            }
+
+            /*
+            var readFrag = "";
+            if (read) {
+                readFrag =  ' data-read="true" data-read-type="' + readType + '"';
+                if (fieldSeparator) {
+                    readFrag += ' data-read-separator="' + fieldSeparator + '" ';
+                }
+                if (repeatable) {
+                    readFrag += ' data-read-index-pattern="' + indexPattern + '" ';
+                    readFrag += ' data-read-list-field="' + listField + '" ';
+                    readFrag += ' data-read-field-pattern="' + fieldPattern + '" ';
+                }
+            }
+
+            var repeatFrag = "";
+            if (repeatable) {
+                repeatFrag = ' repeatable-control ';
+            }*/
+
+            var rrf = this._get_read_and_repeat_frags(params);
+            var readFrag = rrf.read;
+            var repeatFrag = rrf.repeat;
 
             if (typeof(defaultValue) === 'function') {
                 defaultValue = defaultValue();
@@ -1559,6 +1632,22 @@ var rdbwidgets = {
 
             var button = '<button class="btn ' + style + ' form-control ' + classes + '" id="' + id + '"' + displayFrag + '>' + label + '</button>';
             return button;
+        };
+
+        this._hidden = function(params) {
+            var name = params.name;
+            var id = params.id;
+
+            if (!id) {
+                id = name;
+            }
+
+            var rrf = this._get_read_and_repeat_frags(params);
+            var readFrag = rrf.read;
+            var repeatFrag = rrf.repeat;
+
+            var frag = '<input type="hidden" name="' + name + '" id="' + id + '" value="" class="' + repeatFrag + '" ' + readFrag + '>';
+            return frag;
         };
 
         this._combo = function(params) {
@@ -1632,6 +1721,8 @@ var rdbwidgets = {
                     frag += this._text(fieldDef);
                 } else if (fieldType === "button") {
                     frag += this._button(fieldDef);
+                } else if (fieldType === "hidden") {
+                    frag += this._hidden(fieldDef);
                 }
             }
 
