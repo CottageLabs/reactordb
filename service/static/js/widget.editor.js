@@ -274,7 +274,7 @@ var rdbwidgets = {
         }
     },
 
-    controlPanelOptions : function() {
+    controlPanelOptions : function(params) {
         return [
             {
                 "name": "Hightlight Numbers",
@@ -345,6 +345,16 @@ var rdbwidgets = {
                         "type": "text",
                         "default": "10",
                         "label" : "Maximum Number of Records to Show"
+                    },
+                    {
+                        "name" : "countryPageTemplate",
+                        "type" : "hidden",
+                        "default" : params.countryPageTemplate
+                    },
+                    {
+                        "name" : "reactorPageTemplate",
+                        "type" : "hidden",
+                        "default" : params.reactorPageTemplate
                     }
                 ]
             },
@@ -567,7 +577,7 @@ var rdbwidgets = {
                 rdbwidgets.newControlPanel({
                     id: "main-control",
                     category: "control-panel",
-                    options: rdbwidgets.controlPanelOptions(),
+                    options: rdbwidgets.controlPanelOptions(params),
                     renderer : rdbwidgets.newControlPanelRenderer()
                 }),
                 rdbwidgets.newWidgetPreview({
@@ -1637,6 +1647,7 @@ var rdbwidgets = {
         this._hidden = function(params) {
             var name = params.name;
             var id = params.id;
+            var def = params.default;
 
             if (!id) {
                 id = name;
@@ -1646,7 +1657,12 @@ var rdbwidgets = {
             var readFrag = rrf.read;
             var repeatFrag = rrf.repeat;
 
-            var frag = '<input type="hidden" name="' + name + '" id="' + id + '" value="" class="' + repeatFrag + '" ' + readFrag + '>';
+            var defaultFrag = "";
+            if (def && typeof(def) !== 'function') {
+                defaultFrag = def;
+            }
+
+            var frag = '<input type="hidden" name="' + name + '" id="' + id + '" value="' + defaultFrag + '" class="' + repeatFrag + '" ' + readFrag + '>';
             return frag;
         };
 

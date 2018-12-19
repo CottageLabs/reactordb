@@ -2,27 +2,49 @@ var widget = {
     activeEdge : false,
 
     formatters : {
-        year : function(val) {
-            return (new Date(val)).getUTCFullYear();
+        year : function(params) {
+            return function(val) {
+                return (new Date(val)).getUTCFullYear();
+            }
         },
-        year_month : function(val) {
-            return val;
+        year_month : function(params) {
+            var formatter = edges.numFormat({
+                reflectNonNumbers: true,
+                zeroPadding: 2
+            });
+            return function(val) {
+                var d = new Date(val);
+                return d.getUTCFullYear() + "-" + formatter(d.getUTCMonth() + 1);
+            }
         },
-        full_date : function(val) {
-            return val;
+        full_date : function(params) {
+            return function(val) {
+                return val;
+            }
         },
-        number : function(val) {
+        number : function(params) {
             var formatter = edges.numFormat({
                 reflectNonNumbers: true,
                 thousandsSeparator: ","
             });
-            return formatter(val);
+            return function(val) {
+                return formatter(val);
+            }
         },
-        country_link : function(val) {
-            return val;
+        country_link : function(params) {
+            var urlTemplate = params.settings.countryPageTemplate;
+            return function(val) {
+                var url = urlTemplate.replace("{country}", encodeURIComponent(val));
+                return '<a href="' + url + '">' + val + '</a>';
+            }
         },
-        reactor_link : function(val) {
-            return '<a href="#">' + val + '</a>';
+        reactor_link : function(params) {
+            var urlTemplate = params.settings.reactorPageTemplate;
+            return function(val, res) {
+                var reactorId = res.id;
+                var url = urlTemplate.replace("{reactor}", encodeURIComponent(reactorId));
+                return '<a href="' + url + '">' + val + '</a>';
+            }
         }
     },
 
@@ -376,7 +398,7 @@ var widget = {
             var fieldDef = params.settings.reactor[i];
             var obj = {field: fieldDef.field, display: fieldDef.display};
             if (fieldDef.hasOwnProperty("formatting")) {
-                var fn = widget.formatters[fieldDef.formatting];
+                var fn = widget.formatters[fieldDef.formatting](params);
                 obj.valueFunction = fn;
             }
             fieldDisplay.push(obj);
@@ -450,7 +472,7 @@ var widget = {
         var fieldDisplay = [];
         var aaObj = {field: params.settings.aggregate_around.field, display: params.settings.aggregate_around.display};
         if (params.settings.aggregate_around.hasOwnProperty("formatting")) {
-            var fn = widget.formatters[params.settings.aggregate_around.formatting];
+            var fn = widget.formatters[params.settings.aggregate_around.formatting](params);
             aaObj.valueFunction = fn;
         }
         fieldDisplay.push(aaObj);
@@ -459,7 +481,7 @@ var widget = {
             var fieldDef = params.settings.aggregate_on[i];
             var obj = {field: fieldDef.field, display: fieldDef.display};
             if (fieldDef.hasOwnProperty("formatting")) {
-                var fn = widget.formatters[fieldDef.formatting];
+                var fn = widget.formatters[fieldDef.formatting](params);
                 obj.valueFunction = fn;
             }
             fieldDisplay.push(obj);
