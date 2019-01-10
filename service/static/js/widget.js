@@ -569,30 +569,34 @@ var widget = {
         return function(component) {
             var results = component.edge.result.results();
 
-            var histogram = {};
+            // set up the accumulator
+            var accumulator = {};
+            for (var s = parseInt(start); s < parseInt(end); s++) {
+                accumulator[s] = 0;
+            }
+
             for (var i = 0; i < results.length; i++) {
                 var result = results[i];
                 var field = "operation." + params.field;
-                var accumulator = edges.objVal(field, result);
+                var fieldData = edges.objVal(field, result);
+
                 var years = Object.keys(accumulator);
+                years.sort();
+
+                var cumulation = 0;
                 for (var j = 0; j < years.length; j++) {
                     var year = years[j];
-                    var yearNum = parseInt(year);
-                    if (yearNum < start || yearNum > end) {
-                        continue;
+                    var val = fieldData[String(year)];
+                    if (val) {
+                        cumulation += val;
                     }
-                    var val = accumulator[year];
-                    if (!histogram.hasOwnProperty(year)) {
-                        histogram[year] = val;
-                    } else {
-                        histogram[year] += val;
-                    }
+                    accumulator[year] += cumulation;
                 }
             }
 
             var values = [];
-            for (var year in histogram) {
-                values.push({label: year, value: histogram[year]});
+            for (var year in accumulator) {
+                values.push({label: year, value: accumulator[year]});
             }
             values.sort(function(a, b) {
                 if (parseInt(a.year) < parseInt(b.year)) {
@@ -607,5 +611,4 @@ var widget = {
             return [{key: seriesName, values: values}]
         }
     }
-
 };

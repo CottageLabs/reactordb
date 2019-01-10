@@ -46,8 +46,7 @@ var rdbwidgets = {
                 {id: "energy_availability_factor_annual", type: ["number"], display: "Energy Availability Factor (Annual)"},
                 {id: "electricity_supplied", type: ["number"], display: "Electricity Supplied"},
                 {id: "energy_availability_factor_cumulative", type: ["number"], display: "Energy Availability Factor (Cumulative)"},
-                {id: "reference_unit_power", type: ["number"], display: "Reference Unit Power"},
-                {id: "electricity_supplied_cumulative", type: ["number"], display: "Electricity Supplied (Cumulative)"}
+                {id: "reference_unit_power", type: ["number"], display: "Reference Unit Power"}
             ],
             formatters : {
                 date : [
