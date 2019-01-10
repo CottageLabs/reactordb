@@ -241,7 +241,8 @@ var widget = {
                 !params.settings.hasOwnProperty("end") ||
                 !params.settings.hasOwnProperty("value") ||
                 !params.settings.hasOwnProperty("label") ||
-                !params.settings.hasOwnProperty("height")) {
+                !params.settings.hasOwnProperty("height") ||
+                !params.settings.hasOwnProperty("chart")) {
             return false;
         }
 
@@ -262,23 +263,47 @@ var widget = {
             labelDistance = parseInt(labelDistance)
         }
 
-        var components = [
-            edges.newMultibar({
-                id: "chart_histogram_" + params.id,
-                category: "panel",
-                dataFunction: widget._dataSeriesFromHistogram({seriesName: params.settings.label}),
-                renderer : edges.nvd3.newMultibarRenderer({
-                    xTickFormat: ".0f",
-                    barColor : ["#1e9dd8"],
-                    yTickFormat : ",.0f",
-                    showLegend: false,
-                    xAxisLabel: "Year",
-                    yAxisLabel: params.settings.label,
-                    marginLeft: leftMargin,
-                    yAxisLabelDistance: labelDistance
+        var components = [];
+
+        if (params.settings.chart === "bar") {
+            components.push(
+                edges.newMultibar({
+                    id: "chart_histogram_" + params.id,
+                    category: "panel",
+                    dataFunction: widget._dataSeriesFromHistogram({seriesName: params.settings.label}),
+                    renderer: edges.nvd3.newMultibarRenderer({
+                        xTickFormat: ".0f",
+                        barColor: ["#1e9dd8"],
+                        yTickFormat: ",.0f",
+                        showLegend: false,
+                        xAxisLabel: "Year",
+                        yAxisLabel: params.settings.label,
+                        marginLeft: leftMargin,
+                        yAxisLabelDistance: labelDistance
+                    })
                 })
-            })
-        ];
+            );
+        } else if (params.settings.chart === "line") {
+            components.push(
+                edges.newSimpleLineChart({
+                    id: "chart_histogram_" + params.id,
+                    category: "panel",
+                    dataFunction: widget._dataSeriesFromHistogram({seriesName: params.settings.label}),
+                    renderer: edges.nvd3.newSimpleLineChartRenderer({
+                        xTickFormat: ".0f",
+                        lineColor: ["#1e9dd8"],
+                        yTickFormat: ",.0f",
+                        showLegend: false,
+                        xAxisLabel: "Year",
+                        yAxisLabel: params.settings.label,
+                        marginLeft: leftMargin,
+                        yAxisLabelDistance: labelDistance
+                    })
+                })
+            );
+        } else {
+            return false;
+        }
 
         var search_url = params.base + "/custom/" + prefix + "chart_histogram/_search?start=" + params.settings.start + "&end=" + params.settings.end + "&field=" + params.settings.value;
         return edges.newEdge({
@@ -302,7 +327,8 @@ var widget = {
                 !params.settings.hasOwnProperty("end") ||
                 !params.settings.hasOwnProperty("value") ||
                 !params.settings.hasOwnProperty("label") ||
-                !params.settings.hasOwnProperty("height")) {
+                !params.settings.hasOwnProperty("height") ||
+                !params.settings.hasOwnProperty("chart")) {
             return false;
         }
 
@@ -323,28 +349,58 @@ var widget = {
             labelDistance = parseInt(labelDistance)
         }
 
-        var components = [
-            edges.newMultibar({
-                id: "chart_accumulator_" + params.id,
-                category: "panel",
-                dataFunction: widget._dataSeriesFromAccumulator({
-                    seriesName: params.settings.label,
-                    field: params.settings.value,
-                    start: params.settings.start,
-                    end: params.settings.end
-                }),
-                renderer : edges.nvd3.newMultibarRenderer({
-                    xTickFormat: ".0f",
-                    barColor : ["#1e9dd8"],
-                    yTickFormat : ",.0f",
-                    showLegend: false,
-                    xAxisLabel: "Year",
-                    yAxisLabel: params.settings.label,
-                    marginLeft: leftMargin,
-                    yAxisLabelDistance: labelDistance
+        var components = [];
+
+
+        if (params.settings.chart === "bar") {
+            components.push(
+                edges.newMultibar({
+                    id: "chart_accumulator_" + params.id,
+                    category: "panel",
+                    dataFunction: widget._dataSeriesFromAccumulator({
+                        seriesName: params.settings.label,
+                        field: params.settings.value,
+                        start: params.settings.start,
+                        end: params.settings.end
+                    }),
+                    renderer: edges.nvd3.newMultibarRenderer({
+                        xTickFormat: ".0f",
+                        barColor: ["#1e9dd8"],
+                        yTickFormat: ",.0f",
+                        showLegend: false,
+                        xAxisLabel: "Year",
+                        yAxisLabel: params.settings.label,
+                        marginLeft: leftMargin,
+                        yAxisLabelDistance: labelDistance
+                    })
                 })
-            })
-        ];
+            );
+        } else if (params.settings.chart === "line") {
+            components.push(
+                edges.newSimpleLineChart({
+                    id: "chart_accumulator_" + params.id,
+                    category: "panel",
+                    dataFunction: widget._dataSeriesFromAccumulator({
+                        seriesName: params.settings.label,
+                        field: params.settings.value,
+                        start: params.settings.start,
+                        end: params.settings.end
+                    }),
+                    renderer: edges.nvd3.newSimpleLineChartRenderer({
+                        xTickFormat: ".0f",
+                        lineColor: ["#1e9dd8"],
+                        yTickFormat: ",.0f",
+                        showLegend: false,
+                        xAxisLabel: "Year",
+                        yAxisLabel: params.settings.label,
+                        marginLeft: leftMargin,
+                        yAxisLabelDistance: labelDistance
+                    })
+                })
+            );
+        } else {
+            return false;
+        }
 
         var search_url = params.base + "/query/" + prefix + "reactor/_search";
         return edges.newEdge({

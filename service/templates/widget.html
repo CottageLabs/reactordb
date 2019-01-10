@@ -8,7 +8,7 @@
 
 
 <div class="content"><div class="container">
-    <p>start the page off by talking about this accumulator chart (accumulator charts are currently not showing quite the correct information)</p>
+    <p>start the page off by talking about this accumulator chart</p>
 
     <div class="row">
         <div class="col-xs-7">
@@ -22,6 +22,7 @@
                 "prefix" : "preview_",
               "include": "/embed.html",
               "settings": {
+                  "chart" : "line",
                 "start": "1970",
                 "end": "2018",
                 "value": "electricity_supplied",
@@ -164,7 +165,7 @@
                     "prefix" : "preview_",
                     type: "chart_histogram",
                     query: {"query":{"filtered":{"filter":{"bool":{"must":[{"terms":{"reactor.process.exact":["BWR"]}}]}},"query":{"match_all":{}}}}},
-                    settings: {start: "1970", end: "2018", value: "annual_time_online", label: "Annual Time Online", height: "300"}
+                    settings: {chart: "bar", start: "1970", end: "2018", value: "annual_time_online", label: "Annual Time Online", height: "300"}
                 };
             </script>
             <script type="text/javascript" src="embed.js?id=second_widget"></script>

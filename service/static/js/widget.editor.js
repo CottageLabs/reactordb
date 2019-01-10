@@ -463,6 +463,15 @@ var rdbwidgets = {
                 "id" : "chart_histogram",
                 "fields": [
                     {
+                        "name" : "chart",
+                        "type" : "select",
+                        "source" : [
+                            {"val" : "bar", "display" : "bar"},
+                            {"val" : "line", "display" : "line"}
+                        ],
+                        "label" : "Chart Type"
+                    },
+                    {
                         "name": "start",
                         "type": "text",
                         "default": "1970",
@@ -511,6 +520,15 @@ var rdbwidgets = {
                 "name": "Chart : Accumulator",
                 "id" : "chart_accumulator",
                 "fields": [
+                    {
+                        "name" : "chart",
+                        "type" : "select",
+                        "source" : [
+                            {"val" : "bar", "display" : "bar"},
+                            {"val" : "line", "display" : "line"}
+                        ],
+                        "label" : "Chart Type"
+                    },
                     {
                         "name": "start",
                         "type": "text",
