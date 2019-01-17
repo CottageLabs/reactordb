@@ -94,7 +94,6 @@ var rdbwidgets = {
             return function(params) {
                 if (!params) { params = {} }
                 var currentData = params.currentData;
-                var previousData = params.previousData;
                 var idx = params.idx;
 
                 if (!currentData) {
@@ -132,7 +131,6 @@ var rdbwidgets = {
             return function(params) {
                 if (!params) { params = {} }
                 var currentData = params.currentData;
-                var previousData = params.previousData;
                 var idx = params.idx;
 
                 if (!currentData) {
@@ -204,7 +202,6 @@ var rdbwidgets = {
             return function(params) {
                 if (!params) { params = {} }
                 var currentData = params.currentData;
-                var previousData = params.previousData;
                 var idx = params.idx;
 
                 if (!currentData) {
@@ -231,7 +228,6 @@ var rdbwidgets = {
             return function(params) {
                 if (!params) { params = {} }
                 var currentData = params.currentData;
-                var previousData = params.previousData;
                 var idx = params.idx;
 
                 if (!currentData) {
@@ -692,8 +688,6 @@ var rdbwidgets = {
     ControlPanel : function(params) {
         this.options = params.options;
 
-        this.previousData = false;
-
         this.currentType = false;
         this.currentRawData = {};
         this.currentData = {};
@@ -769,7 +763,6 @@ var rdbwidgets = {
         };
 
         this.clearData = function(params) {
-            this.previousData = this.currentData;
             this.currentData = {};
             this.currentType = false;
             this.currentRawData = {};
@@ -780,7 +773,6 @@ var rdbwidgets = {
         };
 
         this.setCurrentData = function(params) {
-            this.previousData = this.currentData;
             this.currentRawData = params.raw;
             this.currentData = params.data;
         }
@@ -1230,124 +1222,6 @@ var rdbwidgets = {
             })
         };
 
-        this.populateForm = function(params) {
-            var context = params.context;
-            var obj = params.obj;
-
-            var fields = Object.keys(obj);
-            for (var i = 0; i < fields.length; i++) {
-                var key = fields[i];
-                var value = obj[key];
-
-                if (depositForms.params.populators && depositForms.params.populators[key]) {
-                    depositForms.params.populators[key](value);
-
-                } else if (key === "files") {
-                    for (var j = 0; j < value.length; j++) {
-                        var fileEntry = value[j];
-                        var file = {
-                            name: fileEntry.file_name,
-                            type: fileEntry.file_mime_type,
-                            size: fileEntry.file_size
-                        };
-
-                        var id = depositForms.generateUUID();
-                        var container = depositForms._fu_make_container(id);
-
-                        var remember = {};
-                        if (depositForms.fu_params.restoreMemory) {
-                            remember = depositForms.fu_params.restoreMemory(fileEntry);
-                        }
-
-                        depositForms._fu_add_uploaded({
-                            file: file,
-                            container: container,
-                            remember: remember
-                        });
-                    }
-
-                    depositForms._announceFileSizeInfo({totalSizeLimit: depositForms.fu_params.totalSizeLimit});
-
-                } else if (depositForms._isPrimitiveNonBool(value)) {
-                    // ordinary key/value pair
-                    var el = depositForms._findFormElements({context: context, key: key});
-                    if (el) {
-                        depositForms._setVal({element: el, val: value});
-                        el.trigger("change");
-                    }
-
-                } else if (value === true || value === false) {
-                    // boolean key/value pair
-                    var el = depositForms._findFormElements({context: context, key: key});
-                    if (el) {
-                        var type = el.attr("type");
-                        if (!type) {
-                            continue;
-                        }
-                        type = type.toLowerCase();
-                        if (type === "checkbox") {
-                            if (value === true) {
-                                depositForms._setVal({element: el, val: "true"});
-                                el.trigger("change");
-                            }
-                        } else if (type === "radio") {
-                            for (var j = 0; j < el.length; j++) {
-                                var rel = $(el[j]);
-                                if (rel.attr("value") === "true" && value === true) {
-                                    depositForms._setVal({element: rel, val: "true"});
-                                    rel.trigger("change");
-                                } else if (rel.attr("value") === "false" && value === false) {
-                                    depositForms._setVal({element: rel, val: "false"});
-                                    rel.trigger("change");
-                                }
-                            }
-                        }
-                    }
-
-                } else if ($.isPlainObject(value) && !$.isArray(value)) {
-                    // a sub-object
-                    if (depositForms.params.populators && depositForms.params.populators[key]) {
-                        depositForms.params.populators[key](value);
-                    } else {
-                        var separator = "___";
-                        var innerContext = key + separator;
-                        depositForms.populateForm({
-                            context: innerContext,
-                            obj: value
-                        })
-                    }
-
-                } else if ($.isArray(value) && value.length > 0) {
-                    // an array
-                    if ($.isPlainObject(value[0])) {
-                        var innerContext = key + "___";
-                        var repeatButton = $("[data-repeat-for='" + key + "']");
-                        if (repeatButton.length > 0)
-                        {
-                            for (var j = 1; j < value.length; j++) {
-                                repeatButton.trigger("click");
-                            }
-                        }
-
-                        for (var j = 0; j < value.length; j++) {
-                            if (repeatButton.length > 0) {
-                                innerContext = key + "-" + String(j) + "-";
-                            }
-                            depositForms.populateForm({
-                                context : innerContext,
-                                obj: value[j]
-                            });
-                        }
-                    } else {
-                        var el = depositForms._findFormElements({context: context, key: key});
-                        if (el) {
-                            depositForms._setVal({element: el, val: value});
-                        }
-                    }
-                }
-            }
-        };
-
         this._isPrimitiveNonBool = function(v) {
             return !($.isPlainObject(v) || $.isArray(v) || v === false || v === true)
         };
@@ -1445,65 +1319,6 @@ var rdbwidgets = {
             }
         };
 
-        this.readFormOld = function(params) {
-            var controlsIdSelector = edges.css_id_selector(this.namespace, "controls", this);
-            var controls = this.component.context.find(controlsIdSelector);
-            var inputs = controls.find(":input");
-
-            var raw = {};
-            for (var i = 0; i < inputs.length; i++) {
-                var input = $(inputs[i]);
-                var name = input.attr("name");
-                if (name) {
-                    var val = input.val();
-                    raw[name] = val;
-                }
-            }
-
-            var parsed = {};
-            var lists = {};
-            var keys = Object.keys(raw);
-            for (var i = 0; i < keys.length; i++) {
-                var key = keys[i];
-                var bits = key.split("__");
-                if (bits.length === 1) {
-                    parsed[key] = raw[key];
-                } else if (bits.length === 2) {
-                    if (!(bits[0] in parsed)) {
-                        parsed[bits[0]] = {};
-                    }
-                    parsed[bits[0]][bits[1]] = raw[key];
-                } else if (bits.length === 3) {
-                    if (!(bits[0] in lists)) {
-                        lists[bits[0]] = {};
-                    }
-                    if (!(bits[2] in lists[bits[0]])) {
-                        lists[bits[0]][bits[2]] = {}
-                    }
-                    lists[bits[0]][bits[2]][bits[1]] = raw[key];
-                }
-            }
-
-            keys = Object.keys(lists);
-            for (var i = 0; i < keys.length; i++) {
-                var key = keys[i];
-                parsed[key] = [];
-                var indices = Object.keys(lists[key]);
-                var numbers = indices.map(function(x) { return parseInt(x) });
-                var max = Math.max.apply(null, numbers);
-                for (var j = 0; j < max; j++) {
-                    parsed[key].push({});
-                }
-                for (var j = 0; j < indices.length; j++) {
-                    var idx = indices[j];
-                    var props = lists[key][idx];
-                    parsed[key][parseInt(idx) - 1] = props;
-                }
-            }
-
-            this.component.setCurrentData({raw: raw, data: parsed});
-        };
-
         this.inputChanged = function(element) {
             this.readForm();
             this._updateDependents(element);
@@ -1517,37 +1332,10 @@ var rdbwidgets = {
             var label = params.label;
             var id = params.id;
             var layout = params.layout || "regular";
-            /*
-            var read = edges.getParam(params.read, true);
-            var readType = edges.getParam(params.readType, "single");
-            var fieldSeparator = edges.getParam(params.fieldSeparator, false);
-            var repeatable = edges.getParam(params.repeatable, false);
-            var indexPattern = edges.getParam(params.indexPattern, false);
-            var listField = edges.getParam(params.listField, false);
-            var fieldPattern = edges.getParam(params.fieldPattern, false);
-            */
+
             if (!id) {
                 id = name;
             }
-
-            /*
-            var readFrag = "";
-            if (read) {
-                readFrag =  ' data-read="true" data-read-type="' + readType + '"';
-                if (fieldSeparator) {
-                    readFrag += ' data-read-separator="' + fieldSeparator + '" ';
-                }
-                if (repeatable) {
-                    readFrag += ' data-read-index-pattern="' + indexPattern + '" ';
-                    readFrag += ' data-read-list-field="' + listField + '" ';
-                    readFrag += ' data-read-field-pattern="' + fieldPattern + '" ';
-                }
-            }
-
-            var repeatFrag = "";
-            if (repeatable) {
-                repeatFrag = ' repeatable-control ';
-            }*/
 
             var rrf = this._get_read_and_repeat_frags(params);
             var readFrag = rrf.read;
@@ -1618,37 +1406,10 @@ var rdbwidgets = {
             var label = params.label;
             var id = params.id;
             var layout = params.layout || "regular";
-            /*
-            var read = edges.getParam(params.read, true);
-            var readType = edges.getParam(params.readType, "single");
-            var fieldSeparator = edges.getParam(params.fieldSeparator, false);
-            var repeatable = edges.getParam(params.repeatable, false);
-            var indexPattern = edges.getParam(params.indexPattern, false);
-            var listField = edges.getParam(params.listField, false);
-            var fieldPattern = edges.getParam(params.fieldPattern, false);
-            */
+
             if (!id) {
                 id = name;
             }
-
-            /*
-            var readFrag = "";
-            if (read) {
-                readFrag =  ' data-read="true" data-read-type="' + readType + '"';
-                if (fieldSeparator) {
-                    readFrag += ' data-read-separator="' + fieldSeparator + '" ';
-                }
-                if (repeatable) {
-                    readFrag += ' data-read-index-pattern="' + indexPattern + '" ';
-                    readFrag += ' data-read-list-field="' + listField + '" ';
-                    readFrag += ' data-read-field-pattern="' + fieldPattern + '" ';
-                }
-            }
-
-            var repeatFrag = "";
-            if (repeatable) {
-                repeatFrag = ' repeatable-control ';
-            }*/
 
             var rrf = this._get_read_and_repeat_frags(params);
             var readFrag = rrf.read;
@@ -1829,7 +1590,7 @@ var rdbwidgets = {
             for (var i = 0; i < dependents.length; i++) {
                 var dependentDef = this.component.getCurrentFieldDef({id: dependents[i]});
                 if ("source" in dependentDef) {
-                    var source = dependentDef.source({currentData: this.component.currentData, previousData: this.component.previousData, idx: idx})
+                    var source = dependentDef.source({currentData: this.component.currentData, idx: idx})
 
                     var fieldBits = fieldDef.name.split(".");
                     var dependentBits = dependentDef.name.split(".");
@@ -1850,7 +1611,7 @@ var rdbwidgets = {
                     el.html(options);
                 }
                 if ("default" in dependentDef) {
-                    var defaultVal = dependentDef.default({currentData: this.component.currentData, previousData: this.component.previousData, idx: idx});
+                    var defaultVal = dependentDef.default({currentData: this.component.currentData, idx: idx});
 
                     var selector = this._mapToFormName({fieldDef: dependentDef, idx: idx});
                     selector = "[name=" + selector + "]";
