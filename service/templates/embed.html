@@ -1,47 +1,23 @@
 {% if assets == "true" %}
 
-<!-- CSS - this goes in first -->
 
-<!--
-this is just bootstrap, it should be included in the base site template already
-<link rel="stylesheet" href="http://reactordb.world-nuclear.org/static/css/reactordb.onlydeps.framework.css"> -->
-
-<!-- all the other third party dependencies (nvd3, tablesorter, etc) -->
 <link rel="stylesheet" href="{{ base }}/static/css/reactordb.onlydeps.implementation.css">
-
-<!-- font awesome, for icons -->
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-
-<!-- reactor database and edges components -->
 <link rel="stylesheet" href="{{ base }}/static/css/reactordb.nodeps.full.css">
 
 {% endif %}
 
-<!-- HTML, must come after CSS and before JavaScript -->
-
-<!-- the div into which we will insert the widget -->
 <div id="{{ id }}-inner"></div>
-
 
 {% if assets == "true" %}
 
-<!-- JAVASCRIPT -->
-
-<!-- all the other third party dependencies, excluding google maps (not jquery) -->
-<script type="text/javascript" src="{{ base }}/static/js/reactordb.onlydeps.implementation.no-gm.js"></script>
-
-<!-- reactor database and edges components -->
+<script type="text/javascript" src="{{ base }}/static/js/widget.onlydeps.implementation.js"></script>
 <script type="text/javascript" src="{{ base }}/static/js/widget.nodeps.full.js"></script>
-
-<!-- widget js (compile this in with the relevant dependencies later) -->
-<!-- <script type="text/javascript" src="{{ base }}/static/js/widget.js"></script> -->
 
 {% endif %}
 
-<!-- activate the widget in the page -->
 <script type="text/javascript">
 var waitForReactorDB{{ id }} = setInterval(function () {
-    // if (typeof reactordb != 'undefined' && typeof widget != "undefined") {
     if (typeof widget != "undefined") {
         var e = widget.init(RDB_WIDGET_CONFIG_{{ id }});
         var id = "{{ id }}";

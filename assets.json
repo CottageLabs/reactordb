@@ -111,6 +111,27 @@
 				"edges.csv"
 			]
 		},
+		"widget.onlydeps.implementation.js" : {
+			"pipelines" : {
+				"cat": {
+					"out": ["js", "widget.onlydeps.implementation.js"]
+				},
+				"js-includes": {
+					"out": ["includes", "widget.onlydeps.implementation.js.html"],
+					"path_prefix_substitutions" : {
+						"magnificent-octopus/octopus/static/vendor/edges/" : "/static/vendor/edges/",
+						"service/static/" : "/static/"
+					}
+				}
+			},
+			"assets" : [
+				"widget.edges"
+			],
+			"include" : [
+				"d3",
+				"nvd3"
+			]
+		},
 		"reactordb.nodeps.full.js" : {
 			"pipelines" : {
 				"js-src": {
