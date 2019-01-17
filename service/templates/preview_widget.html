@@ -15,12 +15,9 @@
 
 {% block extra_js_bottom %}
 
-{# include 'includes/reactordb.nodeps.full.js.html' #}
 {% include 'includes/widget.nodeps.full.js.html' %}
 
-{# <script type="text/javascript" src="{{url_for('static', filename='js/reactordbadmin.js')}}"></script> #}
 <script type="text/javascript" src="{{url_for('static', filename='js/widget.editor.js')}}"></script>
-{# <script type="text/javascript" src="{{url_for('static', filename='js/widget.js')}}"></script> #}
 
 <script type="text/javascript">
 jQuery(document).ready(function($) {

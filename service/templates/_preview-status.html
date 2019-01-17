@@ -2,7 +2,8 @@
 <a href="{{ url_for('preview_search') }}" {% if request.path == url_for('preview_search') %}class="current"{% endif %}>Search</a> |
 <a href="{{ url_for('preview_reactor') }}" {% if request.path.startswith(url_for('preview_reactor')) %}class="current"{% endif %}>Reactor</a> |
 <a href="{{ url_for('preview_country') }}" {% if request.path.startswith(url_for('preview_country')) %}class="current"{% endif %}>Location</a> |
-<a href="{{ url_for('preview_generic') }}" {% if request.path.startswith(url_for('preview_generic')) %}class="current"{% endif %}>Generic Report</a>
+<a href="{{ url_for('preview_generic') }}" {% if request.path.startswith(url_for('preview_generic')) %}class="current"{% endif %}>Generic Report</a> |
+<a href="{{ url_for('preview_widget') }}" {% if request.path.startswith(url_for('preview_widget')) %}class="current"{% endif %}>Widget Editor</a>
 
 <div id="preview-status">
     <div class="row">

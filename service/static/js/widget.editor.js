@@ -579,7 +579,6 @@ var rdbwidgets = {
 
         var selector = params.selector;
         var index = params.index || "reactor";
-        var search_url = params.search_url || current_scheme + "//" + current_domain + "/query/" + index + "/_search";
         var prefix = edges.getParam(params.prefix, "");
 
         var base = params.base;
@@ -588,7 +587,6 @@ var rdbwidgets = {
         var e = edges.newEdge({
             selector: selector,
             template: rdbwidgets.newWidgetEditorTemplate(),
-            // search_url: search_url,
             manageUrl : true,
             components : [
                 // selected filters display, with all the fields given their display names
@@ -613,7 +611,8 @@ var rdbwidgets = {
                     },
                     renderer : edges.bs3.newSelectedFiltersRenderer({
                         showSearchString: true,
-                        allowRemove: false
+                        allowRemove: false,
+                        ifNoFilters: "There are no filters specifed, so this widget will apply to the entire reactor database.  To specify a filter go to <a href='/" + prefix + "search'>the search page</a>",
                     })
                 }),
                 rdbwidgets.newControlPanel({
@@ -651,7 +650,6 @@ var rdbwidgets = {
             var searchTermsClass = edges.css_classes(this.namespace, "search-terms");
             var controlPanelClass = edges.css_classes(this.namespace, "control-panel");
             var previewClass = edges.css_classes(this.namespace, "preview");
-            var snippetClass = edges.css_classes(this.namespace, "snippet");
 
             // start building the page template
             var frag = '<div class="' + containerClass + '"><div class="row">';
