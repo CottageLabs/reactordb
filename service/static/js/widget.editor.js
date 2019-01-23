@@ -288,6 +288,20 @@ var rdbwidgets = {
         }
     },
 
+    validators : {
+        less_than : function(params) {
+            var limit = params.limit;
+            return function(params) {
+                var val = parseInt(params.val);
+                return val < limit;
+            }
+        },
+
+        is_not_integer : function(params) {
+            return !Number.isInteger(Number(params.val))
+        }
+    },
+
     controlPanelOptions : function(params) {
         return [
             {
@@ -314,7 +328,10 @@ var rdbwidgets = {
                                 "name": "display",
                                 "type": "text",
                                 "default": rdbwidgets.data.defaultReactorFieldName({ref : "reactor.field"}),
-                                "label" : "Display Name"
+                                "label" : "Display Name",
+                                "on_val" : [
+                                    {"value" : "", "default" : true}
+                                ]
                             },
                             {
                                 "name": "formatting",
@@ -358,7 +375,20 @@ var rdbwidgets = {
                         "name": "limit",
                         "type": "text",
                         "default": "10",
-                        "label" : "Maximum Number of Records to Show"
+                        "label" : "Maximum Number of Records to Show",
+                        "on_val" : [
+                            {"value" : "", "default" : true},
+                            {
+                                "value" : rdbwidgets.validators.less_than({limit: 1}),
+                                "default" : true,
+                                "run" : function() {alert("You cannot enter a value less than '1'")}
+                            },
+                            {
+                                "value" : rdbwidgets.validators.is_not_integer,
+                                "default" : true,
+                                "run" : function() {alert("You may only enter integers")}
+                            }
+                        ]
                     },
                     {
                         "name" : "countryPageTemplate",
@@ -392,7 +422,10 @@ var rdbwidgets = {
                                 "name": "display",
                                 "type": "text",
                                 "default": rdbwidgets.data.defaultReactorFieldName({ref : "aggregate_around.field"}),
-                                "label" : "Display Name"
+                                "label" : "Display Name",
+                                "on_val" : [
+                                    {"value" : "", "default" : true}
+                                ]
                             },
                             {
                                 "name": "formatting",
@@ -418,7 +451,10 @@ var rdbwidgets = {
                                 "name": "display",
                                 "type": "text",
                                 "default": rdbwidgets.data.defaultReactorFieldName({ref : "aggregate_on.field"}),
-                                "label" : "Display Name"
+                                "label" : "Display Name",
+                                "on_val" : [
+                                    {"value" : "", "default" : true}
+                                ]
                             },
                             {
                                 "name": "formatting",
@@ -440,7 +476,10 @@ var rdbwidgets = {
                         "name": "limit",
                         "type": "text",
                         "default": "10",
-                        "label" : "Maximum Number of Records to Show"
+                        "label" : "Maximum Number of Records to Show",
+                        "on_val" : [
+                            {"value" : "", "default" : true}
+                        ]
                     },
                     {
                         "name" : "countryPageTemplate",
@@ -471,13 +510,19 @@ var rdbwidgets = {
                         "name": "start",
                         "type": "text",
                         "default": "1970",
-                        "label" : "From"
+                        "label" : "From",
+                        "on_val" : [
+                            {"value" : "", "default" : true}
+                        ]
                     },
                     {
                         "name": "end",
                         "type": "text",
                         "default": (new Date()).getUTCFullYear(),
-                        "label" : "To"
+                        "label" : "To",
+                        "on_val" : [
+                            {"value" : "", "default" : true}
+                        ]
                     },
                     {
                         "name": "value",
@@ -490,25 +535,37 @@ var rdbwidgets = {
                         "name" : "label",
                         "type" : "text",
                         "default" : rdbwidgets.data.defaultOperationsFieldName({ref : "value"}),
-                        "label" : "Name"
+                        "label" : "Name",
+                        "on_val" : [
+                            {"value" : "", "default" : true}
+                        ]
                     },
                     {
                         "name" : "height",
                         "type" : "text",
                         "default" : "300",
-                        "label" : "Widget Height (pixels)"
+                        "label" : "Widget Height (pixels)",
+                        "on_val" : [
+                            {"value" : "", "default" : true}
+                        ]
                     },
                     {
                         "name" : "left",
                         "type" : "text",
                         "default" : "80",
-                        "label" : "Left Margin (pixels)"
+                        "label" : "Left Margin (pixels)",
+                        "on_val" : [
+                            {"value" : "", "default" : true}
+                        ]
                     },
                     {
                         "name" : "distance",
                         "type" : "text",
                         "default" : "0",
-                        "label" : "Y Axis Label Distance (pixels)"
+                        "label" : "Y Axis Label Distance (pixels)",
+                        "on_val" : [
+                            {"value" : "", "default" : true}
+                        ]
                     }
                 ]
             },
@@ -529,13 +586,19 @@ var rdbwidgets = {
                         "name": "start",
                         "type": "text",
                         "default": "1970",
-                        "label" : "From"
+                        "label" : "From",
+                        "on_val" : [
+                            {"value" : "", "default" : true}
+                        ]
                     },
                     {
                         "name": "end",
                         "type": "text",
                         "default": (new Date()).getUTCFullYear(),
-                        "label" : "To"
+                        "label" : "To",
+                        "on_val" : [
+                            {"value" : "", "default" : true}
+                        ]
                     },
                     {
                         "name": "value",
@@ -548,25 +611,37 @@ var rdbwidgets = {
                         "name" : "label",
                         "type" : "text",
                         "default" : rdbwidgets.data.defaultOperationsFieldName({ref : "value"}),
-                        "label" : "Name"
+                        "label" : "Name",
+                        "on_val" : [
+                            {"value" : "", "default" : true}
+                        ]
                     },
                     {
                         "name" : "height",
                         "type" : "text",
                         "default" : "300",
-                        "label" : "Widget Height (pixels)"
+                        "label" : "Widget Height (pixels)",
+                        "on_val" : [
+                            {"value" : "", "default" : true}
+                        ]
                     },
                     {
                         "name" : "left",
                         "type" : "text",
                         "default" : "80",
-                        "label" : "Left Margin (pixels)"
+                        "label" : "Left Margin (pixels)",
+                        "on_val" : [
+                            {"value" : "", "default" : true}
+                        ]
                     },
                     {
                         "name" : "distance",
                         "type" : "text",
                         "default" : "0",
-                        "label" : "Y Axis Label Distance (pixels)"
+                        "label" : "Y Axis Label Distance (pixels)",
+                        "on_val" : [
+                            {"value" : "", "default" : true}
+                        ]
                     }
                 ]
             }
@@ -1580,6 +1655,35 @@ var rdbwidgets = {
             }
 
             var fieldDef = this.component.getCurrentFieldDef({id : fieldId});
+
+            // handle empty fields and their on_empty behaviour
+            if (fieldDef.hasOwnProperty("on_val")) {
+                var fieldVal = jqel.val();
+                for (var i = 0; i < fieldDef.on_val.length; i++) {
+                    var valOpts = fieldDef.on_val[i];
+                    var matchVal = valOpts.value;
+                    var isMatch = false;
+                    if (typeof matchVal === "function") {
+                        isMatch = matchVal({val: fieldVal});
+                    } else {
+                        isMatch = matchVal === fieldVal;
+                    }
+                    if (isMatch) {
+                        if (valOpts.default) {
+                            var fieldDefault = fieldDef.default;
+                            if (typeof fieldDefault === "function") {
+                                fieldDefault = fieldDef.default({currentData: this.component.currentData, idx: idx});
+                            }
+                            jqel.val(fieldDefault);
+                        }
+                        if (valOpts.run) {
+                            valOpts.run();
+                        }
+                        break;
+                    }
+                }
+            }
+
             if (!fieldDef.hasOwnProperty("dependents")) {
                 return;
             }
@@ -1613,10 +1717,6 @@ var rdbwidgets = {
 
                     var selector = this._mapToFormName({fieldDef: dependentDef, idx: idx});
                     selector = "[name=" + selector + "]";
-
-                    //var fieldBits = fieldDef.name.split(".");
-                    //var dependentBits = dependentDef.name.split(".");
-                    //var sameObject = fieldBits[0] === dependentBits[0];
 
                     var el = this.component.context.find(selector);
                     el.val(defaultVal);
@@ -1692,6 +1792,9 @@ var rdbwidgets = {
 
         this.namespace = "rdbwidgets-preview";
 
+        this.documentation = "To embed this widget, copy all the HTML text from the grey box above, and paste it \
+                                into your CMS page at the point in the page that you want the widget to appear.";
+
         this.draw = function() {
             var previewContainerClass = edges.css_classes(this.namespace, "container", this);
 
@@ -1711,14 +1814,16 @@ var rdbwidgets = {
                 </div>\
                 </div>';
 
-            var snippetContainerClass = edges.css_classes(this.namespace, "snippet", this);
-            frag += '<div class="' + snippetContainerClass + '">Use the following code to embed this in a web page: <pre>' + this._embedSnippet() + '</pre></div>';
-
             this.component.context.html(frag);
             var localCfg = $.extend({}, this.component.config);
             localCfg.prefix = this.component.prefix;
             this.component.widget = widget.init(localCfg);
 
+            if (this.component.widget) {
+                var snippetContainerClass = edges.css_classes(this.namespace, "snippet", this);
+                var previewFrag = '<div class="' + snippetContainerClass + '">Use the following code to embed this in a web page: <pre>' + this._embedSnippet() + '</pre>' + this.documentation + '</div>';
+                this.component.context.append(previewFrag);
+            }
         };
 
         this._embedSnippet = function() {

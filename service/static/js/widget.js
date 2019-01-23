@@ -154,6 +154,8 @@ var widget = {
         var shutdownBackground = params.base + "/static/images/iconShutdown.svg";
 
         var openingQuery = es.newQuery({raw: params.query});
+        openingQuery.size = 0;
+        openingQuery.from = 0;
         openingQuery.addAggregation(
             es.newTermsAggregation({name: "status", field: "reactor.status.exact", aggs: [
                 es.newSumAggregation({name: "total_gwe", field : "reactor.reference_unit_power_capacity_net"})
@@ -248,6 +250,7 @@ var widget = {
 
         var openingQuery = es.newQuery({raw: params.query});
         openingQuery.size = 10000;
+        openingQuery.from = 0;
 
         var leftMargin = params.settings.left;
         if (!leftMargin) {
@@ -334,6 +337,8 @@ var widget = {
 
         var openingQuery = es.newQuery({raw: params.query});
         openingQuery.size = 10000;
+        openingQuery.from = 0;
+        openingQuery.setSourceFilters({include: ["operation." + params.settings.value]});
 
         var leftMargin = params.settings.left;
         if (!leftMargin) {
@@ -350,7 +355,6 @@ var widget = {
         }
 
         var components = [];
-
 
         if (params.settings.chart === "bar") {
             components.push(
@@ -447,7 +451,9 @@ var widget = {
         // compile the query
         var openingQuery = es.newQuery({raw: params.query});
         openingQuery.size = parseInt(params.settings.limit);
+        openingQuery.from = 0;
         openingQuery.addSortBy(es.newSort({field: params.settings.order.field + sortSuffix, order: params.settings.order.dir}));
+        openingQuery.addSourceFilters({include: ["id"]});
 
         var fieldDisplay = [];
         for (var i = 0; i < params.settings.reactor.length; i++) {
@@ -458,6 +464,7 @@ var widget = {
                 obj.valueFunction = fn;
             }
             fieldDisplay.push(obj);
+            openingQuery.addSourceFilters({include: [obj.field]});
         }
 
         var components = [
@@ -517,6 +524,7 @@ var widget = {
 
         var openingQuery = es.newQuery({raw: params.query});
         openingQuery.size = 0;
+        openingQuery.from = 0;
         openingQuery.addAggregation(
             es.newTermsAggregation({
                 name: params.settings.aggregate_around.field,
