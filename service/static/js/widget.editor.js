@@ -125,8 +125,13 @@ var rdbwidgets = {
             return list;
         },
 
+        defaultFieldFormatter : function(params) {
+            return [{val: "", display: "Raw data"}];
+        },
+
         fieldFormatters : function(params) {
             var ref = params.ref;
+            var defaultOnlyFor = params.defaultOnlyFor;
 
             return function(params) {
                 if (!params) { params = {} }
@@ -140,6 +145,10 @@ var rdbwidgets = {
                 // get the value of the field we are dependent on
                 var val = rdbwidgets.data._getFieldValue({data: currentData, ref: ref, idx: idx});
 
+                if ($.inArray(val, defaultOnlyFor) !== -1) {
+                    return rdbwidgets.data.defaultFieldFormatter();
+                }
+
                 // get the type(s) of the field
                 var types = false;
                 var raw = rdbwidgets.data.raw.reactor;
@@ -151,7 +160,7 @@ var rdbwidgets = {
                 }
 
                 // get all the formatters relevant to this type
-                var list = [{val: "", display: "Raw data"}];
+                var list = rdbwidgets.data.defaultFieldFormatter();
                 var formatters = rdbwidgets.data.raw.formatters;
                 for (var i = 0; i < types.length; i++) {
                     if (formatters.hasOwnProperty(types[i])) {
@@ -254,6 +263,9 @@ var rdbwidgets = {
             var val = false;
             var bits = ref.split(".");
             var node = data[bits[0]];
+            if (!node) {
+                return "";
+            }
             if (bits.length > 1) {
                 if (idx !== false) {
                     val = node[idx][bits[1]];
@@ -430,7 +442,7 @@ var rdbwidgets = {
                             {
                                 "name": "formatting",
                                 "type": "select",
-                                "source": rdbwidgets.data.fieldFormatters({ref: "aggregate_around.field"}),
+                                "source": rdbwidgets.data.fieldFormatters({ref: "aggregate_around.field", defaultOnlyFor: ["reactor.name"]}),
                                 "label" : "Value Formatting"
                             }
                         ]
@@ -464,7 +476,19 @@ var rdbwidgets = {
                             }
                         ],
                         "repeatable": true,
-                        "limit" : 10
+                        "limit" : 10,
+                        "remove_callback" : function(params) {
+                            var form = params.form;
+                            return function() {
+                                var dependentDef = form.component.getCurrentFieldDef({id: "order"});
+                                form.readForm();
+                                form._updateSource({
+                                    fieldDef: dependentDef,
+                                    sameObject: false,
+                                    idx: false
+                                });
+                            }
+                        }
                     },
                     {
                         "name": "order",
@@ -478,7 +502,17 @@ var rdbwidgets = {
                         "default": "10",
                         "label" : "Maximum Number of Records to Show",
                         "on_val" : [
-                            {"value" : "", "default" : true}
+                            {"value" : "", "default" : true},
+                            {
+                                "value" : rdbwidgets.validators.less_than({limit: 1}),
+                                "default" : true,
+                                "run" : function() {alert("You cannot enter a value less than '1'")}
+                            },
+                            {
+                                "value" : rdbwidgets.validators.is_not_integer,
+                                "default" : true,
+                                "run" : function() {alert("You may only enter integers")}
+                            }
                         ]
                     },
                     {
@@ -924,7 +958,7 @@ var rdbwidgets = {
         this.bounceFormWatchers = function(params) {
             var controlsSelector = edges.css_id_selector(this.namespace, "controls", this);
             var inputs = this.component.context.find(controlsSelector).find(":input");
-            this.component.context.find(controlsSelector).unbind("change.Input");
+            inputs.off("change.Input");
             edges.on(inputs, "change.Input", this, "inputChanged");
         };
 
@@ -1247,7 +1281,8 @@ var rdbwidgets = {
                         limit: fieldDef.limit || false,
                         enable_remove: true,
                         remove_selector: "." + fieldDef.name + "__remove",
-                        remove_behaviour: "hide"
+                        remove_behaviour: "hide",
+                        remove_callback: fieldDef.remove_callback({form: this})
                     });
                 }
             }
@@ -1692,12 +1727,18 @@ var rdbwidgets = {
             for (var i = 0; i < dependents.length; i++) {
                 var dependentDef = this.component.getCurrentFieldDef({id: dependents[i]});
                 if ("source" in dependentDef) {
-                    var source = dependentDef.source({currentData: this.component.currentData, idx: idx})
-
                     var fieldBits = fieldDef.name.split(".");
                     var dependentBits = dependentDef.name.split(".");
                     var sameObject = fieldBits[0] === dependentBits[0];
 
+                    this._updateSource({
+                        fieldDef: dependentDef,
+                        sameObject: sameObject,
+                        idx: idx
+                    });
+
+
+                    /*
                     var args = {fieldDef: dependentDef};
                     if (sameObject) {
                         args.idx = idx;
@@ -1708,9 +1749,19 @@ var rdbwidgets = {
                     selector = "[name=" + selector + "]";
 
                     var el = this.component.context.find(selector);
+                    var originalDependentVal = el.val();
 
+                    var source = dependentDef.source({currentData: this.component.currentData, idx: idx});
                     var options = this._options({source : source});
                     el.html(options);
+
+                    // keep the original value if it is still in the list
+                    for (var j = 0; j < source.length; j++) {
+                        if (source[j].val === originalDependentVal) {
+                            el.val(originalDependentVal);
+                            break;
+                        }
+                    }*/
                 }
                 if ("default" in dependentDef) {
                     var defaultVal = dependentDef.default({currentData: this.component.currentData, idx: idx});
@@ -1734,6 +1785,36 @@ var rdbwidgets = {
                 return bits.join("__")
             } else {
                 return bits[0] + "-" + idx + "-" + bits[1];
+            }
+        };
+
+        this._updateSource = function(params) {
+            var dependentDef = params.fieldDef;
+            var sameObject = params.sameObject;
+            var idx = params.idx;
+
+            var args = {fieldDef: dependentDef};
+            if (sameObject) {
+                args.idx = idx;
+            } else {
+                args.idx = false;
+            }
+            var selector = this._mapToFormName(args);
+            selector = "[name=" + selector + "]";
+
+            var el = this.component.context.find(selector);
+            var originalDependentVal = el.val();
+
+            var source = dependentDef.source({currentData: this.component.currentData, idx: idx});
+            var options = this._options({source : source});
+            el.html(options);
+
+            // keep the original value if it is still in the list
+            for (var j = 0; j < source.length; j++) {
+                if (source[j].val === originalDependentVal) {
+                    el.val(originalDependentVal);
+                    break;
+                }
             }
         };
     },
