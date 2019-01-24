@@ -1,5 +1,14 @@
 .rdbwidgets-editor-control-panel label {
-    margin-right: 10px;
+    /* margin-right: 10px; */
+}
+
+.rdbwidgets-control-panel-combo strong {
+    font-size: 1.2em;
+    display: block;
+}
+
+.rdbwidgets-control-panel-combo .form-inline label {
+    margin-right: 15px;
 }
 
 .rdbwidgets-editor-control-panel .form-control {

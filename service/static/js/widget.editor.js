@@ -311,6 +311,14 @@ var rdbwidgets = {
 
         is_not_integer : function(params) {
             return !Number.isInteger(Number(params.val))
+        },
+
+        greater_than : function(params) {
+            var limit = params.limit;
+            return function(params) {
+                var val = parseInt(params.val);
+                return val > limit;
+            }
         }
     },
 
@@ -391,16 +399,17 @@ var rdbwidgets = {
                         "on_val" : [
                             {"value" : "", "default" : true},
                             {
-                                "value" : rdbwidgets.validators.less_than({limit: 1}),
-                                "default" : true,
-                                "run" : function() {alert("You cannot enter a value less than '1'")}
-                            },
-                            {
                                 "value" : rdbwidgets.validators.is_not_integer,
                                 "default" : true,
                                 "run" : function() {alert("You may only enter integers")}
+                            },
+                            {
+                                "value" : rdbwidgets.validators.less_than({limit: 1}),
+                                "default" : true,
+                                "run" : function() {alert("You cannot enter a value less than '1'")}
                             }
-                        ]
+                        ],
+                        "controlWidth" : "2"
                     },
                     {
                         "name" : "countryPageTemplate",
@@ -494,7 +503,8 @@ var rdbwidgets = {
                         "name": "order",
                         "type": "select",
                         "source": rdbwidgets.data.valuesFrom({ref: "aggregate_on.field"}),
-                        "label" : "Sort by Field"
+                        "label" : "Sort by Field",
+                        "controlWidth" : "5"
                     },
                     {
                         "name": "limit",
@@ -504,16 +514,17 @@ var rdbwidgets = {
                         "on_val" : [
                             {"value" : "", "default" : true},
                             {
-                                "value" : rdbwidgets.validators.less_than({limit: 1}),
-                                "default" : true,
-                                "run" : function() {alert("You cannot enter a value less than '1'")}
-                            },
-                            {
                                 "value" : rdbwidgets.validators.is_not_integer,
                                 "default" : true,
                                 "run" : function() {alert("You may only enter integers")}
+                            },
+                            {
+                                "value" : rdbwidgets.validators.less_than({limit: 1}),
+                                "default" : true,
+                                "run" : function() {alert("You cannot enter a value less than '1'")}
                             }
-                        ]
+                        ],
+                        "controlWidth" : "2"
                     },
                     {
                         "name" : "countryPageTemplate",
@@ -538,7 +549,8 @@ var rdbwidgets = {
                             {"val" : "bar", "display" : "bar"},
                             {"val" : "line", "display" : "line"}
                         ],
-                        "label" : "Chart Type"
+                        "label" : "Chart Type",
+                        "controlWidth" : "2"
                     },
                     {
                         "name": "start",
@@ -546,8 +558,33 @@ var rdbwidgets = {
                         "default": "1970",
                         "label" : "From",
                         "on_val" : [
-                            {"value" : "", "default" : true}
-                        ]
+                            {"value" : "", "default" : true},
+                            {
+                                "value" : rdbwidgets.validators.is_not_integer,
+                                "default" : true,
+                                "run" : function() {alert("You may only enter integers")}
+                            },
+                            {
+                                "value" : function(params) {
+                                    var form = params.form;
+                                    var endDef = form.component.getCurrentFieldDef({id: "end"});
+                                    var selector = form._mapToFormName({fieldDef: endDef, idx: false});
+                                    selector = "[name=" + selector + "]";
+                                    var endVal = parseInt(form.component.context.find(selector).val());
+                                    var startVal = parseInt(params.val);
+                                    return startVal > endVal;
+                                },
+                                "default" : true,
+                                "run" : function() {alert("Your From year must be before your To year")}
+
+                            },
+                            {
+                                "value" : rdbwidgets.validators.greater_than({limit: (new Date()).getUTCFullYear()}),
+                                "default" : true,
+                                "run" : function() {alert("Your From year must be before the current year")}
+                            }
+                        ],
+                        "controlWidth" : "2"
                     },
                     {
                         "name": "end",
@@ -555,15 +592,36 @@ var rdbwidgets = {
                         "default": (new Date()).getUTCFullYear(),
                         "label" : "To",
                         "on_val" : [
-                            {"value" : "", "default" : true}
-                        ]
+                            {"value" : "", "default" : true},
+                            {
+                                "value" : rdbwidgets.validators.is_not_integer,
+                                "default" : true,
+                                "run" : function() {alert("You may only enter integers")}
+                            },
+                            {
+                                "value" : function(params) {
+                                    var form = params.form;
+                                    var startDef = form.component.getCurrentFieldDef({id: "start"});
+                                    var selector = form._mapToFormName({fieldDef: startDef, idx: false});
+                                    selector = "[name=" + selector + "]";
+                                    var startVal = parseInt(form.component.context.find(selector).val());
+                                    var endVal = parseInt(params.val);
+                                    return startVal > endVal;
+                                },
+                                "default" : true,
+                                "run" : function() {alert("Your To year must be after your From year")}
+
+                            }
+                        ],
+                        "controlWidth" : "2"
                     },
                     {
                         "name": "value",
                         "type": "select",
                         "source": rdbwidgets.data.numericOperationsFields,
                         "label" : "Value Field",
-                        "dependents" : ["label"]
+                        "dependents" : ["label"],
+                        "controlWidth" : "5"
                     },
                     {
                         "name" : "label",
@@ -572,7 +630,8 @@ var rdbwidgets = {
                         "label" : "Name",
                         "on_val" : [
                             {"value" : "", "default" : true}
-                        ]
+                        ],
+                        "controlWidth" : "5"
                     },
                     {
                         "name" : "height",
@@ -580,8 +639,19 @@ var rdbwidgets = {
                         "default" : "300",
                         "label" : "Widget Height (pixels)",
                         "on_val" : [
-                            {"value" : "", "default" : true}
-                        ]
+                            {"value" : "", "default" : true},
+                            {
+                                "value" : rdbwidgets.validators.is_not_integer,
+                                "default" : true,
+                                "run" : function() {alert("You may only enter integers")}
+                            },
+                            {
+                                "value" : rdbwidgets.validators.less_than({limit: 200}),
+                                "default" : true,
+                                "run" : function() {alert("You cannot enter a value less than '200'")}
+                            }
+                        ],
+                        "controlWidth" : "2"
                     },
                     {
                         "name" : "left",
@@ -589,8 +659,19 @@ var rdbwidgets = {
                         "default" : "80",
                         "label" : "Left Margin (pixels)",
                         "on_val" : [
-                            {"value" : "", "default" : true}
-                        ]
+                            {"value" : "", "default" : true},
+                            {
+                                "value" : rdbwidgets.validators.is_not_integer,
+                                "default" : true,
+                                "run" : function() {alert("You may only enter integers")}
+                            },
+                            {
+                                "value" : rdbwidgets.validators.less_than({limit: 0}),
+                                "default" : true,
+                                "run" : function() {alert("You cannot enter a value less than '0'")}
+                            }
+                        ],
+                        "controlWidth" : "2"
                     },
                     {
                         "name" : "distance",
@@ -598,8 +679,19 @@ var rdbwidgets = {
                         "default" : "0",
                         "label" : "Y Axis Label Distance (pixels)",
                         "on_val" : [
-                            {"value" : "", "default" : true}
-                        ]
+                            {"value" : "", "default" : true},
+                            {
+                                "value" : rdbwidgets.validators.is_not_integer,
+                                "default" : true,
+                                "run" : function() {alert("You may only enter integers")}
+                            },
+                            {
+                                "value" : rdbwidgets.validators.less_than({limit: 0}),
+                                "default" : true,
+                                "run" : function() {alert("You cannot enter a value less than '0'")}
+                            }
+                        ],
+                        "controlWidth" : "2"
                     }
                 ]
             },
@@ -614,7 +706,8 @@ var rdbwidgets = {
                             {"val" : "bar", "display" : "bar"},
                             {"val" : "line", "display" : "line"}
                         ],
-                        "label" : "Chart Type"
+                        "label" : "Chart Type",
+                        "controlWidth" : "2"
                     },
                     {
                         "name": "start",
@@ -623,7 +716,8 @@ var rdbwidgets = {
                         "label" : "From",
                         "on_val" : [
                             {"value" : "", "default" : true}
-                        ]
+                        ],
+                        "controlWidth" : "2"
                     },
                     {
                         "name": "end",
@@ -632,14 +726,16 @@ var rdbwidgets = {
                         "label" : "To",
                         "on_val" : [
                             {"value" : "", "default" : true}
-                        ]
+                        ],
+                        "controlWidth" : "2"
                     },
                     {
                         "name": "value",
                         "type": "select",
                         "source": rdbwidgets.data.numericOperationsFields,
                         "label" : "Field to Accumulate",
-                        "dependents" : ["label"]
+                        "dependents" : ["label"],
+                        "controlWidth" : "5"
                     },
                     {
                         "name" : "label",
@@ -648,7 +744,8 @@ var rdbwidgets = {
                         "label" : "Name",
                         "on_val" : [
                             {"value" : "", "default" : true}
-                        ]
+                        ],
+                        "controlWidth" : "5"
                     },
                     {
                         "name" : "height",
@@ -657,7 +754,8 @@ var rdbwidgets = {
                         "label" : "Widget Height (pixels)",
                         "on_val" : [
                             {"value" : "", "default" : true}
-                        ]
+                        ],
+                        "controlWidth" : "2"
                     },
                     {
                         "name" : "left",
@@ -666,7 +764,8 @@ var rdbwidgets = {
                         "label" : "Left Margin (pixels)",
                         "on_val" : [
                             {"value" : "", "default" : true}
-                        ]
+                        ],
+                        "controlWidth" : "2"
                     },
                     {
                         "name" : "distance",
@@ -675,7 +774,8 @@ var rdbwidgets = {
                         "label" : "Y Axis Label Distance (pixels)",
                         "on_val" : [
                             {"value" : "", "default" : true}
-                        ]
+                        ],
+                        "controlWidth" : "2"
                     }
                 ]
             }
@@ -909,7 +1009,7 @@ var rdbwidgets = {
 
             var source = options.map(function(x) { return {val: x.id, display: x.name} });
             source.unshift({val: "", display: "Select a Widget Type"});
-            frag += this._select({id: typeSelectId, source: source, name: "widget-type", label : "Widget Type", layout: "inline", read: false});
+            frag += this._select({id: typeSelectId, source: source, name: "widget-type", label : "Widget Type", layout: "horizontal", read: false, controlWidth: "3"});
             frag += '<div id="' + controlsId + '"></div>';
             frag += '</form></div>';
 
@@ -1274,16 +1374,19 @@ var rdbwidgets = {
             for (var i = 0; i < fieldSet.length; i++) {
                 var fieldDef = fieldSet[i];
                 if (fieldDef.repeatable === true) {
-                    this.bindRepeatable({
+                    var bindOpts = {
                         list_selector: "#" + fieldDef.name + "_list",
                         entry_prefix: fieldDef.name,
                         button_selector : "." + fieldDef.name + "__add",
                         limit: fieldDef.limit || false,
                         enable_remove: true,
                         remove_selector: "." + fieldDef.name + "__remove",
-                        remove_behaviour: "hide",
-                        remove_callback: fieldDef.remove_callback({form: this})
-                    });
+                        remove_behaviour: "hide"
+                    };
+                    if (fieldDef.remove_callback) {
+                        bindOpts.remove_callback = fieldDef.remove_callback({form: this});
+                    }
+                    this.bindRepeatable(bindOpts);
                 }
             }
         };
@@ -1439,10 +1542,17 @@ var rdbwidgets = {
             var name = params.name;
             var label = params.label;
             var id = params.id;
-            var layout = params.layout || "regular";
+            var layout = params.layout || "basic";
+            var labelWidth = params.labelWidth || "2";
+            var controlWidth = params.controlWidth || "10";
 
             if (!id) {
                 id = name;
+            }
+
+            var labelClass = "";
+            if (layout === "horizontal") {
+                labelClass = ' class="col-xs-' + labelWidth + ' control-label" ';
             }
 
             var rrf = this._get_read_and_repeat_frags(params);
@@ -1457,12 +1567,18 @@ var rdbwidgets = {
                 options += '<option value="' + source[i].val + '">' + source[i].display + '</option>';
             }
             var select = '<select id="' + id + '" name="' + name + '" class="form-control' + repeatFrag + '"' + readFrag + '>' + options + '</select>';
+            if (layout == "horizontal") {
+                select = '<div class="col-xs-' + controlWidth + '">' + select + "</div>";
+            }
 
-            var labelFrag = '<label for="' + id + '">' + label + '</label>';
+
+            var labelFrag = '<label for="' + id + '"' + labelClass + '>' + label + '</label>';
             var frag = '<div class="form-group">' + labelFrag + select + '</div>';
 
             if (layout === "inline") {
                 frag = '<div class="form-inline">' + frag + '</div>'
+            } else if (layout === "horizontal") {
+                frag = '<div class="form-horizontal">' + frag + '</div>'
             }
 
             return frag;
@@ -1513,10 +1629,17 @@ var rdbwidgets = {
             var name = params.name;
             var label = params.label;
             var id = params.id;
-            var layout = params.layout || "regular";
+            var layout = params.layout || "basic";
+            var labelWidth = params.labelWidth || "2";
+            var controlWidth = params.controlWidth || "10";
 
             if (!id) {
                 id = name;
+            }
+
+            var labelClass = "";
+            if (layout === "horizontal") {
+                labelClass = ' class="col-xs-' + labelWidth + ' control-label" ';
             }
 
             var rrf = this._get_read_and_repeat_frags(params);
@@ -1528,11 +1651,17 @@ var rdbwidgets = {
             }
 
             var input = '<input name="' + name + '" id= "' + id + '" type="text" value="' + defaultValue + '" class="form-control' + repeatFrag + '" ' + readFrag + '>';
-            var labelFrag = '<label for="' + id + '">' + label + '</label>';
+            if (layout == "horizontal") {
+                input = '<div class="col-xs-' + controlWidth + '">' + input + "</div>";
+            }
+
+            var labelFrag = '<label for="' + id + '"' + labelClass + '>' + label + '</label>';
             var frag = '<div class="form-group">' + labelFrag + input + '</div>';
 
             if (layout === "inline") {
                 frag = '<div class="form-inline">' + frag + '</div>'
+            } else if (layout === "horizontal") {
+                frag = '<div class="form-horizontal">' + frag + '</div>'
             }
 
             return frag;
@@ -1635,13 +1764,13 @@ var rdbwidgets = {
 
         this._formControls = function(params) {
             var fieldSet = params.fieldSet;
-            var layout = params.layout || "regular";
+            var layout = params.layout || "horizontal";
 
             var frag = "";
             for (var i = 0; i < fieldSet.length; i++) {
                 var fieldDef = fieldSet[i];
                 fieldDef = $.extend({}, fieldDef);
-                fieldDef.layout = layout === "regular" ? "inline" : "regular";
+                fieldDef.layout = layout === "inline" ? "basic" : layout;
                 var fieldType = fieldDef.type;
 
                 if (fieldType === "combo") {
@@ -1699,7 +1828,7 @@ var rdbwidgets = {
                     var matchVal = valOpts.value;
                     var isMatch = false;
                     if (typeof matchVal === "function") {
-                        isMatch = matchVal({val: fieldVal});
+                        isMatch = matchVal({val: fieldVal, form: this});
                     } else {
                         isMatch = matchVal === fieldVal;
                     }
@@ -1736,32 +1865,6 @@ var rdbwidgets = {
                         sameObject: sameObject,
                         idx: idx
                     });
-
-
-                    /*
-                    var args = {fieldDef: dependentDef};
-                    if (sameObject) {
-                        args.idx = idx;
-                    } else {
-                        args.idx = false;
-                    }
-                    var selector = this._mapToFormName(args);
-                    selector = "[name=" + selector + "]";
-
-                    var el = this.component.context.find(selector);
-                    var originalDependentVal = el.val();
-
-                    var source = dependentDef.source({currentData: this.component.currentData, idx: idx});
-                    var options = this._options({source : source});
-                    el.html(options);
-
-                    // keep the original value if it is still in the list
-                    for (var j = 0; j < source.length; j++) {
-                        if (source[j].val === originalDependentVal) {
-                            el.val(originalDependentVal);
-                            break;
-                        }
-                    }*/
                 }
                 if ("default" in dependentDef) {
                     var defaultVal = dependentDef.default({currentData: this.component.currentData, idx: idx});
