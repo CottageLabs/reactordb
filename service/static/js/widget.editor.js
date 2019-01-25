@@ -715,7 +715,31 @@ var rdbwidgets = {
                         "default": "1970",
                         "label" : "From",
                         "on_val" : [
-                            {"value" : "", "default" : true}
+                            {"value" : "", "default" : true},
+                            {
+                                "value" : rdbwidgets.validators.is_not_integer,
+                                "default" : true,
+                                "run" : function() {alert("You may only enter integers")}
+                            },
+                            {
+                                "value" : function(params) {
+                                    var form = params.form;
+                                    var endDef = form.component.getCurrentFieldDef({id: "end"});
+                                    var selector = form._mapToFormName({fieldDef: endDef, idx: false});
+                                    selector = "[name=" + selector + "]";
+                                    var endVal = parseInt(form.component.context.find(selector).val());
+                                    var startVal = parseInt(params.val);
+                                    return startVal > endVal;
+                                },
+                                "default" : true,
+                                "run" : function() {alert("Your From year must be before your To year")}
+
+                            },
+                            {
+                                "value" : rdbwidgets.validators.greater_than({limit: (new Date()).getUTCFullYear()}),
+                                "default" : true,
+                                "run" : function() {alert("Your From year must be before the current year")}
+                            }
                         ],
                         "controlWidth" : "2"
                     },
@@ -725,7 +749,26 @@ var rdbwidgets = {
                         "default": (new Date()).getUTCFullYear(),
                         "label" : "To",
                         "on_val" : [
-                            {"value" : "", "default" : true}
+                            {"value" : "", "default" : true},
+                            {
+                                "value" : rdbwidgets.validators.is_not_integer,
+                                "default" : true,
+                                "run" : function() {alert("You may only enter integers")}
+                            },
+                            {
+                                "value" : function(params) {
+                                    var form = params.form;
+                                    var startDef = form.component.getCurrentFieldDef({id: "start"});
+                                    var selector = form._mapToFormName({fieldDef: startDef, idx: false});
+                                    selector = "[name=" + selector + "]";
+                                    var startVal = parseInt(form.component.context.find(selector).val());
+                                    var endVal = parseInt(params.val);
+                                    return startVal > endVal;
+                                },
+                                "default" : true,
+                                "run" : function() {alert("Your To year must be after your From year")}
+
+                            }
                         ],
                         "controlWidth" : "2"
                     },
@@ -753,7 +796,17 @@ var rdbwidgets = {
                         "default" : "300",
                         "label" : "Widget Height (pixels)",
                         "on_val" : [
-                            {"value" : "", "default" : true}
+                            {"value" : "", "default" : true},
+                            {
+                                "value" : rdbwidgets.validators.is_not_integer,
+                                "default" : true,
+                                "run" : function() {alert("You may only enter integers")}
+                            },
+                            {
+                                "value" : rdbwidgets.validators.less_than({limit: 200}),
+                                "default" : true,
+                                "run" : function() {alert("You cannot enter a value less than '200'")}
+                            }
                         ],
                         "controlWidth" : "2"
                     },
@@ -763,7 +816,17 @@ var rdbwidgets = {
                         "default" : "80",
                         "label" : "Left Margin (pixels)",
                         "on_val" : [
-                            {"value" : "", "default" : true}
+                            {"value" : "", "default" : true},
+                            {
+                                "value" : rdbwidgets.validators.is_not_integer,
+                                "default" : true,
+                                "run" : function() {alert("You may only enter integers")}
+                            },
+                            {
+                                "value" : rdbwidgets.validators.less_than({limit: 0}),
+                                "default" : true,
+                                "run" : function() {alert("You cannot enter a value less than '0'")}
+                            }
                         ],
                         "controlWidth" : "2"
                     },
@@ -773,7 +836,17 @@ var rdbwidgets = {
                         "default" : "0",
                         "label" : "Y Axis Label Distance (pixels)",
                         "on_val" : [
-                            {"value" : "", "default" : true}
+                            {"value" : "", "default" : true},
+                            {
+                                "value" : rdbwidgets.validators.is_not_integer,
+                                "default" : true,
+                                "run" : function() {alert("You may only enter integers")}
+                            },
+                            {
+                                "value" : rdbwidgets.validators.less_than({limit: 0}),
+                                "default" : true,
+                                "run" : function() {alert("You cannot enter a value less than '0'")}
+                            }
                         ],
                         "controlWidth" : "2"
                     }

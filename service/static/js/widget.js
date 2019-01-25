@@ -635,7 +635,7 @@ var widget = {
 
             // set up the accumulator
             var accumulator = {};
-            for (var s = parseInt(start); s < parseInt(end); s++) {
+            for (var s = parseInt(start); s <= parseInt(end) && s <= (new Date()).getUTCFullYear(); s++) {
                 accumulator[s] = 0;
             }
 
