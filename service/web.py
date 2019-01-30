@@ -263,6 +263,10 @@ def live_country(country_id=None):
 def live_generic():
     return render_template("live_generic.html", map_key=app.config.get("GOOGLE_MAP_API_KEY"))
 
+@app.route("/live_widget")
+def live_widget():
+    return render_template("live_widget.html")
+
 #######################################################
 
 #######################################################

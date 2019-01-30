@@ -20,7 +20,8 @@ jQuery(document).ready(function($) {
 
     reactordb.makeSearch({
         reactor_base_url: BASE_URL + "/live_reactor/",
-        genericPageURLTemplate: "/live_generic?ref=search&source={query}"
+        genericPageURLTemplate: "/live_generic?ref=search&source={query}",
+        widgetPageURLTemplate: "/live_widget?source={query}"
     });
 });
 </script>

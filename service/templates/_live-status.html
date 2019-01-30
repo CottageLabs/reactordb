@@ -2,7 +2,8 @@
 <a href="{{ url_for('live_search') }}" {% if request.path == url_for('live_search') %}class="current"{% endif %}>Search</a> |
 <a href="{{ url_for('live_reactor') }}" {% if request.path.startswith(url_for('live_reactor')) %}class="current"{% endif %}>Reactor</a> |
 <a href="{{ url_for('live_country') }}" {% if request.path.startswith(url_for('live_country')) %}class="current"{% endif %}>Location</a> |
-<a href="{{ url_for('live_generic') }}" {% if request.path.startswith(url_for('live_generic')) %}class="current"{% endif %}>Generic Report</a>
+<a href="{{ url_for('live_generic') }}" {% if request.path.startswith(url_for('live_generic')) %}class="current"{% endif %}>Generic Report</a> |
+<a href="{{ url_for('live_widget') }}" {% if request.path.startswith(url_for('live_widget')) %}class="current"{% endif %}>Widget Editor</a>
 
 <div id="live-status">
     <h1>Live Database</h1>

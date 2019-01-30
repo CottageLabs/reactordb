@@ -862,6 +862,7 @@ var rdbwidgets = {
         var selector = params.selector;
         var index = params.index || "reactor";
         var prefix = edges.getParam(params.prefix, "");
+        var searchPage = edges.getParam(params.searchPage, "/search");
 
         var base = params.base;
         var include = params.include;
@@ -894,7 +895,7 @@ var rdbwidgets = {
                     renderer : edges.bs3.newSelectedFiltersRenderer({
                         showSearchString: true,
                         allowRemove: false,
-                        ifNoFilters: "There are no filters specifed, so this widget will apply to the entire reactor database.  To specify a filter go to <a href='/" + prefix + "search'>the search page</a>",
+                        ifNoFilters: "There are no filters specifed, so this widget will apply to the entire reactor database.  To specify a filter go to <a href='" + searchPage + "'>the search page</a>",
                     })
                 }),
                 rdbwidgets.newControlPanel({
