@@ -300,7 +300,8 @@ var widget = {
                         xAxisLabel: "Year",
                         yAxisLabel: params.settings.label,
                         marginLeft: leftMargin,
-                        yAxisLabelDistance: labelDistance
+                        yAxisLabelDistance: labelDistance,
+                        includeOnY: 0
                     })
                 })
             );
@@ -398,7 +399,8 @@ var widget = {
                         xAxisLabel: "Year",
                         yAxisLabel: params.settings.label,
                         marginLeft: leftMargin,
-                        yAxisLabelDistance: labelDistance
+                        yAxisLabelDistance: labelDistance,
+                        includeOnY: 0
                     })
                 })
             );
@@ -639,6 +641,7 @@ var widget = {
                 accumulator[s] = 0;
             }
 
+            // for each reactor, accumulate its operational data into the accumulator
             for (var i = 0; i < results.length; i++) {
                 var result = results[i];
                 var field = "operation." + params.field;
@@ -647,6 +650,7 @@ var widget = {
                 var years = Object.keys(accumulator);
                 years.sort();
 
+                // accumulate the single reactor into the accumulator for all years
                 var cumulation = 0;
                 for (var j = 0; j < years.length; j++) {
                     var year = years[j];
@@ -671,6 +675,21 @@ var widget = {
                 }
                 return 0;
             });
+
+            // chop off the final values that are all the same (i.e. only continue while there is interesting data)
+            if (values.length > 0) {
+                var lastVal = values[values.length - 1].value;
+                var limit = values.length;
+                for (var i = values.length - 2; i > -1; i--) {
+                    var val = values[i].value;
+                    if (val === lastVal) {
+                        limit--;
+                    } else {
+                        break;
+                    }
+                }
+                values.splice(limit);
+            }
 
             return [{key: seriesName, values: values}]
         }
