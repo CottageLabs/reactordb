@@ -2010,9 +2010,8 @@ var rdbwidgets = {
         this.widget = false;
 
         this.synchronise = function() {
-            if (this.widget_id === "") {
-                this.widget_id = "widget_" + this._random_id();
-            }
+            // always reset the widget id, this makes sure that the same one isn't accidentally used twice
+            this.widget_id = "widget_" + this._random_id();
 
             if (!this.edge.resources.hasOwnProperty("control")) {
                 this.config = {};

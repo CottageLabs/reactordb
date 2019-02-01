@@ -7,7 +7,132 @@
 <body>
 
 
+
 <div class="content"><div class="container">
+
+
+<div id="widget_x1ts6"></div>
+
+<script type="text/javascript">
+var RDB_WIDGET_CONFIG_widget_x1ts6 = {
+  "id": "widget_x1ts6",
+  "type": "table_reactor",
+  "query": {
+    "query": {
+      "filtered": {
+        "filter": {
+          "bool": {
+            "must": [
+              {
+                "terms": {
+                  "reactor.country.exact": [
+                    "Russia"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "query": {
+          "match_all": {}
+        }
+      }
+    }
+  },
+  "base": "",
+  "include": "/embed.html",
+  "settings": {
+    "order": {
+      "field": "reactor.name",
+      "dir": "asc",
+      "sort_type": "exact"
+    },
+    "limit": "100",
+    "countryPageTemplate": "/preview_country/{country}",
+    "reactorPageTemplate": "/preview_reactor/{reactor}",
+    "reactor": [
+      {
+        "field": "reactor.name",
+        "display": "Reactor Name",
+        "formatting": "reactor_link"
+      },
+      {
+        "field": "reactor.process",
+        "display": "Reactor Type"
+      },
+      {
+        "field": "reactor.reference_unit_power_capacity_net",
+        "display": "Reference Unit Power (Capacity Net)",
+        "formatting": "number"
+      },
+      {
+        "field": "reactor.status",
+        "display": "Current Status"
+      },
+      {
+        "field": "reactor.first_grid_connection",
+        "display": "First Grid Connection"
+      }
+    ]
+  }
+}
+</script>
+<script type="text/javascript" src="embed.js?id=widget_x1ts6"></script>
+
+
+<div id="widget_x1ts7"></div>
+<script type="text/javascript">
+var RDB_WIDGET_CONFIG_widget_x1ts7 = {
+  "id": "widget_x1ts7",
+  "type": "table_aggregate",
+  "query": {
+    "query": {
+      "filtered": {
+        "filter": {
+          "bool": {
+            "must": [
+              {
+                "terms": {
+                  "reactor.country.exact": [
+                    "Russia"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "query": {
+          "match_all": {}
+        }
+      }
+    }
+  },
+  "base": "",
+  "include": "/embed.html",
+  "settings": {
+    "aggregate_around": {
+      "field": "reactor.country",
+      "display": "Total Capacity"
+    },
+    "order": "reactor.reference_unit_power_capacity_net",
+    "limit": "10",
+    "countryPageTemplate": "/preview_country/{country}",
+    "reactorPageTemplate": "/preview_reactor/{reactor}",
+    "aggregate_on": [
+      {
+        "field": "reactor.reference_unit_power_capacity_net",
+        "display": "Reference Unit Power (Capacity Net MWet)",
+        "formatting": "number"
+      }
+    ]
+  }
+}
+</script>
+<script type="text/javascript" src="embed.js?id=widget_x1ts7"></script>
+
+
+
+
     <p>start the page off by talking about this accumulator chart</p>
 
     <div class="row">

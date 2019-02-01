@@ -4,7 +4,11 @@ var widget = {
     formatters : {
         year : function(params) {
             return function(val) {
-                return (new Date(val)).getUTCFullYear();
+                var d = new Date(val);
+                if (isNaN(d.getTime())) {
+                    return val;
+                }
+                return d.getUTCFullYear();
             }
         },
         year_month : function(params) {
@@ -14,6 +18,9 @@ var widget = {
             });
             return function(val) {
                 var d = new Date(val);
+                if (isNaN(d.getTime())) {
+                    return val;
+                }
                 return d.getUTCFullYear() + "-" + formatter(d.getUTCMonth() + 1);
             }
         },
