@@ -169,8 +169,18 @@ var widget = {
             ]})
         );
 
-        var components = [];
+        function resizeHandler(renderer) {
+            var container = renderer.component.context;
+            var width = container.width();
+            if (width > 180) {
+                width = 180;
+            }
+            var selector = edges.css_class_selector(renderer.namespace, "graphic", renderer);
+            var graphic = container.find(selector);
+            graphic.css("height", width + "px");
+        }
 
+        var components = [];
         components.push(
             edges.numbers.newImportantNumbers({
                 id: "operable_reactors_count_" + params.id,
@@ -187,7 +197,8 @@ var widget = {
                         decimalPlaces: 0,
                         thousandsSeparator: ",",
                         suffix: " MWe"
-                    })
+                    }),
+                    resizeHandler: resizeHandler
                 })
             }),
             edges.numbers.newImportantNumbers({
@@ -205,7 +216,8 @@ var widget = {
                         decimalPlaces: 0,
                         thousandsSeparator: ",",
                         suffix: " MWe"
-                    })
+                    }),
+                    resizeHandler: resizeHandler
                 })
             }),
             edges.numbers.newImportantNumbers({
@@ -223,7 +235,8 @@ var widget = {
                         decimalPlaces: 0,
                         thousandsSeparator: ",",
                         suffix: " MWe"
-                    })
+                    }),
+                    resizeHandler: resizeHandler
                 })
             })
         );
