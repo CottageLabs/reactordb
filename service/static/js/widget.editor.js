@@ -16,7 +16,7 @@ var rdbwidgets = {
                 {id : "construction_suspended", type : ["single", "date"], display : "Construction Suspended"},
                 {id : "contract_year", type : ["single"], display : "Contract Year"},
                 {id : "country", type: ["single", "country-link", "text"], sort_type: "exact", display: "Location"},
-                {id : "design_net_capacity", type: ["single", "number"], display: "Design Net Capacity"},
+                {id : "design_net_capacity", type: ["single", "number"], display: "Design Net Capacity (MWe)"},
                 {id : "first_criticality", type: ["single", "date"], display: "First Criticality"},
                 {id : "first_grid_connection", type : ["single", "date"], display : "First Grid Connection"},
                 {id : "gross_capacity", type: ["single", "number"], display: "Gross Capacity"},
@@ -30,12 +30,12 @@ var rdbwidgets = {
                 {id : "planned_start_up", type : ["single"], sort_type: "exact", display: "Planned Start-up"},
                 {id : "process", type : ["single", "text"], sort_type: "exact", display : "Reactor Type"},
                 {id : "project_start", type: ["single", "date"], display: "Project Start"},
-                {id : "reference_unit_power_capacity_net", type : ["single", "number"], display : "Reference Unit Power (Capacity Net)"},
+                {id : "reference_unit_power_capacity_net", type : ["single", "number"], display : "Reference Unit Power (MWe)"},
                 {id : "restart", type : ["single", "date"], display : "Restart"},
                 {id : "site_name", type: ["single", "text"], sort_type: "exact", display : "Site Name"},
                 {id : "status", type: ["single", "text"], sort_type: "exact", display : "Current Status"},
-                {id : "thermal_capacity", type: ["single", "number"], display: "Thermal Capacity"},
-                {id : "url", type: ["single"], sort_type: "exact", display: "Thermal Capacity"},
+                {id : "thermal_capacity", type: ["single", "number"], display: "Thermal Capacity (MWt)"},
+                {id : "url", type: ["single"], sort_type: "exact", display: "URL"},
                 {id : "vendor", type: ["single", "text"], sort_type: "exact", display: "Vendor"}
             ],
             operations : [
@@ -44,9 +44,9 @@ var rdbwidgets = {
                 {id: "load_factor_cumulative", type: ["number"], display: "Load Factor Cumulative"},
                 {id: "load_factor_annual", type: ["number"], display: "Load Factor Annual"},
                 {id: "energy_availability_factor_annual", type: ["number"], display: "Energy Availability Factor (Annual)"},
-                {id: "electricity_supplied", type: ["number"], display: "Electricity Supplied"},
+                {id: "electricity_supplied", type: ["number"], display: "Electricity Supplied (GWh)"},
                 {id: "energy_availability_factor_cumulative", type: ["number"], display: "Energy Availability Factor (Cumulative)"},
-                {id: "reference_unit_power", type: ["number"], display: "Reference Unit Power"}
+                {id: "reference_unit_power", type: ["number"], display: "Reference Unit Power (MWe)"}
             ],
             formatters : {
                 date : [
