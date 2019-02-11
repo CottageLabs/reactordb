@@ -3,11 +3,69 @@ server {
 
     server_name reactordb.world-nuclear.org;  # dot before the domain ensure it will respond to subdomains and the domain itself e.g. www.domain.org and domain.org
 
+    # restrict access to the site
+    auth_basic "WNA Reactor Database";
+	auth_basic_user_file /etc/nginx/.htpasswd;
+
+    location = /embed.js {
+        auth_basic off;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://localhost:5050;  # this should match the port in the gunicorn config (note there's no /)
+    }
+
+    location = /embed.html {
+        auth_basic off;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://localhost:5050;  # this should match the port in the gunicorn config (note there's no /)
+    }
+
+    location /custom/ {
+        auth_basic off;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://localhost:5050;  # this should match the port in the gunicorn config (note there's no /)
+    }
+
+    location /static/ {
+        auth_basic off;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://localhost:5050;  # this should match the port in the gunicorn config (note there's no /)
+    }
+
+    location /javascript/ {
+        auth_basic off;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://localhost:5050;  # this should match the port in the gunicorn config (note there's no /)
+    }
+
+    location /query/ {
+        auth_basic off;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://localhost:5050;  # this should match the port in the gunicorn config (note there's no /)
+    }
+
     location / {
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header Host $http_host;
-            proxy_redirect off;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_pass http://localhost:5050/;  # this should match the port in the gunicorn config
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://localhost:5050/;  # this should match the port in the gunicorn config (note we keep the /)
     }
 }

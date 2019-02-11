@@ -102,8 +102,20 @@ Install nginx via apt-get. Put the configs in place.
     sudo ln -s ../sites-available/reactordb-production .
     # check symlink is ok
     ls -l
+
+Now generate and store an .htaccess file to enable access to the administrative features of the app:
+
+Install `apache2-utils` via apt-get, then:
+
+    sudo htpasswd -c /etc/nginx/.htpasswd reactordb
+    
+Provide a suitable password for the reactordb user.
+
+Finally, restart nginx:
+
     sudo nginx -t  # test master config and our app config
     sudo nginx -s reload
+
 
 ## supervisor
 
