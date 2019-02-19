@@ -292,6 +292,11 @@
 
 /* generic styles for the dashboard top row */
 
+.reactordb-dashboard-container .edges-bs3-important-numbers-img {
+    height: 100%;
+    text-align: center;
+}
+
 .edges-bs3-important-numbers-title {
     height: 60px;
 }
@@ -363,6 +368,11 @@
  * Styles for the country page
  */
 
+.reactordb-country-container .edges-bs3-important-numbers-img {
+    height: 100%;
+    text-align: center;
+}
+
 #country-report h3 {
     float: none !important;
 }
@@ -392,6 +402,11 @@
 /*
  * Styles for the generic report
  */
+
+.reactordb-generic-container .edges-bs3-important-numbers-img {
+    height: 100%;
+    text-align: center;
+}
 
 #generic-report h3 {
     float: none !important;

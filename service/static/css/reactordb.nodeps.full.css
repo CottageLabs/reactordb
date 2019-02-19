@@ -100,8 +100,8 @@
     position: relative;
 }
 .edges-bs3-important-numbers-img {
-    height: 100%;
-    text-align: center;
+    
+    
 }
 .edges-bs3-important-numbers-img img {
     height: 100%
@@ -691,6 +691,10 @@
 #country-selector {
     margin-top: 20px;
 }
+.reactordb-dashboard-container .edges-bs3-important-numbers-img {
+    height: 100%;
+    text-align: center;
+}
 .edges-bs3-important-numbers-title {
     height: 60px;
 }
@@ -742,6 +746,10 @@
         height: 180px;
     }
 }
+.reactordb-country-container .edges-bs3-important-numbers-img {
+    height: 100%;
+    text-align: center;
+}
 #country-report h3 {
     float: none !important;
 }
@@ -759,6 +767,10 @@
 }
 .edges-nvd3-pie-display-country_nuclear_share {
     height: 60px;
+    text-align: center;
+}
+.reactordb-generic-container .edges-bs3-important-numbers-img {
+    height: 100%;
     text-align: center;
 }
 #generic-report h3 {
