@@ -1,0 +1,2061 @@
+{
+  "parameters": [
+    {
+      "type": "index", 
+      "name": "test_id"
+    }, 
+    {
+      "values": {
+        "none": {
+          "constraints": {
+            "permanent_shutdown": {
+              "or": [
+                "none"
+              ]
+            }, 
+            "longterm_shutdown": {
+              "or": [
+                "none"
+              ]
+            }, 
+            "first_grid_connection": {
+              "or": [
+                "none"
+              ]
+            }, 
+            "construction_restart": {
+              "or": [
+                "none"
+              ]
+            }, 
+            "construction_suspend": {
+              "or": [
+                "none"
+              ]
+            }, 
+            "restart": {
+              "or": [
+                "none"
+              ]
+            }
+          }
+        }, 
+        "2000": {}
+      }, 
+      "type": "generated", 
+      "name": "construction_start"
+    }, 
+    {
+      "values": {
+        "none": {}, 
+        "2001": {
+          "constraints": {
+            "permanent_shutdown": {
+              "nor": [
+                "2000"
+              ]
+            }, 
+            "longterm_shutdown": {
+              "nor": [
+                "2000"
+              ]
+            }, 
+            "first_grid_connection": {
+              "nor": [
+                "2000"
+              ]
+            }, 
+            "restart": {
+              "nor": [
+                "2000"
+              ]
+            }, 
+            "construction_restart": {
+              "nor": [
+                "2000"
+              ]
+            }
+          }
+        }, 
+        "2000": {}
+      }, 
+      "type": "generated", 
+      "name": "construction_suspend"
+    }, 
+    {
+      "values": {
+        "2002": {
+          "constraints": {
+            "permanent_shutdown": {
+              "nor": [
+                "2000"
+              ]
+            }, 
+            "longterm_shutdown": {
+              "nor": [
+                "2000"
+              ]
+            }, 
+            "first_grid_connection": {
+              "nor": [
+                "2000"
+              ]
+            }, 
+            "restart": {
+              "nor": [
+                "2000"
+              ]
+            }
+          }
+        }, 
+        "none": {}, 
+        "2000": {}
+      }, 
+      "type": "generated", 
+      "name": "construction_restart"
+    }, 
+    {
+      "values": {
+        "2003": {
+          "constraints": {
+            "permanent_shutdown": {
+              "nor": [
+                "2000"
+              ]
+            }, 
+            "longterm_shutdown": {
+              "nor": [
+                "2000"
+              ]
+            }, 
+            "restart": {
+              "nor": [
+                "2000"
+              ]
+            }
+          }
+        }, 
+        "none": {}, 
+        "2000": {}
+      }, 
+      "type": "generated", 
+      "name": "first_grid_connection"
+    }, 
+    {
+      "values": {
+        "none": {}, 
+        "2000": {}, 
+        "2004": {
+          "constraints": {
+            "permanent_shutdown": {
+              "nor": [
+                "2000"
+              ]
+            }, 
+            "restart": {
+              "nor": [
+                "2000"
+              ]
+            }
+          }
+        }
+      }, 
+      "type": "generated", 
+      "name": "longterm_shutdown"
+    }, 
+    {
+      "values": {
+        "none": {}, 
+        "2000": {}, 
+        "2005": {
+          "constraints": {
+            "permanent_shutdown": {
+              "nor": [
+                "2000"
+              ]
+            }
+          }
+        }
+      }, 
+      "type": "generated", 
+      "name": "restart"
+    }, 
+    {
+      "values": {
+        "none": {}, 
+        "2006": {}, 
+        "2000": {}
+      }, 
+      "type": "generated", 
+      "name": "permanent_shutdown"
+    }, 
+    {
+      "default": "error", 
+      "values": {
+        "-": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "pre_construction": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }
+      }, 
+      "type": "conditional", 
+      "name": "1999"
+    }, 
+    {
+      "default": "error", 
+      "values": {
+        "permanent_shutdown": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "or": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "under_construction": {
+          "conditions": [
+            {
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "first_grid_connection": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_suspend": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }, 
+            {
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "first_grid_connection": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "construction_restart": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_suspend": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }, 
+            {
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "first_grid_connection": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_suspend": {
+                "or": [
+                  "2001"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "-": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "operable": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "first_grid_connection": {
+                "or": [
+                  "2000"
+                ]
+              }
+            }, 
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "restart": {
+                "or": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "longterm_shutdown": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "construction_suspended": {
+          "conditions": [
+            {
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "first_grid_connection": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "construction_restart": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_suspend": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }
+      }, 
+      "type": "conditional", 
+      "name": "2000"
+    }, 
+    {
+      "default": "error", 
+      "values": {
+        "permanent_shutdown": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "or": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "under_construction": {
+          "conditions": [
+            {
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "first_grid_connection": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_suspend": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }, 
+            {
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "first_grid_connection": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "construction_restart": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_suspend": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "-": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "operable": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "first_grid_connection": {
+                "or": [
+                  "2000"
+                ]
+              }
+            }, 
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "restart": {
+                "or": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "longterm_shutdown": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "construction_suspended": {
+          "conditions": [
+            {
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "first_grid_connection": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "construction_restart": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_suspend": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }
+      }, 
+      "type": "conditional", 
+      "name": "2001"
+    }, 
+    {
+      "default": "error", 
+      "values": {
+        "permanent_shutdown": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "or": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "under_construction": {
+          "conditions": [
+            {
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "first_grid_connection": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "construction_restart": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_suspend": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }, 
+            {
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "first_grid_connection": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "construction_restart": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "-": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "operable": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "first_grid_connection": {
+                "or": [
+                  "2000"
+                ]
+              }
+            }, 
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "restart": {
+                "or": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "longterm_shutdown": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "construction_suspended": {
+          "conditions": [
+            {
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "first_grid_connection": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "construction_restart": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_suspend": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }
+      }, 
+      "type": "conditional", 
+      "name": "2002"
+    }, 
+    {
+      "default": "error", 
+      "values": {
+        "permanent_shutdown": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "or": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "under_construction": {
+          "conditions": [
+            {
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "first_grid_connection": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_restart": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_suspend": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }, 
+            {
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "first_grid_connection": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_restart": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "-": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "operable": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "first_grid_connection": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }, 
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "restart": {
+                "or": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "longterm_shutdown": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "construction_suspended": {
+          "conditions": [
+            {
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "first_grid_connection": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_restart": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_suspend": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }
+      }, 
+      "type": "conditional", 
+      "name": "2003"
+    }, 
+    {
+      "default": "error", 
+      "values": {
+        "permanent_shutdown": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "or": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "under_construction": {
+          "conditions": [
+            {
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "first_grid_connection": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_suspend": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }, 
+            {
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "first_grid_connection": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_restart": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "-": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "operable": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "first_grid_connection": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }, 
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "restart": {
+                "or": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "longterm_shutdown": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "construction_suspended": {
+          "conditions": [
+            {
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "first_grid_connection": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_restart": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_suspend": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }
+      }, 
+      "type": "conditional", 
+      "name": "2004"
+    }, 
+    {
+      "default": "error", 
+      "values": {
+        "permanent_shutdown": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "or": [
+                  "2000"
+                ]
+              }
+            }
+          ]
+        }, 
+        "under_construction": {
+          "conditions": [
+            {
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "first_grid_connection": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_suspend": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "or": [
+                  "none"
+                ]
+              }
+            }, 
+            {
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "first_grid_connection": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_restart": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "restart": {
+                "or": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "-": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "operable": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "first_grid_connection": {
+                "nor": [
+                  "none"
+                ]
+              }
+            }, 
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "first_grid_connection": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "none"
+                ]
+              }
+            }, 
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "longterm_shutdown": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "or": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "construction_suspended": {
+          "conditions": [
+            {
+              "permanent_shutdown": {
+                "nor": [
+                  "2000"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "first_grid_connection": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_restart": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_suspend": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "or": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }
+      }, 
+      "type": "conditional", 
+      "name": "2005"
+    }, 
+    {
+      "default": "error", 
+      "values": {
+        "permanent_shutdown": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "under_construction": {
+          "conditions": [
+            {
+              "permanent_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "first_grid_connection": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_suspend": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "or": [
+                  "none"
+                ]
+              }
+            }, 
+            {
+              "permanent_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "first_grid_connection": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_restart": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "restart": {
+                "or": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "-": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "operable": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "first_grid_connection": {
+                "nor": [
+                  "none"
+                ]
+              }
+            }, 
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "first_grid_connection": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "none"
+                ]
+              }
+            }, 
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "longterm_shutdown": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "or": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "construction_suspended": {
+          "conditions": [
+            {
+              "permanent_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "first_grid_connection": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_restart": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_suspend": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "or": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }
+      }, 
+      "type": "conditional", 
+      "name": "2006"
+    }, 
+    {
+      "default": "error", 
+      "values": {
+        "permanent_shutdown": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "nor": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "operable": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "first_grid_connection": {
+                "nor": [
+                  "none"
+                ]
+              }
+            }, 
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "first_grid_connection": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "none"
+                ]
+              }
+            }, 
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "nor": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "under_construction": {
+          "conditions": [
+            {
+              "permanent_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "first_grid_connection": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_suspend": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "or": [
+                  "none"
+                ]
+              }
+            }, 
+            {
+              "permanent_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "first_grid_connection": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_restart": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "restart": {
+                "or": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "longterm_shutdown": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "permanent_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "or": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "construction_suspended": {
+          "conditions": [
+            {
+              "permanent_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "longterm_shutdown": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "first_grid_connection": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_restart": {
+                "or": [
+                  "none"
+                ]
+              }, 
+              "construction_start": {
+                "or": [
+                  "2000"
+                ]
+              }, 
+              "construction_suspend": {
+                "nor": [
+                  "none"
+                ]
+              }, 
+              "restart": {
+                "or": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }, 
+        "pre_construction": {
+          "conditions": [
+            {
+              "construction_start": {
+                "or": [
+                  "none"
+                ]
+              }
+            }
+          ]
+        }
+      }, 
+      "type": "conditional", 
+      "name": "this_year"
+    }
+  ]
+}

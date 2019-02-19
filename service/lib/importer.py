@@ -1,4 +1,5 @@
 from service.models import MasterSheet, PRISSheet, Reactor, OperatingHistorySheet, Operation
+from datetime import datetime
 
 STATUS_MAP = {
     "Operational" : "Operable"
@@ -62,6 +63,7 @@ def import_reactordb(master_path, pris_path, history_path):
         obj["status"] = STATUS_MAP.get(obj.get("status"), obj.get("status"))
 
         _add_operation_data(obj, histories)
+        _add_status_data(obj)
 
         # make and populate a reactor object, then save it
         r = Reactor()
@@ -115,3 +117,64 @@ def _add_operation_data(obj, histories):
         for year in years:
             total += data[year]
             obj["operation"][cf][str(year)] = total
+
+
+def _add_status_data(obj):
+    if "operation" not in obj:
+        obj["operation"] = {}
+    obj["operation"]["operational_status"] = {}
+    context = obj["operation"]["operational_status"]
+
+    construction_start = obj.get("construction_start")
+    end = datetime.utcnow().year
+
+    if not construction_start:
+        context[end] = "pre_construction"
+        return
+
+    start = _milestone_year(obj, "construction_start")
+
+    permanent_shutdown = _milestone_year(obj, "permanent_shutdown")
+    restart = _milestone_year(obj, "restart")
+    longterm_shutdown = _milestone_year(obj, "longterm_shutdown")
+    first_grid_connection = _milestone_year(obj, "first_grid_connection")
+    construction_restart = _milestone_year(obj, "construction_restart")
+    construction_suspend = _milestone_year(obj, "construction_suspend")
+
+    for year in range(end, start - 2, -1):
+        if permanent_shutdown is not None and year >= permanent_shutdown:
+            context[year] = "permanent_shutdown"
+            continue
+        if longterm_shutdown is not None and year >= longterm_shutdown:
+            if restart is not None and year < restart:
+                context[year] = "longterm_shutdown"
+                continue
+            if restart is None:
+                context[year] = "longterm_shutdown"
+                continue
+        if restart is not None and year >= restart:
+            context[year] = "operable"
+            continue
+        if first_grid_connection is not None and year >= first_grid_connection:
+            context[year] = "operable"
+            continue
+        if construction_suspend is not None and year >= construction_suspend:
+            if construction_restart is not None and year < construction_restart:
+                context[year] = "construction_suspended"
+                continue
+            if construction_restart is None:
+                context[year] = "construction_suspended"
+                continue
+        if construction_restart is not None and year >= construction_restart:
+            context[year] = "under_construction"
+            continue
+        if start is not None and year >= start:
+            context[year] = "under_construction"
+            continue
+        context[year] = "pre_construction"
+
+def _milestone_year(obj, milestone):
+    milestone_date = obj.get(milestone)
+    if not milestone_date:
+        return None
+    return datetime.strptime(milestone_date, "%Y-%m-%d").year

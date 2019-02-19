@@ -43,3 +43,4 @@ class TestImport(ESTestCase):
         assert len(res) == 10
         assert res[0].country is not None
         assert res[0].data["index"]["country"] == res[0].country.lower()
+
