@@ -860,10 +860,13 @@ var widget = {
                     }
                 } else if (primary.substring(0, 11) === "operational") {
                     var opsField = primary.substring(12);
-                    var opsData = reactor.operation[opsField];
+                    var opsData = {};
+                    if (reactor.operation.hasOwnProperty(opsField)) {
+                        opsData = reactor.operation[opsField];
+                    }
 
                     var fbVal = false;
-                    if (fallback) {
+                    if (fallback && reactor.reactor.hasOwnProperty(fallback)) {
                         var fbVal = reactor.reactor[fallback]
                     }
 
@@ -885,11 +888,13 @@ var widget = {
                         }
                     }
                 } else {
-                    var val = reactor.reactor[primary];
-                    for (var j = 0; j < years.length; j++) {
-                        var year = years[j];
-                        if (histogram.hasOwnProperty(year)) {
-                            histogram[year] += val;
+                    if (reactor.reactor.hasOwnProperty(primary)) {
+                        var val = reactor.reactor[primary];
+                        for (var j = 0; j < years.length; j++) {
+                            var year = years[j];
+                            if (histogram.hasOwnProperty(year)) {
+                                histogram[year] += val;
+                            }
                         }
                     }
                 }
