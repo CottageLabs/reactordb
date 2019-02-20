@@ -63,6 +63,56 @@ var rdbwidgets = {
                 "reactor-link" : [
                     {val: "reactor_link", display: "Link to Reactor Page"}
                 ]
+            },
+            statuses: [
+                {"val" : "", "display" : "Select an Operational Status"},
+                {"val" : "under_construction", "display" : "Under Construction"},
+                {"val" : "operable", "display" : "Operable"},
+                {"val" : "longterm_shutdown", "display" : "Longterm Shutdown"},
+                {"val" : "permanent_shutdown", "display" : "Permanent Shutdown"}
+            ],
+            primaries : [
+                {val: "reactor_count", display: "Reactor Count", label : "Reactor Count"},
+                {val: "design_net_capacity", display: "Design Net Capacity (Static)", label: "Design Net Capacity"},
+                {val: "gross_capacity", display: "Gross Capacity (Static)", label: "Gross Capacity"},
+                {val: "thermal_capacity", display: "Thermal Capacity (Static)", label: "Thermal Capacity"},
+                {val: "reference_unit_power_capacity_net", display: "Reference Unit Power (Static)", label: "Reference Unit Power"},
+                {val: "operational_reference_unit_power", display: "Reference Unit Power (Operational)", label: "Reference Unit Power"}
+            ],
+            statusHierarchy : {
+                "under_construction" : {
+                    "primary" : {
+                        "reactor_count" : [],
+                        "design_net_capacity" : [],
+                        "gross_capacity" : [],
+                        "thermal_capacity" : []
+                    }
+                },
+                "operable" : {
+                    "primary" : {
+                        "reactor_count" : [],
+                        "operational_reference_unit_power" : [
+                            "reference_unit_power_capacity_net", "design_net_capacity", "gross_capacity", "thermal_capacity"
+                        ]
+                    }
+                },
+                "longterm_shutdown" : {
+                    "primary" : {
+                        "reactor_count" : [],
+                        "operational_reference_unit_power" : [
+                            "reference_unit_power_capacity_net", "design_net_capacity", "gross_capacity", "thermal_capacity"
+                        ]
+                    }
+                },
+                "permanent_shutdown" : {
+                    "primary" : {
+                        "reactor_count" : [],
+                        "design_net_capacity" : [],
+                        "gross_capacity" : [],
+                        "thermal_capacity" : [],
+                        "reference_unit_power_capacity_net" : []
+                    }
+                }
             }
         },
 
@@ -252,6 +302,132 @@ var rdbwidgets = {
                         return raw[i].sort_type || "";
                     }
                 }
+            }
+        },
+
+        statusPrimaryValues : function(params) {
+            var ref = params.ref;
+
+            return function(params) {
+                if (!params) { params = {} }
+                var currentData = params.currentData;
+                var idx = params.idx;
+
+                if (!currentData) {
+                    return [];
+                }
+
+                var options = [];
+
+                // get the value of the field we are dependent on
+                var statusField = rdbwidgets.data._getFieldValue({data: currentData, ref: ref, idx: idx});
+                if (statusField === "") {
+                    return options;
+                }
+
+                var primaries = Object.keys(rdbwidgets.data.raw.statusHierarchy[statusField].primary);
+                var statuses = rdbwidgets.data.raw.primaries;
+
+                for (var i = 0; i < primaries.length; i++) {
+                    var primary = primaries[i];
+                    for (var j = 0; j < statuses.length; j++) {
+                        var status = statuses[j];
+                        if (status.val === primary) {
+                            options.push(status);
+                            break;
+                        }
+                    }
+                }
+
+                if (options.length > 0) {
+                    options.unshift({val: "", display: "Select a Primary Value Field"});
+                }
+                return options;
+            }
+        },
+
+        statusFallbackValues : function(params) {
+            var statusRef = params.status;
+            var primaryRef = params.primary;
+
+            return function(params) {
+                if (!params) { params = {} }
+                var currentData = params.currentData;
+                var idx = params.idx;
+
+                if (!currentData) {
+                    return [];
+                }
+
+                var options = [];
+
+                // get the value of the field we are dependent on
+                var statusField = rdbwidgets.data._getFieldValue({data: currentData, ref: statusRef, idx: idx});
+                var primaryField = rdbwidgets.data._getFieldValue({data: currentData, ref: primaryRef, idx: idx});
+
+                if (statusField === "" || primaryField === "") {
+                    return options;
+                }
+
+                var fallbacks = rdbwidgets.data.raw.statusHierarchy[statusField].primary[primaryField];
+                var statuses = rdbwidgets.data.raw.primaries;
+
+                for (var i = 0; i < fallbacks.length; i++) {
+                    var fallback = fallbacks[i];
+                    for (var j = 0; j < statuses.length; j++) {
+                        var status = statuses[j];
+                        if (status.val === fallback) {
+                            options.push(status);
+                            break;
+                        }
+                    }
+                }
+
+                if (options.length > 0) {
+                    options.unshift({val: "", display: "Select a Fallback Value Field"});
+                }
+
+                return options;
+            }
+        },
+
+        statusChartLabel : function(params) {
+            var statusRef = params.status;
+            var primaryRef = params.primary;
+
+            return function(params) {
+                if (!params) { params = {} }
+                var currentData = params.currentData;
+                var idx = params.idx;
+
+                if (!currentData) {
+                    return "";
+                }
+
+                // get the value of the field we are dependent on
+                var statusField = rdbwidgets.data._getFieldValue({data: currentData, ref: statusRef, idx: idx});
+                var primaryField = rdbwidgets.data._getFieldValue({data: currentData, ref: primaryRef, idx: idx});
+
+                if (statusField === "" || primaryField === "") {
+                    return "";
+                }
+
+                var statuses = rdbwidgets.data.raw.statuses;
+                var primaries = rdbwidgets.data.raw.primaries;
+
+                for (var i = 0; i < statuses.length; i++) {
+                    var status = statuses[i];
+                    if (status.val === statusField) {
+                        for (var j = 0; j < primaries.length; j++) {
+                            var primary = primaries[j];
+                            if (primary.val === primaryField) {
+                                return status.display + " - " + primary.label;
+                            }
+                        }
+                    }
+                }
+
+                return "";
             }
         },
 
@@ -784,6 +960,178 @@ var rdbwidgets = {
                         "name" : "label",
                         "type" : "text",
                         "default" : rdbwidgets.data.defaultOperationsFieldName({ref : "value"}),
+                        "label" : "Name",
+                        "on_val" : [
+                            {"value" : "", "default" : true}
+                        ],
+                        "controlWidth" : "5"
+                    },
+                    {
+                        "name" : "height",
+                        "type" : "text",
+                        "default" : "300",
+                        "label" : "Widget Height (pixels)",
+                        "on_val" : [
+                            {"value" : "", "default" : true},
+                            {
+                                "value" : rdbwidgets.validators.is_not_integer,
+                                "default" : true,
+                                "run" : function() {alert("You may only enter integers")}
+                            },
+                            {
+                                "value" : rdbwidgets.validators.less_than({limit: 200}),
+                                "default" : true,
+                                "run" : function() {alert("You cannot enter a value less than '200'")}
+                            }
+                        ],
+                        "controlWidth" : "2"
+                    },
+                    {
+                        "name" : "left",
+                        "type" : "text",
+                        "default" : "80",
+                        "label" : "Left Margin (pixels)",
+                        "on_val" : [
+                            {"value" : "", "default" : true},
+                            {
+                                "value" : rdbwidgets.validators.is_not_integer,
+                                "default" : true,
+                                "run" : function() {alert("You may only enter integers")}
+                            },
+                            {
+                                "value" : rdbwidgets.validators.less_than({limit: 0}),
+                                "default" : true,
+                                "run" : function() {alert("You cannot enter a value less than '0'")}
+                            }
+                        ],
+                        "controlWidth" : "2"
+                    },
+                    {
+                        "name" : "distance",
+                        "type" : "text",
+                        "default" : "0",
+                        "label" : "Y Axis Label Distance (pixels)",
+                        "on_val" : [
+                            {"value" : "", "default" : true},
+                            {
+                                "value" : rdbwidgets.validators.is_not_integer,
+                                "default" : true,
+                                "run" : function() {alert("You may only enter integers")}
+                            },
+                            {
+                                "value" : rdbwidgets.validators.less_than({limit: 0}),
+                                "default" : true,
+                                "run" : function() {alert("You cannot enter a value less than '0'")}
+                            }
+                        ],
+                        "controlWidth" : "2"
+                    }
+                ]
+            },
+            {
+                "name": "Chart : Status",
+                "id" : "chart_status",
+                "fields": [
+                    {
+                        "name" : "chart",
+                        "type" : "select",
+                        "source" : [
+                            {"val" : "bar", "display" : "bar"},
+                            {"val" : "line", "display" : "line"}
+                        ],
+                        "label" : "Chart Type",
+                        "controlWidth" : "2"
+                    },
+                    {
+                        "name": "start",
+                        "type": "text",
+                        "default": "1970",
+                        "label" : "From",
+                        "on_val" : [
+                            {"value" : "", "default" : true},
+                            {
+                                "value" : rdbwidgets.validators.is_not_integer,
+                                "default" : true,
+                                "run" : function() {alert("You may only enter integers")}
+                            },
+                            {
+                                "value" : function(params) {
+                                    var form = params.form;
+                                    var endDef = form.component.getCurrentFieldDef({id: "end"});
+                                    var selector = form._mapToFormName({fieldDef: endDef, idx: false});
+                                    selector = "[name=" + selector + "]";
+                                    var endVal = parseInt(form.component.context.find(selector).val());
+                                    var startVal = parseInt(params.val);
+                                    return startVal > endVal;
+                                },
+                                "default" : true,
+                                "run" : function() {alert("Your From year must be before your To year")}
+
+                            },
+                            {
+                                "value" : rdbwidgets.validators.greater_than({limit: (new Date()).getUTCFullYear()}),
+                                "default" : true,
+                                "run" : function() {alert("Your From year must be before the current year")}
+                            }
+                        ],
+                        "controlWidth" : "2"
+                    },
+                    {
+                        "name": "end",
+                        "type": "text",
+                        "default": (new Date()).getUTCFullYear(),
+                        "label" : "To",
+                        "on_val" : [
+                            {"value" : "", "default" : true},
+                            {
+                                "value" : rdbwidgets.validators.is_not_integer,
+                                "default" : true,
+                                "run" : function() {alert("You may only enter integers")}
+                            },
+                            {
+                                "value" : function(params) {
+                                    var form = params.form;
+                                    var startDef = form.component.getCurrentFieldDef({id: "start"});
+                                    var selector = form._mapToFormName({fieldDef: startDef, idx: false});
+                                    selector = "[name=" + selector + "]";
+                                    var startVal = parseInt(form.component.context.find(selector).val());
+                                    var endVal = parseInt(params.val);
+                                    return startVal > endVal;
+                                },
+                                "default" : true,
+                                "run" : function() {alert("Your To year must be after your From year")}
+
+                            }
+                        ],
+                        "controlWidth" : "2"
+                    },
+                    {
+                        "name": "status",
+                        "type": "select",
+                        "source": rdbwidgets.data.raw.statuses,
+                        "label" : "Operational Status",
+                        "dependents" : ["primary"],
+                        "controlWidth" : "5"
+                    },
+                    {
+                        "name": "primary",
+                        "type": "select",
+                        "source": rdbwidgets.data.statusPrimaryValues({ref: "status"}),
+                        "label" : "Primary Value Field",
+                        "dependents" : ["fallback", "label"],
+                        "controlWidth" : "5"
+                    },
+                    {
+                        "name": "fallback",
+                        "type": "select",
+                        "source": rdbwidgets.data.statusFallbackValues({status: "status", primary: "primary"}),
+                        "label" : "Fallback Value Field",
+                        "controlWidth" : "5"
+                    },
+                    {
+                        "name" : "label",
+                        "type" : "text",
+                        "default" : rdbwidgets.data.statusChartLabel({status: "status", primary: "primary"}),
                         "label" : "Name",
                         "on_val" : [
                             {"value" : "", "default" : true}
@@ -1640,11 +1988,16 @@ var rdbwidgets = {
             for (var i = 0; i < source.length; i++) {
                 options += '<option value="' + source[i].val + '">' + source[i].display + '</option>';
             }
-            var select = '<select id="' + id + '" name="' + name + '" class="form-control' + repeatFrag + '"' + readFrag + '>' + options + '</select>';
+
+            var disabledFrag = "";
+            if (source.length === 0) {
+                disabledFrag = " disabled ";
+            }
+
+            var select = '<select id="' + id + '" name="' + name + '" class="form-control' + repeatFrag + '"' + readFrag + '' + disabledFrag + '>' + options + '</select>';
             if (layout == "horizontal") {
                 select = '<div class="col-xs-' + controlWidth + '">' + select + "</div>";
             }
-
 
             var labelFrag = '<label for="' + id + '"' + labelClass + '>' + label + '</label>';
             var frag = '<div class="form-group">' + labelFrag + select + '</div>';
@@ -1934,11 +2287,13 @@ var rdbwidgets = {
                     var dependentBits = dependentDef.name.split(".");
                     var sameObject = fieldBits[0] === dependentBits[0];
 
-                    this._updateSource({
+                    var updatedElement = this._updateSource({
                         fieldDef: dependentDef,
                         sameObject: sameObject,
                         idx: idx
                     });
+
+                    updatedElement.trigger("change")
                 }
                 if ("default" in dependentDef) {
                     var defaultVal = dependentDef.default({currentData: this.component.currentData, idx: idx});
@@ -1948,6 +2303,7 @@ var rdbwidgets = {
 
                     var el = this.component.context.find(selector);
                     el.val(defaultVal);
+                    el.trigger("change");
                 }
             }
         };
@@ -1986,6 +2342,12 @@ var rdbwidgets = {
             var options = this._options({source : source});
             el.html(options);
 
+            if (source.length === 0) {
+                el.prop("disabled", true);
+            } else {
+                el.prop("disabled", false);
+            }
+
             // keep the original value if it is still in the list
             for (var j = 0; j < source.length; j++) {
                 if (source[j].val === originalDependentVal) {
@@ -1993,6 +2355,8 @@ var rdbwidgets = {
                     break;
                 }
             }
+
+            return el;
         };
     },
 

@@ -72,6 +72,8 @@ var widget = {
             return widget.chartAccumulator(params);
         } else if (type === "table_aggregate") {
             return widget.tableAggregate(params);
+        } else if (type === "chart_status") {
+            return widget.chartStatus(params);
         }
 
         return false;
@@ -439,6 +441,110 @@ var widget = {
         });
     },
 
+    chartStatus : function(params) {
+        var selector = params.selector;
+        var prefix = edges.getParam(params.prefix, "");
+
+        if (!params.hasOwnProperty("settings")) {
+            return;
+        }
+        if (!params.settings.hasOwnProperty("start") ||
+                !params.settings.hasOwnProperty("end") ||
+                !params.settings.hasOwnProperty("status") ||
+                !params.settings.hasOwnProperty("primary") ||
+                !params.settings.hasOwnProperty("label") ||
+                !params.settings.hasOwnProperty("height") ||
+                !params.settings.hasOwnProperty("chart")) {
+            return false;
+        }
+
+        var openingQuery = es.newQuery({raw: params.query});
+        openingQuery.size = 10000;
+        openingQuery.from = 0;
+        // openingQuery.setSourceFilters({include: ["operation." + params.settings.value]});
+
+        var leftMargin = params.settings.left;
+        if (!leftMargin) {
+            leftMargin = 80
+        } else {
+            leftMargin = parseInt(leftMargin)
+        }
+
+        var labelDistance = params.settings.distance;
+        if (!labelDistance) {
+            labelDistance = 0
+        } else {
+            labelDistance = parseInt(labelDistance)
+        }
+
+        var components = [];
+
+        if (params.settings.chart === "bar") {
+            components.push(
+                edges.newMultibar({
+                    id: "chart_status_" + params.id,
+                    category: "panel",
+                    dataFunction: widget._dataSeriesFromStatus({
+                        seriesName: params.settings.label,
+                        status: params.settings.status,
+                        primary: params.settings.primary,
+                        fallback: params.settings.fallback,
+                        start: params.settings.start,
+                        end: params.settings.end
+                    }),
+                    renderer: edges.nvd3.newMultibarRenderer({
+                        xTickFormat: ".0f",
+                        barColor: ["#1e9dd8"],
+                        yTickFormat: ",.0f",
+                        showLegend: false,
+                        xAxisLabel: "Year",
+                        yAxisLabel: params.settings.label,
+                        marginLeft: leftMargin,
+                        yAxisLabelDistance: labelDistance
+                    })
+                })
+            );
+        } else if (params.settings.chart === "line") {
+            components.push(
+                edges.newSimpleLineChart({
+                    id: "chart_status_" + params.id,
+                    category: "panel",
+                    dataFunction: widget._dataSeriesFromStatus({
+                        seriesName: params.settings.label,
+                        status: params.settings.status,
+                        primary: params.settings.primary,
+                        fallback: params.settings.fallback,
+                        start: params.settings.start,
+                        end: params.settings.end
+                    }),
+                    renderer: edges.nvd3.newSimpleLineChartRenderer({
+                        xTickFormat: ".0f",
+                        lineColor: ["#1e9dd8"],
+                        yTickFormat: ",.0f",
+                        showLegend: false,
+                        xAxisLabel: "Year",
+                        yAxisLabel: params.settings.label,
+                        marginLeft: leftMargin,
+                        yAxisLabelDistance: labelDistance,
+                        includeOnY: 0
+                    })
+                })
+            );
+        } else {
+            return false;
+        }
+
+        var search_url = params.base + "/query/" + prefix + "reactor/_search";
+        return edges.newEdge({
+            selector: selector,
+            template: widget.newSingleComponentTemplate({height: params.settings.height || false}),
+            search_url: search_url,
+            manageUrl : false,
+            openingQuery: openingQuery,
+            components : components
+        });
+    },
+
     tableReactor : function(params) {
         var selector = params.selector;
         var prefix = edges.getParam(params.prefix, "");
@@ -703,6 +809,112 @@ var widget = {
                 for (var i = values.length - 2; i > -1; i--) {
                     var val = values[i].value;
                     if (val === lastVal) {
+                        limit--;
+                    } else {
+                        break;
+                    }
+                }
+                values.splice(limit);
+            }
+
+            return [{key: seriesName, values: values}]
+        }
+    },
+
+    _dataSeriesFromStatus : function(params) {
+        var seriesName = params.seriesName;
+        var status = params.status;
+        var primary = params.primary;
+        var fallback = params.fallback;
+        var start = parseInt(params.start);
+        var end = parseInt(params.end);
+
+        return function(component) {
+            var results = component.edge.result.results();
+
+            // set up the histogram
+            var histogram = {};
+            for (var s = parseInt(start); s <= parseInt(end) && s <= (new Date()).getUTCFullYear(); s++) {
+                histogram[s] = 0;
+            }
+
+            for (var i = 0; i < results.length; i++) {
+                var reactor = results[i];
+
+                var years = [];
+                var possibleYears = Object.keys(reactor.operation.operational_status);
+                for (var j = 0; j < possibleYears.length; j++) {
+                    var possible = possibleYears[j];
+                    var yearStatus = reactor.operation.operational_status[possible];
+                    if (yearStatus === status) {
+                        years.push(possible);
+                    }
+                }
+
+                if (primary === "reactor_count") {
+                    for (var j = 0; j < years.length; j++) {
+                        var year = years[j];
+                        if (histogram.hasOwnProperty(year)) {
+                            histogram[year] += 1;
+                        }
+                    }
+                } else if (primary.substring(0, 11) === "operational") {
+                    var opsField = primary.substring(12);
+                    var opsData = reactor.operation[opsField];
+
+                    var fbVal = false;
+                    if (fallback) {
+                        var fbVal = reactor.reactor[fallback]
+                    }
+
+                    for (var j = 0; j < years.length; j++) {
+                        var year = years[j];
+                        if (!histogram.hasOwnProperty(year)) {
+                            continue;
+                        }
+                        var wasSet = false;
+                        if (opsData.hasOwnProperty(year)) {
+                            var val = opsData[year];
+                            if (val !== 0) {
+                                histogram[year] += val;
+                                wasSet = true;
+                            }
+                        }
+                        if (!wasSet && fbVal) {
+                            histogram[year] += fbVal;
+                        }
+                    }
+                } else {
+                    var val = reactor.reactor[primary];
+                    for (var j = 0; j < years.length; j++) {
+                        var year = years[j];
+                        if (histogram.hasOwnProperty(year)) {
+                            histogram[year] += val;
+                        }
+                    }
+                }
+            }
+
+            var values = [];
+            for (var year in histogram) {
+                values.push({label: year, value: histogram[year]});
+            }
+            values.sort(function(a, b) {
+                if (parseInt(a.year) < parseInt(b.year)) {
+                    return 1;
+                }
+                if (parseInt(a.year) > parseInt(b.year)) {
+                    return -1;
+                }
+                return 0;
+            });
+
+            // chop off the final values if they are zeroes
+            if (values.length > 0) {
+                var limit = values.length;
+                for (var i = values.length - 1; i > -1; i--) {
+                    var val = values[i].value;
+                    if (val === 0) {
                         limit--;
                     } else {
                         break;
