@@ -461,7 +461,9 @@ var widget = {
         var openingQuery = es.newQuery({raw: params.query});
         openingQuery.size = 10000;
         openingQuery.from = 0;
-        // openingQuery.setSourceFilters({include: ["operation." + params.settings.value]});
+
+        var includes = widget._statusIncludeFields(params.settings);
+        openingQuery.setSourceFilters({include: includes});
 
         var leftMargin = params.settings.left;
         if (!leftMargin) {
@@ -840,6 +842,9 @@ var widget = {
 
             for (var i = 0; i < results.length; i++) {
                 var reactor = results[i];
+                if (!reactor.hasOwnProperty("reactor")) {
+                    reactor.reactor = {};
+                }
 
                 var years = [];
                 var possibleYears = Object.keys(reactor.operation.operational_status);
@@ -930,5 +935,25 @@ var widget = {
 
             return [{key: seriesName, values: values}]
         }
+    },
+
+    _statusIncludeFields : function(params) {
+        var primary = params.primary;
+        var fallback = params.fallback;
+
+        var include = ["operation.operational_status"];
+
+        if (primary.substring(0, 11) === "operational") {
+            var field = primary.substring(12);
+            include.push("operation." + field);
+        } else {
+            include.push("reactor." + primary);
+        }
+
+        if (fallback) {
+            include.push("reactor." + fallback);
+        }
+
+        return include;
     }
 };
