@@ -2453,7 +2453,7 @@ var rdbwidgets = {
             var settings = '<script type="text/javascript">\nvar RDB_WIDGET_CONFIG_';
             settings += this.component.widget_id + ' = ' + JSON.stringify(this.component.config, null, 2) + '\n</script>\n';
 
-            var include = '<script type="text/javascript" src="embed.js?id=' + this.component.widget_id + '"></script>';
+            var include = '<script type="text/javascript" src="' + this.component.config.base + '/embed.js?id=' + this.component.widget_id + '"></script>';
 
             var snippet = div + settings + include;
             snippet = edges.escapeHtml(snippet);
