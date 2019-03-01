@@ -251,7 +251,7 @@ var widget = {
         );
 
         var search_url = params.base + "/query/" + prefix + "reactor/_search";
-        return edges.newEdge({
+        var e = edges.newEdge({
             selector: selector,
             template: widget.newHighlightTemplate({id: params.id}),
             search_url: search_url,
@@ -259,6 +259,14 @@ var widget = {
             openingQuery: openingQuery,
             components : components
         });
+
+        var container = $(selector).parent();
+        var observer = new MutationObserver(function(mutations) {
+            e.draw();
+        });
+        observer.observe(container[0], {attributes: true, attributeFilter: ["style"]});
+
+        return e;
     },
 
     chartHistogram : function(params) {
@@ -339,7 +347,7 @@ var widget = {
         }
 
         var search_url = params.base + "/custom/" + prefix + "chart_histogram/_search?start=" + params.settings.start + "&end=" + params.settings.end + "&field=" + params.settings.value;
-        return edges.newEdge({
+        var e = edges.newEdge({
             selector: selector,
             template: widget.newSingleComponentTemplate({height: params.settings.height || false}),
             search_url: search_url,
@@ -347,6 +355,14 @@ var widget = {
             openingQuery: openingQuery,
             components : components
         });
+
+        var container = $(selector).parent();
+        var observer = new MutationObserver(function(mutations) {
+            e.draw();
+        });
+        observer.observe(container[0], {attributes: true, attributeFilter: ["style"]});
+
+        return e;
     },
 
     chartAccumulator : function(params) {
@@ -438,7 +454,7 @@ var widget = {
         }
 
         var search_url = params.base + "/query/" + prefix + "reactor/_search";
-        return edges.newEdge({
+        var e = edges.newEdge({
             selector: selector,
             template: widget.newSingleComponentTemplate({height: params.settings.height || false}),
             search_url: search_url,
@@ -446,6 +462,14 @@ var widget = {
             openingQuery: openingQuery,
             components : components
         });
+
+        var container = $(selector).parent();
+        var observer = new MutationObserver(function(mutations) {
+            e.draw();
+        });
+        observer.observe(container[0], {attributes: true, attributeFilter: ["style"]});
+
+        return e;
     },
 
     chartStatus : function(params) {
@@ -544,7 +568,7 @@ var widget = {
         }
 
         var search_url = params.base + "/query/" + prefix + "reactor/_search";
-        return edges.newEdge({
+        var e = edges.newEdge({
             selector: selector,
             template: widget.newSingleComponentTemplate({height: params.settings.height || false}),
             search_url: search_url,
@@ -552,6 +576,14 @@ var widget = {
             openingQuery: openingQuery,
             components : components
         });
+
+        var container = $(selector).parent();
+        var observer = new MutationObserver(function(mutations) {
+            e.draw();
+        });
+        observer.observe(container[0], {attributes: true, attributeFilter: ["style"]});
+
+        return e;
     },
 
     tableReactor : function(params) {
@@ -615,7 +647,7 @@ var widget = {
         ];
 
         var search_url = params.base + "/query/" + prefix + "reactor/_search";
-        return edges.newEdge({
+        var e = edges.newEdge({
             selector: selector,
             template: widget.newSingleComponentTemplate(),
             search_url: search_url,
@@ -623,6 +655,14 @@ var widget = {
             openingQuery: openingQuery,
             components : components
         });
+
+        var container = $(selector).parent();
+        var observer = new MutationObserver(function(mutations) {
+            e.draw();
+        });
+        observer.observe(container[0], {attributes: true, attributeFilter: ["style"]});
+
+        return e;
     },
 
     tableAggregate : function(params) {
@@ -713,7 +753,7 @@ var widget = {
         ];
 
         var search_url = params.base + "/query/" + prefix + "reactor/_search";
-        return edges.newEdge({
+        var e = edges.newEdge({
             selector: selector,
             template: widget.newSingleComponentTemplate(),
             search_url: search_url,
@@ -721,6 +761,14 @@ var widget = {
             openingQuery: openingQuery,
             components : components
         });
+
+        var container = $(selector).parent();
+        var observer = new MutationObserver(function(mutations) {
+            e.draw();
+        });
+        observer.observe(container[0], {attributes: true, attributeFilter: ["style"]});
+
+        return e;
     },
 
     _reactorStatusCount : function(params) {
