@@ -23,7 +23,7 @@ var waitForJQuery{{ id }} = setInterval(function () {
                 assets = "true";
                 RDB_WIDGET_REGISTRY.assets = true
             }
-            $("#" + widgetConfig.id).load(widgetConfig.base + "/" + widgetConfig.include + "?id=" + widgetConfig.id + "&base=" + encodeURIComponent(widgetConfig.base) + "&assets=" + assets);
+            $("#" + widgetConfig.id).load(widgetConfig.base + widgetConfig.include + "?id=" + widgetConfig.id + "&base=" + encodeURIComponent(widgetConfig.base) + "&assets=" + assets);
         });
         clearInterval(waitForJQuery{{ id }});
     }

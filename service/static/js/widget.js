@@ -174,12 +174,19 @@ var widget = {
         function resizeHandler(renderer) {
             var container = renderer.component.context;
             var width = container.width();
+            var oversized = false;
             if (width > 180) {
                 width = 180;
+                oversized = true;
             }
             var selector = edges.css_class_selector(renderer.namespace, "graphic", renderer);
             var graphic = container.find(selector);
             graphic.css("height", width + "px");
+            if (oversized) {
+                graphic.addClass("oversized");
+            } else {
+                graphic.removeClass("oversized");
+            }
         }
 
         var components = [];

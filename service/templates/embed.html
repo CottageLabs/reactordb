@@ -18,7 +18,7 @@
 
 <script type="text/javascript">
 var waitForReactorDB{{ id }} = setInterval(function () {
-    if (typeof widget != "undefined") {
+    if (typeof widget != "undefined" && typeof nv != "undefined") {
         var e = widget.init(RDB_WIDGET_CONFIG_{{ id }});
         var id = "{{ id }}";
         var idx = RDB_WIDGET_REGISTRY.pending.indexOf(id);
