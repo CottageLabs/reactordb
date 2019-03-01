@@ -2448,7 +2448,7 @@ var rdbwidgets = {
         };
 
         this._embedSnippet = function() {
-            var div ='<div id="' + this.component.widget_id + '"></div>\n';
+            var div ='<div id="' + this.component.widget_id + '" style="float: left; width: 100%"></div>\n';
 
             var settings = '<script type="text/javascript">\nvar RDB_WIDGET_CONFIG_';
             settings += this.component.widget_id + ' = ' + JSON.stringify(this.component.config, null, 2) + '\n</script>\n';
